@@ -1,6 +1,6 @@
-# Bitmark Synergy Application
+# Bitmark Spring Application
 
-The Bitmark Synergy application for helping Social Network Users Reclaim Rights to Personal Data
+The Bitmark Spring application for helping Social Network Users Reclaim Rights to Personal Data
 
 ## Getting Started
 
@@ -31,15 +31,6 @@ buffer.size=100
 async=true
 async.queuesize=100
 ```
-- `app/fabric.properties` : Configuration for Fabric distribution
-```xml
-apiSecret=FabricSecretKey
-apiKey=FabricApiKey
-```
-
-Create `distribution` directory for distribution configuration
-- release_note.txt : Release note for distribution
-- testers.txt : list email of testers, separate by a comma
 
 Add `release.keystore` and `release.properties` for releasing as production
 
@@ -50,6 +41,4 @@ Add `release.keystore` and `release.properties` for releasing as production
 Using `-PsplitApks` to build split APKs
 
 ## Deployment
-The debug build is distributed via ***Fabric Beta***
-
-`./gradew crashlyticsUploadDistributionInhouseDebug`
+Coming soon
