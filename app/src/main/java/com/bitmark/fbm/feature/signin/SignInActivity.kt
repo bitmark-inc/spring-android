@@ -115,10 +115,11 @@ class SignInActivity : BaseAppCompatActivity() {
         viewModel.prepareDataLiveData.asLiveData().observe(this, Observer { res ->
             when {
                 res.isSuccess() -> {
+                    val registered = res.data()!!
                     OneSignal.setSubscription(true)
                     progressBar.gone()
                     blocked = false
-                    val bundle = ArchiveRequestContainerActivity.getBundle(true)
+                    val bundle = ArchiveRequestContainerActivity.getBundle(registered)
                     navigator.anim(RIGHT_LEFT)
                         .startActivityAsRoot(ArchiveRequestContainerActivity::class.java, bundle)
                 }

@@ -10,8 +10,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
 import com.bitmark.cryptography.crypto.encoder.Hex.HEX
 import com.bitmark.cryptography.crypto.encoder.Raw.RAW
+import com.bitmark.fbm.data.ext.isHttpError
 import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.data.source.AppRepository
+import com.bitmark.fbm.data.source.remote.api.error.HttpException
 import com.bitmark.fbm.data.source.remote.api.event.RemoteApiBus
 import com.bitmark.fbm.feature.BaseViewModel
 import com.bitmark.fbm.util.livedata.CompositeLiveData
@@ -31,13 +33,13 @@ class SignInViewModel(
     private val remoteApiBus: RemoteApiBus
 ) : BaseViewModel(lifecycle) {
 
-    internal val prepareDataLiveData = CompositeLiveData<Any>()
+    internal val prepareDataLiveData = CompositeLiveData<Boolean>()
 
     internal val serviceUnsupportedLiveData = MutableLiveData<String>()
 
     fun prepareData(account: Account, keyAlias: String, authRequired: Boolean) {
         prepareDataLiveData.add(
-            rxLiveDataTransformer.completable(
+            rxLiveDataTransformer.single(
                 prepareDataStream(
                     account,
                     keyAlias,
@@ -58,15 +60,21 @@ class SignInViewModel(
             val timestamp = t.second
             val signature = t.third
             accountRepo.registerFbmServerJwt(timestamp, signature, requester)
-        }.andThen(accountRepo.syncAccountData().flatMapCompletable { accountData ->
+        }.andThen(accountRepo.syncAccountData().flatMap { accountData ->
             accountData.keyAlias = keyAlias
             accountData.authRequired = authRequired
             Completable.mergeArray(
                 accountRepo.saveAccountData(accountData),
                 appRepo.registerNotificationService(accountData.id),
                 appRepo.setDataReady()
-            )
-        })
+            ).andThen(Single.just(true))
+        }).onErrorResumeNext { e ->
+            if (e.isHttpError() && (e as HttpException).code == 401) {
+                Single.just(false)
+            } else {
+                Single.error<Boolean>(e)
+            }
+        }
 
     override fun onStart() {
         super.onStart()
