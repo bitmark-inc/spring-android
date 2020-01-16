@@ -17,7 +17,7 @@
     <string name="get_your_data">Get your data</string>
     <string name="fb_login">Facebook login</string>
     <string name="fb_password">Facebook password</string>
-    <string name="we_will_only_use_your_fb_login">We’ll only use your Facebook login information to automate your back up.  \n\nYour login is stored on your device, never in the Cloud.</string>
+    <string name="we_will_only_use_your_fb_login">We’ll only use your Facebook login information to automate your back up.\n\nYour login is stored on your device, never in the Cloud.</string>
     <string name="data_requested">Data requested</string>
     <string name="notify_me_arrow">Notify me »</string>
     <string name="no_thanks">No thanks</string>
