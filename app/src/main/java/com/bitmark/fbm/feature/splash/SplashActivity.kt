@@ -31,6 +31,7 @@ import com.bitmark.fbm.feature.DialogController
 import com.bitmark.fbm.feature.Navigator
 import com.bitmark.fbm.feature.Navigator.Companion.BOTTOM_UP
 import com.bitmark.fbm.feature.Navigator.Companion.FADE_IN
+import com.bitmark.fbm.feature.Navigator.Companion.NONE
 import com.bitmark.fbm.feature.Navigator.Companion.RIGHT_LEFT
 import com.bitmark.fbm.feature.main.MainActivity
 import com.bitmark.fbm.feature.register.archiverequest.ArchiveRequestContainerActivity
@@ -93,7 +94,7 @@ class SplashActivity : BaseAppCompatActivity() {
         spannableString.setSpan(
             object : ClickableSpan() {
                 override fun onClick(widget: View) {
-                    // TODO go to term of service
+                    navigator.anim(NONE).openBrowser(BuildConfig.TERM_OF_SERVICE)
                 }
 
             }, startIndex,
@@ -112,7 +113,7 @@ class SplashActivity : BaseAppCompatActivity() {
         spannableString.setSpan(
             object : ClickableSpan() {
                 override fun onClick(widget: View) {
-                    // TODO go to privacy policy
+                    navigator.anim(NONE).openBrowser(BuildConfig.PRIVACY_POLICY)
                 }
 
             }, startIndex,

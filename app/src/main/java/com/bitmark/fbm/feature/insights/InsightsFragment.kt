@@ -17,6 +17,7 @@ import com.bitmark.fbm.feature.BaseSupportFragment
 import com.bitmark.fbm.feature.BaseViewModel
 import com.bitmark.fbm.feature.DialogController
 import com.bitmark.fbm.feature.Navigator
+import com.bitmark.fbm.feature.Navigator.Companion.RIGHT_LEFT
 import com.bitmark.fbm.feature.account.AccountActivity
 import com.bitmark.fbm.logging.Event
 import com.bitmark.fbm.logging.EventLogger
@@ -72,13 +73,13 @@ class InsightsFragment : BaseSupportFragment() {
 
         adapter.setItemClickListener(object : InsightsRecyclerViewAdapter.ItemClickListener {
             override fun onIncomeInfoClicked() {
-                // TODO implement later
+                val bundle = AccountActivity.getBundle(true)
+                navigator.anim(RIGHT_LEFT).startActivity(AccountActivity::class.java, bundle)
             }
-
         })
 
         ivAccount.setSafetyOnclickListener {
-            navigator.anim(Navigator.RIGHT_LEFT).startActivity(AccountActivity::class.java)
+            navigator.anim(RIGHT_LEFT).startActivity(AccountActivity::class.java)
         }
     }
 

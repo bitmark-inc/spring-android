@@ -159,6 +159,8 @@ android {
                     "\"https://raw.githubusercontent.com/bitmark-inc/spring/master/privacy-policy.md\""
             buildConfigField "String", "EULA",
                     "\"https://raw.githubusercontent.com/bitmark-inc/spring/master/eula.md\""
+            buildConfigField "String", "FAQ",
+                    "\"https://raw.githubusercontent.com/bitmark-inc/spring/master/faq.md\""
         }
 
         prd {
@@ -186,6 +188,8 @@ android {
                     "\"https://raw.githubusercontent.com/bitmark-inc/spring/master/privacy-policy.md\""
             buildConfigField "String", "EULA",
                     "\"https://raw.githubusercontent.com/bitmark-inc/spring/master/eula.md\""
+            buildConfigField "String", "FAQ",
+                    "\"https://raw.githubusercontent.com/bitmark-inc/spring/master/faq.md\""
         }
     }
 

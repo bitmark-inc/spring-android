@@ -8,6 +8,7 @@ package com.bitmark.fbm.feature.account
 
 import android.graphics.Color
 import android.graphics.Typeface
+import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.method.LinkMovementMethod
@@ -30,6 +31,7 @@ import com.bitmark.fbm.feature.whatsnew.WhatsNewActivity
 import com.bitmark.fbm.util.ext.openBrowser
 import com.bitmark.fbm.util.ext.openIntercom
 import com.bitmark.fbm.util.ext.setSafetyOnclickListener
+import com.bitmark.fbm.util.view.WebViewActivity
 import kotlinx.android.synthetic.main.activity_account.*
 import javax.inject.Inject
 
@@ -41,7 +43,13 @@ class AccountActivity : BaseAppCompatActivity() {
         private const val SURVEY_URL =
             "https://docs.google.com/forms/d/e/1FAIpQLScL41kNU6SBzo7ndcraUf7O-YJ_JrPqg_rlI588UjLK-_sGtQ/viewform?usp=sf_link"
 
-        fun newInstance() = AccountActivity()
+        private const val GOTO_FAQ = "goto_faq"
+
+        fun getBundle(goToFaq: Boolean = false): Bundle {
+            val bundle = Bundle()
+            bundle.putBoolean(GOTO_FAQ, goToFaq)
+            return bundle
+        }
     }
 
     @Inject
@@ -50,6 +58,15 @@ class AccountActivity : BaseAppCompatActivity() {
     override fun layoutRes(): Int = R.layout.activity_account
 
     override fun viewModel(): BaseViewModel? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val goToFaq = intent?.extras?.getBoolean(GOTO_FAQ) ?: false
+        if (goToFaq) {
+            goToFaq()
+        }
+    }
 
     override fun initComponents() {
         super.initComponents()
@@ -66,7 +83,7 @@ class AccountActivity : BaseAppCompatActivity() {
         spannableString.setSpan(
             object : ClickableSpan() {
                 override fun onClick(widget: View) {
-                    // TODO go to term of service
+                    navigator.anim(NONE).openBrowser(BuildConfig.TERM_OF_SERVICE)
                 }
 
             }, startIndex,
@@ -85,7 +102,7 @@ class AccountActivity : BaseAppCompatActivity() {
         spannableString.setSpan(
             object : ClickableSpan() {
                 override fun onClick(widget: View) {
-                    // TODO go to privacy policy
+                    navigator.anim(NONE).openBrowser(BuildConfig.PRIVACY_POLICY)
                 }
 
             }, startIndex,
@@ -141,7 +158,7 @@ class AccountActivity : BaseAppCompatActivity() {
         }
 
         tvFaq.setSafetyOnclickListener {
-            toastComingSoon()
+            goToFaq()
         }
 
         tvHelp.setSafetyOnclickListener {
@@ -156,10 +173,16 @@ class AccountActivity : BaseAppCompatActivity() {
         tvTellUs.setSafetyOnclickListener {
             navigator.anim(NONE).openBrowser(SURVEY_URL)
         }
+
     }
 
     private fun toastComingSoon() {
         Toast.makeText(this, "Coming soon", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun goToFaq() {
+        val bundle = WebViewActivity.getBundle(BuildConfig.FAQ, getString(R.string.faq))
+        navigator.anim(RIGHT_LEFT).startActivity(WebViewActivity::class.java, bundle)
     }
 
     override fun onBackPressed() {
