@@ -21,12 +21,13 @@ import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import com.bitmark.fbm.R
 import com.bitmark.fbm.feature.main.MainActivity
+import com.bitmark.fbm.feature.splash.SplashActivity
 import com.bitmark.fbm.util.ext.getResIdentifier
 
 fun buildSimpleNotificationBundle(
     context: Context, @StringRes title: Int, @StringRes message: Int,
     notificationId: Int = 0,
-    receiver: Class<*> = MainActivity::class.java
+    receiver: Class<*> = SplashActivity::class.java
 ): Bundle {
     val bundle = Bundle()
     bundle.putString("title", context.getString(title))
@@ -38,10 +39,10 @@ fun buildSimpleNotificationBundle(
 
 fun pushNotification(context: Context, bundle: Bundle) {
     val receiver = try {
-        val receiverName = bundle.getString("receiver") ?: MainActivity::class.java.name
+        val receiverName = bundle.getString("receiver") ?: SplashActivity::class.java.name
         Class.forName(receiverName)
     } catch (e: Throwable) {
-        MainActivity::class.java
+        SplashActivity::class.java
     }
     val intent = Intent(context, receiver)
     intent.putExtra("notification", bundle)

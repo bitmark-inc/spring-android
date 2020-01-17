@@ -6,7 +6,10 @@
  */
 package com.bitmark.fbm.data.model
 
+import com.bitmark.apiservice.params.RegistrationParams
+import com.bitmark.cryptography.crypto.Sha3512
 import com.bitmark.cryptography.crypto.encoder.Hex.HEX
+import com.bitmark.cryptography.crypto.encoder.Raw.RAW
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
@@ -45,10 +48,11 @@ fun ArchiveData.isValid() = status != ArchiveStatus.INVALID
 
 fun ArchiveData.isProcessed() = status == ArchiveStatus.PROCESSED
 
-fun ArchiveData.toMetaData() = mapOf("created_at" to createdAt, "updated_at" to updatedAt)
-
 val ArchiveData.hashBytes: ByteArray
     get() = HEX.decode(hash)
+
+val ArchiveData.assetId: String
+    get() = HEX.encode(Sha3512.hash(RAW.decode(RegistrationParams.computeFingerprint(hashBytes))))
 
 enum class ArchiveStatus {
     @Expose

@@ -698,7 +698,11 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                 res.isSuccess() -> {
                     val accountData = res.data()!!
                     if (registered) {
-                        navigator.anim(RIGHT_LEFT).startActivityAsRoot(MainActivity::class.java)
+                        loadAccount(accountData) { account ->
+                            val bundle = MainActivity.getBundle(account.seed.encodedSeed)
+                            navigator.anim(RIGHT_LEFT)
+                                .startActivityAsRoot(MainActivity::class.java, bundle)
+                        }
                     } else {
                         registerAccount(fbCredential!!.id, downloadArchiveCredential, accountData)
                     }

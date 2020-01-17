@@ -9,6 +9,7 @@ package com.bitmark.fbm.data.source.remote.api.service
 import com.bitmark.fbm.BuildConfig
 import com.bitmark.fbm.data.source.remote.api.middleware.RxErrorHandlingCallAdapterFactory
 import com.google.gson.Gson
+import okhttp3.Cache
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -29,10 +30,11 @@ class ServiceGenerator {
             gson: Gson,
             appInterceptors: List<Interceptor>? = null,
             networkInterceptors: List<Interceptor>? = null,
-            timeout: Long = CONNECTION_TIMEOUT
+            timeout: Long = CONNECTION_TIMEOUT,
+            cache: Cache? = null
         ): T {
             val httpClient =
-                buildHttpClient(appInterceptors, networkInterceptors, timeout)
+                buildHttpClient(appInterceptors, networkInterceptors, timeout, cache)
             val builder = Retrofit.Builder().baseUrl(endPoint)
                 .addCallAdapterFactory(RxErrorHandlingCallAdapterFactory())
                 .addConverterFactory(GsonConverterFactory.create(gson))
@@ -45,9 +47,11 @@ class ServiceGenerator {
         fun buildHttpClient(
             appInterceptors: List<Interceptor>? = null,
             networkInterceptors: List<Interceptor>? = null,
-            timeout: Long = CONNECTION_TIMEOUT
+            timeout: Long = CONNECTION_TIMEOUT,
+            cache: Cache? = null
         ): OkHttpClient {
             val httpClientBuilder = OkHttpClient.Builder()
+            if (cache != null) httpClientBuilder.cache(cache)
             httpClientBuilder.followRedirects(false)
 
             appInterceptors?.forEach { interceptor ->

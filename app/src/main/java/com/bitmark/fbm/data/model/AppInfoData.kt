@@ -21,7 +21,11 @@ data class AppInfoData(
 
     @Expose
     @SerializedName("server")
-    val serverInfo: ServerInfo
+    val serverInfo: ServerInfo,
+
+    @Expose
+    @SerializedName("system_version")
+    val systemVersion: String
 ) : Data
 
 data class AndroidAppInfo(

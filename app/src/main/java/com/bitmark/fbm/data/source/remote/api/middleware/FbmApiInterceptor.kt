@@ -28,8 +28,6 @@ class FbmApiInterceptor :
         val builder = chain.request().newBuilder()
             .addHeader("Content-Type", "application/json")
             .addHeader("Accept", "application/json")
-            .addHeader("Cache-Control", "no-cache")
-            .addHeader("Cache-Control", "no-store")
             .addHeader("Client-Type", "android")
             .addHeader("Client-Version", "${BuildConfig.VERSION_CODE}")
         if (!TextUtils.isEmpty(Jwt.getInstance().token))

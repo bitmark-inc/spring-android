@@ -40,5 +40,5 @@ class AppRemoteDataSource @Inject constructor(
 
     fun getAppInfo() = fbmApi.getAppInfo().map { res ->
         res["information"] ?: error("could not get app info")
-    }
+    }.subscribeOn(Schedulers.io())
 }

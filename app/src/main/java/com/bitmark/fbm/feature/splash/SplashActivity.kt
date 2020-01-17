@@ -69,6 +69,8 @@ class SplashActivity : BaseAppCompatActivity() {
 
     private val handler = Handler()
 
+    private lateinit var account: Account
+
     override fun layoutRes(): Int = R.layout.activity_splash
 
     override fun viewModel(): BaseViewModel? = null
@@ -286,8 +288,9 @@ class SplashActivity : BaseAppCompatActivity() {
                     handler.postDelayed({
                         if (dataReady) {
                             if (categoryReady) {
+                                val bundle = MainActivity.getBundle(account.seed.encodedSeed)
                                 navigator.anim(FADE_IN)
-                                    .startActivityAsRoot(MainActivity::class.java)
+                                    .startActivityAsRoot(MainActivity::class.java, bundle)
                             } else {
                                 val bundle = ArchiveRequestContainerActivity.getBundle(true)
                                 navigator.anim(FADE_IN)
@@ -329,7 +332,8 @@ class SplashActivity : BaseAppCompatActivity() {
 
     private fun prepareData(accountData: AccountData) {
         loadAccount(accountData) { account ->
-            viewModel.prepareData(account)
+            this.account = account
+            viewModel.prepareData(this.account)
         }
     }
 
