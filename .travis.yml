@@ -1,0 +1,50 @@
+language: android
+dist: trusty
+
+android:
+  components:
+    - tools
+    - platform-tools
+    - build-tools-28.0.3
+    - android-28
+    - extra-google-m2repository
+    - extra-android-m2repository
+
+  licenses:
+    - android-sdk-preview-license-.+
+    - android-sdk-license-.+
+    - google-gdk-license-.+
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.android/build-cache
+
+before_install:
+  - openssl aes-256-cbc -K $encrypted_54e4f91e8abd_key -iv $encrypted_54e4f91e8abd_iv -in .travis/secrets.tar.enc -out secrets.tar -d
+  - tar xvf secrets.tar
+  - chmod +x gradlew
+  - echo y | sdkmanager "ndk-bundle"
+  - export ANDROID_NDK_HOME=$ANDROID_HOME/ndk-bundle
+  - export PATH=$PATH:$ANDROID_NDK_HOME
+  - mkdir "$ANDROID_HOME/licenses" || true
+  - echo -e "\n24333f8a63b6825ea9c5514f83c2829b004d1fee" > "$ANDROID_HOME/licenses/android-sdk-license"
+  - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
+
+install:
+before_script:
+  - rm -fr $HOME/.gradle/caches/modules-2/files-2.1/com.bitmark.sdk
+  - mkdir -p app/src/main/resources && touch app/src/main/resources/sentry.properties
+  - touch key.properties && touch sentry.properties && touch keystores/release.properties
+  - echo -n >local.properties && echo "ndk.dir=$ANDROID_NDK_HOME"$'\n'"sdk.dir=$ANDROID_HOME" >local.properties
+  - echo -n >key.properties && echo "api.key.bitmark=$BM_API_KEY"$'\n'"api.key.intercom=$INTERCOM_API_KEY"$'\n'"api.app-center.token=$APP_CENTER_API_TOKEN" >key.properties
+  - echo -n >sentry.properties && echo "defaults.project=bitmark-fbm-android"$'\n'"defaults.org=bitmark-inc"$'\n'"auth.token=$SENTRY_AUTH_TOKEN" >sentry.properties
+  - echo -n >app/src/main/resources/sentry.properties && echo "dsn=$SENTRY_DSN" >app/src/main/resources/sentry.properties
+  - echo -n >keystores/release.properties && echo "key.alias=springks"$'\n'"key.store.password=$key.store.password"$'\n'"key.alias.password=$key.alias.password" >keystores/release.properties
+
+script:
+  - ./gradlew clean fillSecretKey assembleInhouseDebug appCenterUploadInhouseDebug

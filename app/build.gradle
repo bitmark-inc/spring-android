@@ -16,6 +16,8 @@ apply plugin: 'io.sentry.android.gradle'
 
 apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 
+apply plugin: "com.betomorrow.appcenter"
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -129,12 +131,12 @@ android {
         }
     }
 
-    flavorDimensions "version"
+    flavorDimensions "env"
 
     productFlavors {
 
         inhouse {
-            dimension "version"
+            dimension "env"
             applicationIdSuffix ".inhouse"
             resValue "string", "app_name", "Spring Inhouse"
             manifestPlaceholders = [
@@ -164,7 +166,7 @@ android {
         }
 
         prd {
-            dimension "version"
+            dimension "env"
             resValue "string", "app_name", "Spring"
             manifestPlaceholders = [
                     appIcon                        : "@mipmap/ic_launcher",
@@ -216,6 +218,24 @@ android {
         // during a build.  If you disable this you'll need to manually
         // upload the mapping files with sentry-cli when you do a release.
         autoUpload true
+    }
+}
+
+appcenter {
+    def keyPropertiesFile = rootProject.file('key.properties')
+    def keyProperties = new Properties()
+    keyProperties.load(new FileInputStream(keyPropertiesFile))
+
+    apiToken = keyProperties["api.app-center.token"]
+    ownerName = "support-zzd0-28"
+    distributionGroups = ["Bitmark"]
+    releaseNotes = file("../CHANGELOG.md")
+    notifyTesters = true
+    apps {
+        inhouse {
+            dimension = "env"
+            appName = "Spring-Android-Inhouse"
+        }
     }
 }
 
