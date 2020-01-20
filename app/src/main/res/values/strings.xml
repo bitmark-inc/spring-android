@@ -206,9 +206,9 @@
     <string name="tagged_with_lower_format">tagged with %1$s</string>
     <string name="tagged_at_lower_format">tagged at %1$s</string>
     <string name="reacted_to_lower_format">reacted to %1$s</string>
-    <string name="last_week_format_plural">Last %d Weeks</string>
-    <string name="last_year_format_plural">Last %d Years</string>
-    <string name="last_decade_format_plural">Last %d Decades</string>
+    <string name="last_week_format_plural">%d Weeks Ago</string>
+    <string name="last_year_format_plural">%d Years Ago</string>
+    <string name="last_decade_format_plural">%d Decades Ago</string>
     <string name="income_fb_made_from_you_format">Income Facebook made from you since %1$s.</string>
     <string name="version_format">Version %1$s</string>
     <string name="day_ago_format">%1$dd ago</string>
