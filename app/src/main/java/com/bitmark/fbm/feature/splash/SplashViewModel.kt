@@ -63,9 +63,11 @@ class SplashViewModel(
     fun prepareData(account: Account) {
         prepareDataLiveData.add(
             rxLiveDataTransformer.single(
-                registerJwtStream(account).andThen(
-                    checkInvalidArchiveStream()
-                ).onNetworkErrorResumeNext { Single.just(false) }
+                registerJwtStream(account)
+                    .andThen(accountRepo.syncAccountData().ignoreElement())
+                    .andThen(checkInvalidArchiveStream()).onNetworkErrorResumeNext {
+                        Single.just(false)
+                    }
                 /*.flatMap { invalid ->
                     if (invalid) {
                         // keep account data for next time using

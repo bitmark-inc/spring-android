@@ -9,6 +9,8 @@ package com.bitmark.fbm.feature.statistic
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
+import android.util.Range
+import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -35,6 +37,7 @@ import com.bitmark.fbm.util.view.TopVerticalItemDecorator
 import com.bitmark.fbm.util.view.statistic.GroupView
 import kotlinx.android.synthetic.main.fragment_statistic.*
 import javax.inject.Inject
+import kotlin.math.abs
 
 
 class StatisticFragment : BaseSupportFragment() {
@@ -65,9 +68,10 @@ class StatisticFragment : BaseSupportFragment() {
 
     @Inject
     internal lateinit var logger: EventLogger
+
     private lateinit var period: Period
 
-    private var periodStartedAtSec = -1L
+    private var currentStartedAtSec = -1L
 
     private var periodGap = -1
 
@@ -86,23 +90,29 @@ class StatisticFragment : BaseSupportFragment() {
             arguments?.getString(PERIOD) ?: throw IllegalArgumentException("missing period")
         )
 
-        periodGap = getDefaultPeriodGap(period)
-        periodStartedAtSec = getStartOfPeriodSec(period)
+        periodGap = 0
+        currentStartedAtSec = getStartOfPeriodSec(period)
     }
 
     override fun onResume() {
         super.onResume()
         if (adapter.itemCount > 0) return
         handler.postDelayed({
-            viewModel.listUsageStatistic(period, periodStartedAtSec)
+            viewModel.listUsageStatistic(period, currentStartedAtSec)
         }, Constants.MASTER_DELAY_TIME)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.getLastActivityTimestamp()
     }
 
     override fun initComponents() {
         super.initComponents()
 
-        ivNextPeriod.isEnabled = periodStartedAtSec != getStartOfPeriodSec(period)
-        showPeriod(period, periodStartedAtSec, periodGap)
+        ivNextPeriod.isEnabled = currentStartedAtSec != getStartOfPeriodSec(period)
+        showPeriod(period, currentStartedAtSec, periodGap)
 
         adapter = StatisticRecyclerViewAdapter()
         val layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
@@ -122,53 +132,56 @@ class StatisticFragment : BaseSupportFragment() {
         })
 
         ivNextPeriod.setOnClickListener {
-            periodGap--
-            periodStartedAtSec =
-                getStartOfPeriodSec(period, periodStartedAtSec, true)
-            showPeriod(period, periodStartedAtSec, periodGap)
-            viewModel.listUsageStatistic(period, periodStartedAtSec)
+            nextPeriod()
         }
 
         ivPrevPeriod.setOnClickListener {
-            periodGap++
-            periodStartedAtSec =
-                getStartOfPeriodSec(period, periodStartedAtSec, false)
-            showPeriod(period, periodStartedAtSec, periodGap)
-            viewModel.listUsageStatistic(period, periodStartedAtSec)
+            prevPeriod()
         }
 
     }
 
+    private fun nextPeriod() {
+        periodGap++
+        currentStartedAtSec =
+            getStartOfPeriodSec(period, currentStartedAtSec, 1)
+        showPeriod(period, currentStartedAtSec, periodGap)
+        viewModel.listUsageStatistic(period, currentStartedAtSec)
+    }
+
+    private fun prevPeriod() {
+        periodGap--
+        currentStartedAtSec =
+            getStartOfPeriodSec(period, currentStartedAtSec, -1)
+        showPeriod(period, currentStartedAtSec, periodGap)
+        viewModel.listUsageStatistic(period, currentStartedAtSec)
+    }
+
     private fun showPeriod(period: Period, periodStartedAtSec: Long, periodGap: Int) {
         ivNextPeriod.isEnabled = periodStartedAtSec != getStartOfPeriodSec(period)
-        ivPrevPeriod.isEnabled = getStartOfPeriodSec(period, periodStartedAtSec, false) >= 0L
+        ivPrevPeriod.isEnabled = getStartOfPeriodSec(period, periodStartedAtSec, -1) >= 0L
         val periodStartedAtMillis = periodStartedAtSec * 1000
         tvTime.text = DateTimeUtil.formatPeriod(period, periodStartedAtMillis)
-        val defaultPeriodGap = getDefaultPeriodGap(period)
+        val defaultPeriodGap = 0
         if (defaultPeriodGap == periodGap) {
             tvType.text = getString(
                 when (period) {
-                    Period.WEEK -> R.string.last_week
+                    Period.WEEK -> R.string.this_week
                     Period.YEAR -> R.string.this_year
                     Period.DECADE -> R.string.this_decade
                 }
             )
         } else {
-            val plural = periodGap > 1
+            val plural = abs(periodGap) > 1
             tvType.text = getString(
                 when (period) {
                     Period.WEEK -> if (plural) R.string.last_week_format_plural else R.string.last_week
                     Period.YEAR -> if (plural) R.string.last_year_format_plural else R.string.last_year
                     Period.DECADE -> if (plural) R.string.last_decade_format_plural else R.string.last_decade
                 }
-            ).format(periodGap)
+            ).format(abs(periodGap))
         }
 
-    }
-
-    private fun getDefaultPeriodGap(period: Period) = when (period) {
-        Period.WEEK -> 1 // last week by default
-        else -> 0
     }
 
     override fun deinitComponents() {
@@ -183,7 +196,7 @@ class StatisticFragment : BaseSupportFragment() {
             when {
                 res.isSuccess() -> {
                     val data = res.data() ?: return@Observer
-                    if (data.any { s -> s.periodStartedAtSec != periodStartedAtSec }) return@Observer
+                    if (data.any { s -> s.periodStartedAtSec != currentStartedAtSec }) return@Observer
                     adapter.set(data)
                 }
 
@@ -206,17 +219,54 @@ class StatisticFragment : BaseSupportFragment() {
                 }
             }
         })
+
+        viewModel.getLastActivityTimestampLiveData.asLiveData().observe(this, Observer { res ->
+            when {
+                res.isSuccess() -> {
+                    val lastActivityMillis = res.data()!! * 1000
+                    val startOfPeriodMillis = getStartOfPeriodSec(period) * 1000
+                    periodGap = calculateGap(period, startOfPeriodMillis, lastActivityMillis)
+                    currentStartedAtSec =
+                        getStartOfPeriodSec(period, currentStartedAtSec, periodGap)
+                    showPeriod(period, currentStartedAtSec, periodGap)
+                }
+            }
+        })
+    }
+
+    private fun calculateGap(
+        period: Period,
+        startOfPeriodMillis: Long,
+        lastActivityMillis: Long
+    ): Int {
+        val periodDateRange = when (period) {
+            Period.WEEK -> DateTimeUtil.getDateRangeOfWeek(startOfPeriodMillis)
+            Period.YEAR -> DateTimeUtil.getDateRangeOfYear(startOfPeriodMillis)
+            Period.DECADE -> DateTimeUtil.getDateRangeOfDecade(startOfPeriodMillis)
+        }
+        val periodMillisRange = Range(periodDateRange.first.time, periodDateRange.second.time)
+        return if (lastActivityMillis in periodMillisRange) {
+            0
+        } else {
+            val gapMillis = abs(lastActivityMillis - startOfPeriodMillis)
+            val gap = when (period) {
+                Period.WEEK -> (gapMillis / DateTimeUtil.WEEK_MILLIS + 1).toInt()
+                Period.YEAR -> (gapMillis / DateTimeUtil.YEAR_MILLIS + 1).toInt()
+                Period.DECADE -> (gapMillis / DateTimeUtil.DECADE_MILLIS + 1).toInt()
+            }
+            if (lastActivityMillis < periodMillisRange.lower) -gap else gap
+        }
     }
 
     private fun handleChartClicked(chartItem: GroupView.ChartItem) {
         if (chartItem.yVal == 0f) return
-        val periodStartedAtMillis = periodStartedAtSec * 1000
+        val periodStartedAtMillis = currentStartedAtSec * 1000
         val endedAtSec = when (period) {
-            Period.WEEK -> DateTimeUtil.getEndOfWeek(periodStartedAtMillis)
+            Period.WEEK -> DateTimeUtil.getEndOfWeekMillis(periodStartedAtMillis)
             Period.YEAR -> DateTimeUtil.getEndOfYearMillis(periodStartedAtMillis)
-            Period.DECADE -> DateTimeUtil.getEndOfDecade(periodStartedAtMillis)
+            Period.DECADE -> DateTimeUtil.getEndOfDecadeMillis(periodStartedAtMillis)
         } / 1000
-        val startedAtSec = periodStartedAtSec
+        val startedAtSec = currentStartedAtSec
 
         val title = getString(
             when (chartItem.sectionName) {
@@ -300,29 +350,17 @@ class StatisticFragment : BaseSupportFragment() {
     }
 
     private fun getStartOfPeriodSec(period: Period) = when (period) {
-        Period.WEEK -> DateTimeUtil.getStartOfLastWeekMillis()
+        Period.WEEK -> DateTimeUtil.getStartOfThisWeekMillis()
         Period.YEAR -> DateTimeUtil.getStartOfThisYearMillis()
         Period.DECADE -> DateTimeUtil.getStartOfThisDecadeMillis()
     } / 1000
 
-    private fun getStartOfPeriodSec(period: Period, sec: Long, next: Boolean): Long {
+    private fun getStartOfPeriodSec(period: Period, sec: Long, gap: Int): Long {
         val millis = sec * 1000
         return when (period) {
-            Period.WEEK -> if (next) {
-                DateTimeUtil.getStartOfNextWeekMillis(millis)
-            } else {
-                DateTimeUtil.getStartOfLastWeekMillis(millis)
-            }
-            Period.YEAR -> if (next) {
-                DateTimeUtil.getStartOfNextYearMillis(millis)
-            } else {
-                DateTimeUtil.getStartOfLastYearMillis(millis)
-            }
-            Period.DECADE -> if (next) {
-                DateTimeUtil.getStartOfNextDecadeMillis(millis)
-            } else {
-                DateTimeUtil.getStartOfLastDecadeMillis(millis)
-            }
+            Period.WEEK -> DateTimeUtil.getStartOfWeekMillis(millis, gap)
+            Period.YEAR -> DateTimeUtil.getStartOfYearMillis(millis, gap)
+            Period.DECADE -> DateTimeUtil.getStartOfDecadeMillis(millis, gap)
         } / 1000
     }
 

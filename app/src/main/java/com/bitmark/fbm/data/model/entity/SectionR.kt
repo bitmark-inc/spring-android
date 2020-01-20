@@ -188,9 +188,9 @@ fun Period.toSubPeriodRangeSec(startedAtSec: Long) = LongRange(
 
 fun Period.toPeriodRangeSec(startedAtSec: Long) = LongRange(
     startedAtSec, when (this) {
-        Period.WEEK -> DateTimeUtil.getEndOfWeek(startedAtSec * 1000)
+        Period.WEEK -> DateTimeUtil.getEndOfWeekMillis(startedAtSec * 1000)
         Period.YEAR -> DateTimeUtil.getEndOfYearMillis(startedAtSec * 1000)
-        Period.DECADE -> DateTimeUtil.getEndOfDecade(startedAtSec * 1000)
+        Period.DECADE -> DateTimeUtil.getEndOfDecadeMillis(startedAtSec * 1000)
     } / 1000
 )
 

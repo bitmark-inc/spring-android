@@ -44,6 +44,12 @@ class DateTimeUtil {
 
         val TIME_FORMAT_1 = "hh:mm a"
 
+        val WEEK_MILLIS = 7 * 24 * 60 * 60 * 1000L
+
+        val YEAR_MILLIS = 365 * 24 * 60 * 60 * 1000L
+
+        val DECADE_MILLIS = 10 * YEAR_MILLIS
+
         fun stringToString(date: String) =
             stringToString(date, DATE_FORMAT_1)
 
@@ -133,27 +139,21 @@ class DateTimeUtil {
             Calendar.getInstance(TimeZone.getTimeZone(timezone)).time
 
         fun getStartOfLastWeekMillis(timezone: String = "UTC") =
-            getStartOfLastWeekMillis(Calendar.getInstance().timeInMillis, timezone)
+            getStartOfWeekMillis(Calendar.getInstance().timeInMillis, -1, timezone)
 
-        fun getStartOfLastWeekMillis(thisWeekMillis: Long, timezone: String = "UTC"): Long {
+        fun getStartOfThisWeekMillis(timezone: String = "UTC") =
+            getStartOfWeekMillis(Calendar.getInstance().timeInMillis, 0, timezone)
+
+        fun getStartOfWeekMillis(thisWeekMillis: Long, gap: Int, timezone: String = "UTC"): Long {
             val calendar = Calendar.getInstance(TimeZone.getTimeZone(timezone))
             calendar.timeInMillis = thisWeekMillis
-            calendar.add(Calendar.DAY_OF_YEAR, -7)
+            calendar.add(Calendar.DAY_OF_YEAR, gap * 7)
             calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
             val startOfSunday = getStartOfDate(calendar)
             return startOfSunday.timeInMillis
         }
 
-        fun getStartOfNextWeekMillis(thisWeekMillis: Long, timezone: String = "UTC"): Long {
-            val calendar = Calendar.getInstance(TimeZone.getTimeZone(timezone))
-            calendar.timeInMillis = thisWeekMillis
-            calendar.add(Calendar.DAY_OF_YEAR, 7)
-            calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
-            val startOfSunday = getStartOfDate(calendar)
-            return startOfSunday.timeInMillis
-        }
-
-        fun getEndOfWeek(millis: Long, timezone: String = "UTC"): Long {
+        fun getEndOfWeekMillis(millis: Long, timezone: String = "UTC"): Long {
             val calendar = Calendar.getInstance(TimeZone.getTimeZone(timezone))
             calendar.timeInMillis = millis
             calendar.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY)
@@ -176,17 +176,17 @@ class DateTimeUtil {
             return startOfYear.timeInMillis
         }
 
-        fun getStartOfNextYearMillis(thisYearMillis: Long, timezone: String = "UTC"): Long {
+        fun getStartOfYearMillis(thisYearMillis: Long, gap: Int, timezone: String = "UTC"): Long {
             val calendar = Calendar.getInstance(TimeZone.getTimeZone(timezone))
             calendar.timeInMillis = thisYearMillis
             calendar.set(Calendar.DAY_OF_YEAR, 1)
-            calendar.add(Calendar.YEAR, 1)
+            calendar.add(Calendar.YEAR, gap)
             val startOfYear = getStartOfDate(calendar)
             return startOfYear.timeInMillis
         }
 
         fun getEndOfYearMillis(millis: Long, timezone: String = "UTC"): Long {
-            val nextYearMillis = getStartOfNextYearMillis(millis, timezone)
+            val nextYearMillis = getStartOfYearMillis(millis, 1, timezone)
             val calendar = Calendar.getInstance(TimeZone.getTimeZone(timezone))
             calendar.timeInMillis = nextYearMillis
             calendar.add(Calendar.DAY_OF_YEAR, -1)
@@ -214,20 +214,21 @@ class DateTimeUtil {
             return startOfDecade.timeInMillis
         }
 
-        fun getStartOfNextDecadeMillis(
+        fun getStartOfDecadeMillis(
             startOfThisDecadeMillis: Long,
+            gap: Int,
             timezone: String = "UTC"
         ): Long {
             val calendar = Calendar.getInstance(TimeZone.getTimeZone(timezone))
             calendar.timeInMillis = startOfThisDecadeMillis
-            calendar.add(Calendar.YEAR, 10)
+            calendar.add(Calendar.YEAR, 10 * gap)
             calendar.set(Calendar.DAY_OF_YEAR, 1)
             val startOfDecade = getStartOfDate(calendar)
             return startOfDecade.timeInMillis
         }
 
-        fun getEndOfDecade(startOfThisDecadeMillis: Long, timezone: String = "UTC"): Long {
-            val nextDecadeMillis = getStartOfNextDecadeMillis(startOfThisDecadeMillis, timezone)
+        fun getEndOfDecadeMillis(startOfThisDecadeMillis: Long, timezone: String = "UTC"): Long {
+            val nextDecadeMillis = getStartOfDecadeMillis(startOfThisDecadeMillis, 1, timezone)
             val calendar = Calendar.getInstance(TimeZone.getTimeZone(timezone))
             calendar.timeInMillis = nextDecadeMillis
             calendar.add(Calendar.DAY_OF_YEAR, -1)
@@ -257,11 +258,12 @@ class DateTimeUtil {
         }
 
         fun getDateRangeOfWeek(
-            startOfWeekMillis: Long,
+            weekMillis: Long,
             timezone: String = "UTC"
         ): Pair<Date, Date> {
             val calendar = Calendar.getInstance(TimeZone.getTimeZone(timezone))
-            calendar.timeInMillis = startOfWeekMillis
+            calendar.timeInMillis = weekMillis
+            calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
             val startDate = getStartOfDate(calendar).time
             calendar.add(Calendar.WEEK_OF_YEAR, 1)
             calendar.add(Calendar.DAY_OF_YEAR, -1)
@@ -269,12 +271,27 @@ class DateTimeUtil {
             return Pair(startDate, endDate)
         }
 
-        fun getDateRangeOfDecade(
-            startOfDecadeMillis: Long,
+        fun getDateRangeOfYear(
+            yearMillis: Long,
             timezone: String = "UTC"
         ): Pair<Date, Date> {
             val calendar = Calendar.getInstance(TimeZone.getTimeZone(timezone))
-            calendar.timeInMillis = startOfDecadeMillis
+            calendar.timeInMillis = yearMillis
+            calendar.set(Calendar.DAY_OF_YEAR, 1)
+            val startDate = getStartOfDate(calendar).time
+            calendar.add(Calendar.YEAR, 1)
+            calendar.add(Calendar.DAY_OF_YEAR, -1)
+            val endDate = getEndOfDate(calendar).time
+            return Pair(startDate, endDate)
+        }
+
+        fun getDateRangeOfDecade(
+            decadeMillis: Long,
+            timezone: String = "UTC"
+        ): Pair<Date, Date> {
+            val calendar = Calendar.getInstance(TimeZone.getTimeZone(timezone))
+            calendar.timeInMillis = decadeMillis
+            calendar.add(Calendar.YEAR, -calendar.get(Calendar.YEAR) % 10)
             val startDate = getStartOfDate(calendar).time
             calendar.add(Calendar.YEAR, 9)
             val endDate = getEndOfDate(calendar).time

@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import com.bitmark.fbm.data.ext.onNetworkErrorReturn
 import com.bitmark.fbm.data.model.entity.Period
 import com.bitmark.fbm.data.model.entity.SectionName
+import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.data.source.StatisticRepository
 import com.bitmark.fbm.feature.BaseViewModel
 import com.bitmark.fbm.util.ext.replace
@@ -24,11 +25,14 @@ import java.util.*
 class StatisticViewModel(
     lifecycle: Lifecycle,
     private val statisticRepo: StatisticRepository,
+    private val accountRepo: AccountRepository,
     private val rxLiveDataTransformer: RxLiveDataTransformer
 ) :
     BaseViewModel(lifecycle) {
 
     internal val listUsageStatisticLiveData = CompositeLiveData<List<SectionModelView>>()
+
+    internal val getLastActivityTimestampLiveData = CompositeLiveData<Long>()
 
     fun listUsageStatistic(period: Period, periodStartedAtSec: Long) {
         val stream =
@@ -93,4 +97,8 @@ class StatisticViewModel(
                 periodStartedAtSec
             )
         )
+
+    fun getLastActivityTimestamp() {
+        getLastActivityTimestampLiveData.add(rxLiveDataTransformer.single(accountRepo.getLastActivityTimestamp()))
+    }
 }

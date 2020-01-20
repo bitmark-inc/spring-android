@@ -100,4 +100,9 @@ class AccountRepository(
         }).flatMap { accountData ->
         saveAccountData(accountData).andThen(Single.just(accountData))
     }
+
+    fun getLastActivityTimestamp() = getAccountData().map { accountData ->
+        accountData.metadata?.get("last_activity_timestamp")?.toLong()
+            ?: error("do not contains last_activity_timestamp")
+    }
 }
