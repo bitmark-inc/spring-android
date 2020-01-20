@@ -2,6 +2,9 @@
 
 The Bitmark Spring application for helping Social Network Users Reclaim Rights to Personal Data
 
+[![Made by](https://img.shields.io/badge/Made%20by-Bitmark%20Inc-lightgrey.svg)](https://bitmark.com)
+[![Build Status](https://travis-ci.org/bitmark-inc/spring-android.svg?branch=master)](https://travis-ci.org/bitmark-inc/spring-android)
+
 ## Getting Started
 
 #### Prequisites
@@ -41,4 +44,4 @@ Add `release.keystore` and `release.properties` for releasing as production
 Using `-PsplitApks` to build split APKs
 
 ## Deployment
-Coming soon
+`./gradlew appCenterUploadInhouseDebug`
