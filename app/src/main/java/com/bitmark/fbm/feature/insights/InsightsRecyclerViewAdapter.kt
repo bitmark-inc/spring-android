@@ -6,6 +6,9 @@
  */
 package com.bitmark.fbm.feature.insights
 
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.UnderlineSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,10 +18,12 @@ import com.bitmark.fbm.R
 import com.bitmark.fbm.util.DateTimeUtil
 import com.bitmark.fbm.util.ext.getDimensionPixelSize
 import com.bitmark.fbm.util.ext.gone
+import com.bitmark.fbm.util.ext.setSafetyOnclickListener
 import com.bitmark.fbm.util.ext.visible
 import com.bitmark.fbm.util.modelview.InsightModelView
 import kotlinx.android.synthetic.main.item_categories.view.*
 import kotlinx.android.synthetic.main.item_category.view.*
+import kotlinx.android.synthetic.main.item_how_u_r_tracked.view.*
 import kotlinx.android.synthetic.main.item_income.view.*
 
 
@@ -27,6 +32,7 @@ class InsightsRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder
     companion object {
         private const val INCOME = 0x00
         private const val CATEGORY = 0x01
+        private const val USER_TRACKED = 0x02
     }
 
     private val items = mutableListOf<InsightModelView>()
@@ -36,6 +42,7 @@ class InsightsRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder
     fun set(insights: List<InsightModelView>) {
         items.clear()
         items.addAll(insights)
+        items.add(InsightModelView(null, null, null))
         notifyDataSetChanged()
     }
 
@@ -66,6 +73,13 @@ class InsightsRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder
                     false
                 )
             )
+            USER_TRACKED -> UserTrackedVH(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_how_u_r_tracked,
+                    parent,
+                    false
+                ), itemClickListener
+            )
             else -> error("unsupported view type")
         }
     }
@@ -76,6 +90,8 @@ class InsightsRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder
         when (holder) {
             is IncomeVH -> holder.bind(items[position])
             is CategoryVH -> holder.bind(items[position])
+            is UserTrackedVH -> { // do nothing
+            }
             else -> error("unsupported holder")
         }
     }
@@ -85,7 +101,7 @@ class InsightsRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder
         return when {
             item.income != null -> INCOME
             item.categories != null -> CATEGORY
-            else -> error("unsupported view type")
+            else -> USER_TRACKED
         }
     }
 
@@ -148,8 +164,31 @@ class InsightsRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+    class UserTrackedVH(view: View, listener: ItemClickListener?) : RecyclerView.ViewHolder(view) {
+
+        init {
+            with(view) {
+                tvReadMore.setSafetyOnclickListener {
+                    listener?.onReadMoreClicked()
+                }
+
+                val string = context.getString(R.string.read_more_arrow)
+                val spannableString = SpannableString(string)
+                spannableString.setSpan(
+                    UnderlineSpan(),
+                    0,
+                    string.length,
+                    Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                )
+                tvReadMore.text = spannableString
+            }
+        }
+    }
+
     interface ItemClickListener {
 
         fun onIncomeInfoClicked()
+
+        fun onReadMoreClicked()
     }
 }

@@ -19,6 +19,7 @@ import com.bitmark.fbm.feature.DialogController
 import com.bitmark.fbm.feature.Navigator
 import com.bitmark.fbm.feature.Navigator.Companion.RIGHT_LEFT
 import com.bitmark.fbm.feature.account.AccountActivity
+import com.bitmark.fbm.feature.support.SupportActivity
 import com.bitmark.fbm.logging.Event
 import com.bitmark.fbm.logging.EventLogger
 import com.bitmark.fbm.logging.Tracer
@@ -72,10 +73,20 @@ class InsightsFragment : BaseSupportFragment() {
         rvInsights.adapter = adapter
 
         adapter.setItemClickListener(object : InsightsRecyclerViewAdapter.ItemClickListener {
+
+            override fun onReadMoreClicked() {
+                val bundle = SupportActivity.getBundle(
+                    getString(R.string.how_u_r_tracked),
+                    getString(R.string.how_u_r_tracked_content)
+                )
+                navigator.anim(RIGHT_LEFT).startActivity(SupportActivity::class.java, bundle)
+            }
+
             override fun onIncomeInfoClicked() {
                 val bundle = AccountActivity.getBundle(true)
                 navigator.anim(RIGHT_LEFT).startActivity(AccountActivity::class.java, bundle)
             }
+
         })
 
         ivAccount.setSafetyOnclickListener {

@@ -41,7 +41,7 @@
         app:layout_constraintEnd_toEndOf="@id/tvIncome"
         app:layout_constraintStart_toStartOf="@id/tvIncome"
         app:layout_constraintTop_toBottomOf="@id/tvIncome"
-        tools:text="@string/income_fb_made_from_you"
+        tools:text="Income Facebook made from you since 2015"
         />
 
     <com.bitmark.fbm.util.view.TouchableOpacityAppCompatImageView
