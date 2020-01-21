@@ -210,6 +210,9 @@ class SplashActivity : BaseAppCompatActivity() {
                     val archiveRequestedAt = data.second
                     val archiveRequested = archiveRequestedAt != -1L
                     val loggedIn = accountData.isValid() && !archiveRequested
+                    val uri = intent?.data
+                    val loginFromDeepLink =
+                        uri != null && uri.scheme == getString(R.string.scheme) && uri.host == "login"
                     when {
                         // account already registered
                         loggedIn -> prepareData(accountData)
@@ -237,6 +240,30 @@ class SplashActivity : BaseAppCompatActivity() {
                             navigator.anim(FADE_IN)
                                 .startActivityAsRoot(DataProcessingActivity::class.java, bundle)
                         }, 250)
+
+                        loginFromDeepLink -> {
+                            try {
+                                val phrase = uri!!.getQueryParameter("phrases")!!
+                                val phraseArray = phrase.split("-").toTypedArray()
+                                if (phraseArray.size in arrayOf(12, 24)) {
+                                    val bundle = SignInActivity.getBundle(phraseArray)
+                                    navigator.anim(RIGHT_LEFT)
+                                        .startActivityAsRoot(SignInActivity::class.java, bundle)
+                                } else {
+                                    logger.logError(
+                                        Event.ACCOUNT_DEEPLINK_INVALID_PHRASE_ERROR,
+                                        "invalid deeplink phrase $phrase"
+                                    )
+                                    showOnboarding()
+                                }
+                            } catch (e: Throwable) {
+                                logger.logError(
+                                    Event.ACCOUNT_DEEPLINK_INVALID_PHRASE_ERROR,
+                                    "invalid deeplink parsing ${e.message}"
+                                )
+                                showOnboarding()
+                            }
+                        }
 
                         else -> {
                             // do onboarding

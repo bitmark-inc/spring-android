@@ -139,6 +139,7 @@ android {
             dimension "env"
             applicationIdSuffix ".inhouse"
             resValue "string", "app_name", "Spring Inhouse"
+            resValue "string", "scheme", "com.spring.dev"
             manifestPlaceholders = [
                     appIcon                        : "@mipmap/ic_launcher_dev",
                     appIconRound                   : "@mipmap/ic_launcher_dev_round",
@@ -168,6 +169,7 @@ android {
         prd {
             dimension "env"
             resValue "string", "app_name", "Spring"
+            resValue "string", "scheme", "com.spring"
             manifestPlaceholders = [
                     appIcon                        : "@mipmap/ic_launcher",
                     appIconRound                   : "@mipmap/ic_launcher_round",

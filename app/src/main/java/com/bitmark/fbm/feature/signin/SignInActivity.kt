@@ -6,6 +6,7 @@
  */
 package com.bitmark.fbm.feature.signin
 
+import android.os.Bundle
 import android.os.Handler
 import android.text.InputType
 import android.view.inputmethod.EditorInfo
@@ -32,6 +33,16 @@ import javax.inject.Inject
 
 class SignInActivity : BaseAppCompatActivity() {
 
+    companion object {
+        private const val RECOVERY_PHRASE = "RECOVERY_PHRASE"
+
+        fun getBundle(key: Array<String>): Bundle {
+            val bundle = Bundle()
+            bundle.putStringArray(RECOVERY_PHRASE, key)
+            return bundle
+        }
+    }
+
     @Inject
     internal lateinit var viewModel: SignInViewModel
 
@@ -55,6 +66,16 @@ class SignInActivity : BaseAppCompatActivity() {
 
     override fun viewModel(): BaseViewModel? = viewModel
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val phrase = intent?.extras?.getStringArray(RECOVERY_PHRASE)
+        if (phrase != null) {
+            etPhrase.setText(phrase.joinToString(" "))
+            submit(phrase)
+        }
+    }
+
     override fun initComponents() {
         super.initComponents()
 
@@ -65,24 +86,13 @@ class SignInActivity : BaseAppCompatActivity() {
 
         btnSubmit.setSafetyOnclickListener {
             if (blocked) return@setSafetyOnclickListener
-            try {
-                val phrase = etPhrase.text.toString().trim().split(" ").toTypedArray()
-                val account = Account.fromRecoveryPhrase(*phrase)
-                showKeyEnteringResult(true)
-                val authRequired = false
-                saveAccount(account, authRequired, successAction = { alias ->
-                    viewModel.prepareData(account, alias, authRequired)
-                }, errorAction = { e ->
-                    dialogController.alert(e)
-                })
-            } catch (e: Throwable) {
-                showKeyEnteringResult(false)
-            }
+            val phrase = etPhrase.text.toString().trim().split(" ").toTypedArray()
+            submit(phrase)
         }
 
         etPhrase.doOnTextChanged { text, _, _, _ ->
             val phrase = text?.trim()?.split(" ")
-            if (phrase != null && phrase.size == 12) {
+            if (phrase != null && phrase.size in arrayOf(12, 24)) {
                 etPhrase.setTextColor(getColor(R.color.international_klein_blue))
             } else {
                 etPhrase.setTextColor(getColor(R.color.tundora))
@@ -91,6 +101,21 @@ class SignInActivity : BaseAppCompatActivity() {
 
         ivBack.setSafetyOnclickListener {
             navigator.anim(RIGHT_LEFT).finishActivity()
+        }
+    }
+
+    private fun submit(phrase: Array<String>) {
+        try {
+            val account = Account.fromRecoveryPhrase(*phrase)
+            showKeyEnteringResult(true)
+            val authRequired = false
+            saveAccount(account, authRequired, successAction = { alias ->
+                viewModel.prepareData(account, alias, authRequired)
+            }, errorAction = { e ->
+                dialogController.alert(e)
+            })
+        } catch (e: Throwable) {
+            showKeyEnteringResult(false)
         }
     }
 

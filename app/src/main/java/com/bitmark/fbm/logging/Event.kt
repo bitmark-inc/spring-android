@@ -22,6 +22,8 @@ enum class Event(val value: String) {
 
     ACCOUNT_GET_JWT_ERROR("account_get_jwt_error"),
 
+    ACCOUNT_DEEPLINK_INVALID_PHRASE_ERROR("account_deeplink_invalid_phrase_error"),
+
     AUTOMATE_PAGE_DETECTION_ERROR("page_detection_error"),
 
     ARCHIVE_REQUEST_PREPARE_DATA_ERROR("archive_request_prepare_data_error"),
