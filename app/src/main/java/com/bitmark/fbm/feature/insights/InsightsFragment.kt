@@ -36,6 +36,9 @@ class InsightsFragment : BaseSupportFragment() {
 
         private const val TAG = "InsightsFragment"
 
+        private const val INCOME_QUATERLY_EARNING_LINK =
+            "https://investor.fb.com/financials/?section=quarterlyearnings"
+
         fun newInstance() = InsightsFragment()
     }
 
@@ -83,8 +86,13 @@ class InsightsFragment : BaseSupportFragment() {
             }
 
             override fun onIncomeInfoClicked() {
-                val bundle = AccountActivity.getBundle(true)
-                navigator.anim(RIGHT_LEFT).startActivity(AccountActivity::class.java, bundle)
+                val bundle = SupportActivity.getBundle(
+                    getString(R.string.how_much_your_worth_to_fb),
+                    getString(R.string.avg_revenue_per_user),
+                    getString(R.string.quarterly_earning_reports),
+                    INCOME_QUATERLY_EARNING_LINK
+                )
+                navigator.anim(RIGHT_LEFT).startActivity(SupportActivity::class.java, bundle)
             }
 
         })
