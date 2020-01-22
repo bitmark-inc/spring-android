@@ -207,9 +207,8 @@ class ArchiveIssuanceProcessor @Inject constructor(
 
             override fun onResponse(call: Call, response: Response) {
                 val res = response.body!!.string()
-                // TODO change later
                 val hash =
-                    HEX.encode(Sha3256.hash(RAW.decode(if (res.isEmpty()) "Test EULA" else res)))
+                    HEX.encode(Sha3256.hash(RAW.decode(if (res.isEmpty()) " " else res)))
                 emt.onSuccess(hash)
             }
         })
