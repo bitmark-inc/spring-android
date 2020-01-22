@@ -157,11 +157,11 @@ android {
             buildConfigField "String", "FBM_ASSET_ENDPOINT",
                     "\"https://fbm.test.bitmark.com/api/media\""
             buildConfigField "String", "TERM_OF_SERVICE",
-                    "\"https://github.com/bitmark-inc/spring/blob/master/terms-and-service.md\""
+                    "\"https://raw.githubusercontent.com/bitmark-inc/spring/master/terms-and-service.md\""
             buildConfigField "String", "PRIVACY_POLICY",
-                    "\"https://github.com/bitmark-inc/spring/blob/master/privacy-policy.md\""
+                    "\"https://raw.githubusercontent.com/bitmark-inc/spring/master/privacy-policy.md\""
             buildConfigField "String", "FAQ",
-                    "\"https://github.com/bitmark-inc/spring/blob/master/faq.md\""
+                    "\"https://raw.githubusercontent.com/bitmark-inc/spring/master/faq.md\""
         }
 
         prd {
@@ -185,11 +185,11 @@ android {
             buildConfigField "String", "FBM_ASSET_ENDPOINT",
                     "\"https://fbm.bitmark.com/api/media\""
             buildConfigField "String", "TERM_OF_SERVICE",
-                    "\"https://github.com/bitmark-inc/spring/blob/master/terms-and-service.md\""
+                    "\"https://raw.githubusercontent.com/bitmark-inc/spring/master/terms-and-service.md\""
             buildConfigField "String", "PRIVACY_POLICY",
-                    "\"https://github.com/bitmark-inc/spring/blob/master/privacy-policy.md\""
+                    "\"https://raw.githubusercontent.com/bitmark-inc/spring/master/privacy-policy.md\""
             buildConfigField "String", "FAQ",
-                    "\"https://github.com/bitmark-inc/spring/blob/master/faq.md\""
+                    "\"https://raw.githubusercontent.com/bitmark-inc/spring/master/faq.md\""
         }
     }
 
