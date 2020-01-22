@@ -8,6 +8,7 @@ package com.bitmark.fbm.feature.signin
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
+import com.bitmark.cryptography.crypto.Sha3256
 import com.bitmark.cryptography.crypto.encoder.Hex.HEX
 import com.bitmark.cryptography.crypto.encoder.Raw.RAW
 import com.bitmark.fbm.data.ext.isHttpError
@@ -63,10 +64,13 @@ class SignInViewModel(
         }.andThen(accountRepo.syncAccountData().flatMap { accountData ->
             accountData.keyAlias = keyAlias
             accountData.authRequired = authRequired
+            val intercomId =
+                "FBM_android_%s".format(Sha3256.hash(RAW.decode(accountData.id)))
             Completable.mergeArray(
                 accountRepo.saveAccountData(accountData),
                 appRepo.registerNotificationService(accountData.id),
-                appRepo.setDataReady()
+                appRepo.setDataReady(),
+                accountRepo.registerIntercomUser(intercomId)
             ).andThen(Single.just(true))
         }).onErrorResumeNext { e ->
             if (e.isHttpError() && (e as HttpException).code == 401) {
