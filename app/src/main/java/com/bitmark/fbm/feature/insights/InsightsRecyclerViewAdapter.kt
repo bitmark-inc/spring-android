@@ -42,7 +42,7 @@ class InsightsRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder
     fun set(insights: List<InsightModelView>) {
         items.clear()
         items.addAll(insights)
-        items.add(InsightModelView(null, null, null))
+        //items.add(InsightModelView(null, null, null))
         notifyDataSetChanged()
     }
 
