@@ -224,6 +224,7 @@ class StatisticFragment : BaseSupportFragment() {
             when {
                 res.isSuccess() -> {
                     val lastActivityMillis = res.data()!! * 1000
+                    if (lastActivityMillis == 0L) return@Observer
                     val startOfPeriodMillis = getStartOfPeriodSec(period) * 1000
                     periodGap = calculateGap(period, startOfPeriodMillis, lastActivityMillis)
                     currentStartedAtSec =
