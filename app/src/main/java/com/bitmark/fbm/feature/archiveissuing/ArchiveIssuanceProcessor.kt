@@ -12,7 +12,6 @@ import com.bitmark.apiservice.params.RegistrationParams
 import com.bitmark.cryptography.crypto.Sha3256
 import com.bitmark.cryptography.crypto.encoder.Hex.HEX
 import com.bitmark.cryptography.crypto.encoder.Raw.RAW
-import com.bitmark.fbm.BuildConfig
 import com.bitmark.fbm.data.model.assetId
 import com.bitmark.fbm.data.model.hashBytes
 import com.bitmark.fbm.data.source.AccountRepository
@@ -28,7 +27,6 @@ import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.exceptions.CompositeException
 import io.reactivex.functions.BiConsumer
-import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
 import okhttp3.*
 import java.io.IOException
@@ -139,15 +137,16 @@ class ArchiveIssuanceProcessor @Inject constructor(
                 val registerAssetStream = if (unregisteredAssetIds.isEmpty()) {
                     Completable.complete()
                 } else {
-                    Single.zip(
-                        getHashedEula(),
-                        appRepo.getSystemVersion(),
-                        BiFunction<String, String, Pair<String, String>> { hash, systemVer ->
-                            Pair(
-                                hash,
-                                systemVer
-                            )
-                        }).flatMapCompletable { p ->
+                    appRepo.getAppInfo().map { appInfo ->
+                        Pair(
+                            appInfo.docs.eula,
+                            appInfo.systemVersion
+                        )
+                    }.flatMap { p ->
+                        val eula = p.first
+                        val systemVer = p.second
+                        getHashedEula(eula).map { hash -> Pair(hash, systemVer) }
+                    }.flatMapCompletable { p ->
                         val hash = p.first
                         val systemVer = p.second
 
@@ -197,9 +196,9 @@ class ArchiveIssuanceProcessor @Inject constructor(
             }
         }
 
-    private fun getHashedEula() = Single.create<String> { emt ->
+    private fun getHashedEula(eula: String) = Single.create<String> { emt ->
         val client = OkHttpClient()
-        val request = Request.Builder().url(BuildConfig.EULA).method("GET", null).build()
+        val request = Request.Builder().url(eula).method("GET", null).build()
         client.newCall(request).enqueue(object : Callback {
 
             override fun onFailure(call: Call, e: IOException) {

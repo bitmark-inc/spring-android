@@ -25,8 +25,18 @@ data class AppInfoData(
 
     @Expose
     @SerializedName("system_version")
-    val systemVersion: String
+    val systemVersion: String,
+
+    @Expose
+    @SerializedName("docs")
+    val docs: Docs
 ) : Data
+
+data class Docs(
+    @Expose
+    @SerializedName("eula")
+    val eula: String
+)
 
 data class AndroidAppInfo(
     @Expose

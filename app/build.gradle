@@ -160,8 +160,6 @@ android {
                     "\"https://github.com/bitmark-inc/spring/blob/master/terms-and-service.md\""
             buildConfigField "String", "PRIVACY_POLICY",
                     "\"https://github.com/bitmark-inc/spring/blob/master/privacy-policy.md\""
-            buildConfigField "String", "EULA",
-                    "\"https://github.com/bitmark-inc/spring/blob/master/eula.md\""
             buildConfigField "String", "FAQ",
                     "\"https://github.com/bitmark-inc/spring/blob/master/faq.md\""
         }
@@ -190,8 +188,6 @@ android {
                     "\"https://github.com/bitmark-inc/spring/blob/master/terms-and-service.md\""
             buildConfigField "String", "PRIVACY_POLICY",
                     "\"https://github.com/bitmark-inc/spring/blob/master/privacy-policy.md\""
-            buildConfigField "String", "EULA",
-                    "\"https://github.com/bitmark-inc/spring/blob/master/eula.md\""
             buildConfigField "String", "FAQ",
                     "\"https://github.com/bitmark-inc/spring/blob/master/faq.md\""
         }
