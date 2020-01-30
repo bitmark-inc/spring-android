@@ -44,5 +44,7 @@ enum class Event(val value: String) {
 
     PLAY_VIDEO_ERROR("play_video_error"),
 
-    INSIGHTS_LOADING_ERROR("insights_loading_error")
+    INSIGHTS_LOADING_ERROR("insights_loading_error"),
+
+    RX_UNCAUGHT_ERROR("Rx Uncaught error")
 }

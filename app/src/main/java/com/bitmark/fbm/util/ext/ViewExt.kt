@@ -116,7 +116,7 @@ fun TextView.setTextColorRes(@ColorRes id: Int) {
 
 fun WebView.evaluateJs(script: String?, success: () -> Unit = {}, error: () -> Unit = {}) {
     evaluateJavascript(script) { result ->
-        if (result.contains("ErrorUtils caught an error", true)) {
+        if (result.contains("error", true)) {
             Tracer.ERROR.log("WebView.evaluateJs()", "Script: $script, result:$result")
             error()
         } else {

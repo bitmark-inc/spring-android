@@ -172,6 +172,19 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                     handlePageLoaded(wv, script, registered)
                 }
             }
+
+            override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
+                val message = consoleMessage?.message()
+                if (message != null && message.contains(
+                        "Uncaught TypeError",
+                        true
+                    )
+                ) {
+                    logger.logError(Event.AUTOMATE_PAGE_DETECTION_ERROR, message)
+                    handleUnexpectedPageDetected(wv)
+                }
+                return true
+            }
         }
 
         val webViewClient = object : WebViewClient() {
@@ -238,29 +251,42 @@ class ArchiveRequestFragment : BaseSupportFragment() {
         script: AutomationScriptData
     ) {
 
+        val errorAction = { showHelpRequiredState() }
 
         when (pageName) {
             Page.Name.LOGIN -> {
                 startCheckLoginFailedLooper(wv, script)
                 wv.evaluateJs(
-                    script.getLoginScript(fbCredential!!.id, fbCredential!!.password)
-                        ?: return
+                    script.getLoginScript(fbCredential!!.id, fbCredential!!.password)!!,
+                    error = errorAction
                 )
             }
             Page.Name.SAVE_DEVICE -> {
-                wv.evaluateJs(script.getSaveDeviceOkScript())
+                wv.evaluateJs(script.getSaveDeviceOkScript(), error = errorAction)
             }
             Page.Name.NEW_FEED -> {
-                wv.evaluateJs(script.getNewFeedGoToSettingPageScript())
+                wv.evaluateJs(
+                    script.getNewFeedGoToSettingPageScript(),
+                    error = errorAction
+                )
             }
             Page.Name.SETTINGS -> {
-                wv.evaluateJs(script.getSettingGoToAdsPrefScript())
+                wv.evaluateJs(
+                    script.getSettingGoToAdsPrefScript(),
+                    error = errorAction
+                )
             }
             Page.Name.ADS_PREF -> {
-                wv.evaluateJs(script.getAdsPrefGoToYourInfoPageScript())
+                wv.evaluateJs(
+                    script.getAdsPrefGoToYourInfoPageScript(),
+                    error = errorAction
+                )
             }
             Page.Name.DEMOGRAPHIC -> {
-                wv.evaluateJs(script.getDemoGraphGoToBehaviorsPageScript())
+                wv.evaluateJs(
+                    script.getDemoGraphGoToBehaviorsPageScript(),
+                    error = errorAction
+                )
             }
             Page.Name.BEHAVIORS -> {
                 handler.postDelayed({
@@ -275,7 +301,7 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                     TAG,
                     "automateCategoriesFetching, unexpected page is $pageName"
                 )
-                showHelpRequiredState()
+                errorAction()
             }
         }
     }
@@ -285,24 +311,33 @@ class ArchiveRequestFragment : BaseSupportFragment() {
         pageName: Page.Name,
         script: AutomationScriptData
     ) {
+
+        val errorAction = { showHelpRequiredState() }
+
         when (pageName) {
             Page.Name.LOGIN -> {
                 startCheckLoginFailedLooper(wv, script)
                 wv.evaluateJs(
-                    script.getLoginScript(fbCredential!!.id, fbCredential!!.password)
-                        ?: return
+                    script.getLoginScript(fbCredential!!.id, fbCredential!!.password)!!,
+                    error = errorAction
                 )
             }
             Page.Name.SAVE_DEVICE -> {
-                wv.evaluateJs(script.getSaveDeviceOkScript())
+                wv.evaluateJs(script.getSaveDeviceOkScript(), error = errorAction)
             }
             Page.Name.NEW_FEED -> {
                 // permanently save cookies for next session
                 CookieManager.getInstance().flush()
-                wv.evaluateJs(script.getNewFeedGoToSettingPageScript())
+                wv.evaluateJs(
+                    script.getNewFeedGoToSettingPageScript(),
+                    error = errorAction
+                )
             }
             Page.Name.SETTINGS -> {
-                wv.evaluateJs(script.getSettingGoToArchivePageScript())
+                wv.evaluateJs(
+                    script.getSettingGoToArchivePageScript(),
+                    error = errorAction
+                )
             }
             Page.Name.ARCHIVE -> {
                 when {
@@ -328,7 +363,10 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                 }
             }
             Page.Name.RE_AUTH -> {
-                wv.evaluateJs(script.getReAuthScript(fbCredential!!.password))
+                wv.evaluateJs(
+                    script.getReAuthScript(fbCredential!!.password),
+                    error = errorAction
+                )
             }
 
             else -> {
@@ -336,7 +374,7 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                     TAG,
                     "automateCategoriesFetching, unexpected page is $pageName"
                 )
-                showHelpRequiredState()
+                errorAction()
             }
         }
     }
@@ -415,13 +453,14 @@ class ArchiveRequestFragment : BaseSupportFragment() {
         wv: WebView,
         script: AutomationScriptData
     ) {
+        val errorAction = { showHelpRequiredState() }
         wv.evaluateJs(script.getArchiveSelectJsonOptionScript(), success = {
             wv.evaluateJs(script.getArchiveSelectHighResolution(), success = {
                 wv.evaluateJs(script.getArchiveCreateFileScript(), success = {
                     checkArchiveIsCreating(wv, script)
-                })
-            })
-        })
+                }, error = errorAction)
+            }, error = errorAction)
+        }, error = errorAction)
     }
 
     private fun checkArchiveIsCreating(wv: WebView, script: AutomationScriptData) {

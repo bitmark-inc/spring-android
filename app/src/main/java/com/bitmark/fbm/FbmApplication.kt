@@ -14,7 +14,8 @@ import com.bitmark.fbm.feature.connectivity.ConnectivityHandler
 import com.bitmark.fbm.feature.notification.NotificationOpenedHandler
 import com.bitmark.fbm.feature.notification.NotificationReceivedHandler
 import com.bitmark.fbm.keymanagement.ApiKeyManager.Companion.API_KEY_MANAGER
-import com.bitmark.fbm.logging.Tracer
+import com.bitmark.fbm.logging.Event
+import com.bitmark.fbm.logging.EventLogger
 import com.bitmark.sdk.features.BitmarkSDK
 import com.crashlytics.android.Crashlytics
 import com.onesignal.OneSignal
@@ -49,6 +50,9 @@ class FbmApplication : DaggerApplication() {
     @Inject
     internal lateinit var connectivityHandler: ConnectivityHandler
 
+    @Inject
+    internal lateinit var logger: EventLogger
+
     private val applicationInjector = DaggerAppComponent.builder()
         .application(this)
         .build()
@@ -68,10 +72,7 @@ class FbmApplication : DaggerApplication() {
             .setNotificationReceivedHandler(notificationReceivedHandler)
             .init()
         RxJavaPlugins.setErrorHandler { e ->
-            Tracer.DEBUG.log(
-                TAG,
-                "intercept rx error ${e.javaClass} with message ${e.message} to be sent to thread uncaught exception"
-            )
+            logger.logError(Event.RX_UNCAUGHT_ERROR, e)
         }
         registerActivityLifecycleCallbacks(appLifecycleHandler)
         connectivityHandler.register()
