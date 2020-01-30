@@ -34,8 +34,6 @@ class WhatsNewActivity : BaseAppCompatActivity() {
 
     companion object {
 
-        private const val SUPPORT_EMAIL = "support@bitmark.com"
-
         private const val RE_ENTER = "re_enter"
 
         fun getBundle(reEnter: Boolean): Bundle {
@@ -72,7 +70,7 @@ class WhatsNewActivity : BaseAppCompatActivity() {
         val releaseNoteInfo =
             resources?.getStringArray(R.array.release_note_info) ?: arrayOf("", "")
 
-        val releaseNote = releaseNoteInfo[0].format(SUPPORT_EMAIL)
+        val releaseNote = releaseNoteInfo[0]
         val spannable = SpannableString(releaseNote)
         val clickableSpan = object : ClickableSpan() {
             override fun onClick(widget: View) {
@@ -86,11 +84,12 @@ class WhatsNewActivity : BaseAppCompatActivity() {
 
         }
 
-        val startPos = releaseNote.indexOf(SUPPORT_EMAIL)
+        val linkLabel = getString(R.string.let_us_know)
+        val startPos = releaseNote.indexOf(linkLabel)
         spannable.setSpan(
             clickableSpan,
             startPos,
-            startPos + SUPPORT_EMAIL.length,
+            startPos + linkLabel.length,
             Spanned.SPAN_INCLUSIVE_EXCLUSIVE
         )
         tvNotes.text = spannable
