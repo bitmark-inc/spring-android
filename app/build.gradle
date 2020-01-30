@@ -282,7 +282,7 @@ dependencies {
     // Bitmark SDK
     implementation 'com.bitmark.sdk:android-sdk:2.1.0'
     implementation 'com.bitmark.sdk:api-service:2.1.0'
-    implementation 'com.bitmark.sdk:cryptography:1.5.0'
+    implementation 'com.bitmark.sdk:cryptography:1.6.0-SNAPSHOT'
 
     // Glide
     implementation 'com.github.bumptech.glide:glide:4.10.0'
