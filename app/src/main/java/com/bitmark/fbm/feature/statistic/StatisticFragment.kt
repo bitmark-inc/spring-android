@@ -73,7 +73,7 @@ class StatisticFragment : BaseSupportFragment() {
 
     private var currentStartedAtSec = -1L
 
-    private var periodGap = -1
+    private var periodGap = 0
 
     private val handler = Handler()
 
@@ -90,7 +90,6 @@ class StatisticFragment : BaseSupportFragment() {
             arguments?.getString(PERIOD) ?: throw IllegalArgumentException("missing period")
         )
 
-        periodGap = 0
         currentStartedAtSec = getStartOfPeriodSec(period)
     }
 
@@ -105,7 +104,7 @@ class StatisticFragment : BaseSupportFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.getLastActivityTimestamp()
+        if (periodGap == 0) viewModel.getLastActivityTimestamp()
     }
 
     override fun initComponents() {
