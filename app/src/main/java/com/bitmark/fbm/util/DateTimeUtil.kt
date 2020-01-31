@@ -263,9 +263,11 @@ class DateTimeUtil {
         }
 
         fun getStartOfDatesMillisInYear(millis: Long, timezone: String = "UTC"): LongArray {
-            val calendar = Calendar.getInstance(TimeZone.getTimeZone(timezone))
+            var calendar = Calendar.getInstance(TimeZone.getTimeZone(timezone))
             calendar.timeInMillis = millis
             calendar.set(Calendar.MONTH, Calendar.JANUARY)
+            calendar.set(Calendar.DAY_OF_MONTH, 1)
+            calendar = getStartOfDate(calendar)
             val dates = LongArray(12)
             for (i in dates.indices) {
                 dates[i] = calendar.timeInMillis
@@ -275,10 +277,13 @@ class DateTimeUtil {
         }
 
         fun getStartOfDatesMillisInDecade(millis: Long, timezone: String = "UTC"): LongArray {
-            val calendar = Calendar.getInstance(TimeZone.getTimeZone(timezone))
+            var calendar = Calendar.getInstance(TimeZone.getTimeZone(timezone))
             calendar.timeInMillis = millis
             val thisYear = calendar.get(Calendar.YEAR)
             calendar.set(Calendar.YEAR, thisYear - thisYear % 10)
+            calendar.set(Calendar.MONTH, Calendar.JANUARY)
+            calendar.set(Calendar.DAY_OF_MONTH, 1)
+            calendar = getStartOfDate(calendar)
             val dates = LongArray(10)
             for (i in dates.indices) {
                 dates[i] = calendar.timeInMillis
