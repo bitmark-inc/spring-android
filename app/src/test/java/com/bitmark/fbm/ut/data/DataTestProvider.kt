@@ -47,7 +47,10 @@ val ACCOUNT_DATA_NO_ACTIVITY_TIMESTAMP = AccountData(
 
 val REMOTE_ACCOUNT_DATA = AccountData(
     "fgfGaBGJ19dLGq4MXeHMoCcyFRcpmYFXV2zhxyM6NjVFeumcDt",
-    mapOf("fb-identifier" to "193dae28e99ef0e0e9646b32aaa5ead303e950b043a266ecf3cbbfbcd8fe1d57"),
+    mapOf(
+        "fb-identifier" to "193dae28e99ef0e0e9646b32aaa5ead303e950b043a266ecf3cbbfbcd8fe1d57",
+        "last_activity_timestamp" to "123"
+    ),
     "2020-01-11T12:44:51.637092Z",
     "2020-01-11T12:44:51.637092Z",
     false,

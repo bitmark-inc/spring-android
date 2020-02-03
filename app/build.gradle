@@ -18,6 +18,8 @@ apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 
 apply plugin: "com.betomorrow.appcenter"
 
+apply plugin: 'jacoco-android'
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -320,6 +322,38 @@ task fillSecretKey {
         apiKeyFile.bytes = []
         apiKeyFile.text = content
     }
+}
+
+jacoco {
+    toolVersion = "0.8.4"
+}
+
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+}
+
+jacocoAndroidUnitTestReport {
+    excludes += [
+            '**/R.class',
+            '**/R$*.class',
+            '**/BuildConfig.*',
+            '**/Manifest*.*',
+            '**/*Test*.*',
+            'android/**/*.*',
+            '**/*_Provide*/**',
+            '**/*_Factory*/**',
+            '**/*_MembersInjector.class',
+            '**/*Dagger*',
+            '**/*Dao_Impl*',
+            '**/data/model/*',
+            '**/di/*',
+            '**/keymanagement/*',
+            'com.bumptech.glide'
+    ]
+
+    csv.enabled false
+    html.enabled true
+    xml.enabled true
 }
 
 apply plugin: 'com.google.gms.google-services'

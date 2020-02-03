@@ -762,14 +762,14 @@ class AccountRepositoryTest : DataTest() {
         val observer = TestObserver<Any>()
 
         whenever(remoteDataSource.updateMetadata(any())).thenReturn(Single.error(HTTP_ERROR))
-        whenever(localDataSource.getAccountData()).thenReturn(Single.error(RANDOM_ERROR))
+        whenever(localDataSource.getAccountData()).thenReturn(Single.just(ACCOUNT_DATA))
         whenever(localDataSource.saveAccountData(any())).thenReturn(Completable.complete())
 
         repository.updateMetadata(mapOf()).subscribe(observer)
 
         observer.assertNoValues()
         observer.assertNotComplete()
-        observer.assertError(RANDOM_ERROR)
+        observer.assertError(HTTP_ERROR)
         observer.assertTerminated()
     }
 
