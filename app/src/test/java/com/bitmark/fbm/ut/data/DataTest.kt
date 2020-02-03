@@ -11,6 +11,7 @@ import com.bitmark.fbm.ut.rule.RxImmediateSchedulerRule
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
+import org.junit.rules.ExpectedException
 import org.junit.rules.TestRule
 import org.junit.rules.Timeout
 import org.junit.runner.RunWith
@@ -35,6 +36,10 @@ abstract class DataTest {
     @JvmField
     @Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
+
+    @JvmField
+    @Rule
+    val expectedExceptionRule = ExpectedException.none()
 
     @Before
     open fun before() {
