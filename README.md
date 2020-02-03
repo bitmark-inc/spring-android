@@ -4,6 +4,7 @@ The Bitmark Spring application for helping Social Network Users Reclaim Rights t
 
 [![Made by](https://img.shields.io/badge/Made%20by-Bitmark%20Inc-lightgrey.svg)](https://bitmark.com)
 [![Build Status](https://travis-ci.org/bitmark-inc/spring-android.svg?branch=master)](https://travis-ci.org/bitmark-inc/spring-android)
+[![codecov](https://codecov.io/gh/bitmark-inc/spring-android/branch/master/graph/badge.svg)](https://codecov.io/gh/bitmark-inc/spring-android)
 
 ## Getting Started
 
