@@ -6,9 +6,7 @@
  */
 package com.bitmark.fbm.ut.data
 
-import com.bitmark.fbm.data.model.AccountData
-import com.bitmark.fbm.data.model.ArchiveData
-import com.bitmark.fbm.data.model.ArchiveStatus
+import com.bitmark.fbm.data.model.*
 import com.bitmark.fbm.data.source.remote.api.error.HttpException
 import com.bitmark.fbm.data.source.remote.api.error.NetworkException
 import java.io.IOException
@@ -81,6 +79,28 @@ val PROCESSED_ARCHIVE_DATA = listOf(
         "2020-01-11T12:44:51.637092Z",
         "abf13fa"
     )
+)
+
+val AUTOMATION_SCRIPT_DATA = AutomationScriptData(
+    listOf(
+        Page(
+            Page.Name.LOGIN,
+            detection = "detection",
+            actions = mapOf("action1" to "action1")
+        )
+    )
+)
+
+val APP_INFO_DATA = AppInfoData(
+    AndroidAppInfo(5, "https://android.com"),
+    IosAppInfo(5, "https://ios.com"),
+    ServerInfo(
+        "1.0.0",
+        "fgfGaBGJ19dLGq4MXeHMoCcyFRcpmYFXV2zhxyM6NjVFeumcDt",
+        "193dae28e99ef0e0e9646b32aaa5ead303e950b043a266ecf3cbbfbcd8fe1d57"
+    ),
+    systemVersion = "1.0.0",
+    docs = Docs("https://eula.com")
 )
 
 fun anyString(): String {
