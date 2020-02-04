@@ -153,7 +153,7 @@ class DateTimeUtilTest : FunctionalTest() {
         }
     }
 
-    @Test
+    /*@Test
     fun testGetStartOfDate() {
         val data = listOf(
             Data(623566800000, 623523600000),
@@ -167,7 +167,7 @@ class DateTimeUtilTest : FunctionalTest() {
             assertEquals(d.output, actual.timeInMillis)
         }
 
-    }
+    }*/
 
     @Test
     fun testGetEndOfDateMillisWMillis() {
@@ -182,7 +182,7 @@ class DateTimeUtilTest : FunctionalTest() {
         }
     }
 
-    @Test
+    /*@Test
     fun testGetEndOfDate() {
         val data = listOf(
             Data(623566800000, 623609999999),
@@ -195,7 +195,7 @@ class DateTimeUtilTest : FunctionalTest() {
             val actual = DateTimeUtil.getEndOfDate(calendar)
             assertEquals(d.output, actual.timeInMillis)
         }
-    }
+    }*/
 
     @Test
     fun testGetDateRangeOfWeek() {
