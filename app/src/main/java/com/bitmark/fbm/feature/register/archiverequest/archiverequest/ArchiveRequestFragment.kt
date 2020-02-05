@@ -18,7 +18,10 @@ import com.bitmark.fbm.R
 import com.bitmark.fbm.data.ext.fromJson
 import com.bitmark.fbm.data.ext.isServiceUnsupportedError
 import com.bitmark.fbm.data.ext.newGsonInstance
-import com.bitmark.fbm.data.model.*
+import com.bitmark.fbm.data.model.AccountData
+import com.bitmark.fbm.data.model.AutomationScriptData
+import com.bitmark.fbm.data.model.Page
+import com.bitmark.fbm.data.model.isValid
 import com.bitmark.fbm.data.source.remote.api.error.UnknownException
 import com.bitmark.fbm.feature.BaseSupportFragment
 import com.bitmark.fbm.feature.BaseViewModel
@@ -36,7 +39,6 @@ import com.bitmark.fbm.logging.Event
 import com.bitmark.fbm.logging.EventLogger
 import com.bitmark.fbm.logging.Tracer
 import com.bitmark.fbm.util.DateTimeUtil
-import com.bitmark.fbm.util.callback.Action1
 import com.bitmark.fbm.util.ext.*
 import com.bitmark.sdk.authentication.KeyAuthenticationSpec
 import com.bitmark.sdk.features.Account
@@ -115,8 +117,6 @@ class ArchiveRequestFragment : BaseSupportFragment() {
 
     private val handler = Handler()
 
-    private var fbCredential: CredentialData? = null
-
     private var archiveRequestedAt = -1L
 
     private var expectedPage: List<Page.Name>? = null
@@ -124,8 +124,6 @@ class ArchiveRequestFragment : BaseSupportFragment() {
     private var lastUrl = ""
 
     private var reloadCount = 0
-
-    private var checkLoginFailedLooperStopped = false
 
     private lateinit var downloadArchiveCredential: DownloadArchiveCredential
 
@@ -217,7 +215,7 @@ class ArchiveRequestFragment : BaseSupportFragment() {
 
         wv.loadUrl(url)
 
-        showAutomatingState()
+        if (isArchiveRequested()) showAutomatingState()
     }
 
     private fun handlePageLoaded(wv: WebView, script: AutomationScriptData, registered: Boolean) {
@@ -227,7 +225,11 @@ class ArchiveRequestFragment : BaseSupportFragment() {
             if (unexpectedPageDetected) {
                 handleUnexpectedPageDetected(wv)
             } else {
-                showAutomatingState()
+                if (name !in arrayOf(Page.Name.LOGIN, Page.Name.RE_AUTH)) {
+                    showAutomatingState()
+                } else {
+                    showLoginRequiredState()
+                }
                 reloadCount = 0 // reset after detect expected page
                 expectedPage = EXPECTED_PAGES[name]
 
@@ -236,11 +238,6 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                 } else {
                     automateAccountRegister(wv, name, script)
                 }
-            }
-
-            // stop checking login failed looper after leaving LOGIN page
-            if (name != Page.Name.LOGIN) {
-                checkLoginFailedLooperStopped = true
             }
         }
     }
@@ -255,11 +252,7 @@ class ArchiveRequestFragment : BaseSupportFragment() {
 
         when (pageName) {
             Page.Name.LOGIN -> {
-                startCheckLoginFailedLooper(wv, script)
-                wv.evaluateJs(
-                    script.getLoginScript(fbCredential!!.id, fbCredential!!.password)!!,
-                    error = errorAction
-                )
+                // Do nothing
             }
             Page.Name.SAVE_DEVICE -> {
                 wv.evaluateJs(script.getSaveDeviceOkScript(), error = errorAction)
@@ -316,11 +309,7 @@ class ArchiveRequestFragment : BaseSupportFragment() {
 
         when (pageName) {
             Page.Name.LOGIN -> {
-                startCheckLoginFailedLooper(wv, script)
-                wv.evaluateJs(
-                    script.getLoginScript(fbCredential!!.id, fbCredential!!.password)!!,
-                    error = errorAction
-                )
+                // Do nothing
             }
             Page.Name.SAVE_DEVICE -> {
                 wv.evaluateJs(script.getSaveDeviceOkScript(), error = errorAction)
@@ -356,17 +345,11 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                                 }
                             })
                     }
-                    hasCredential() -> automateArchiveRequest(wv, script)
-                    else -> {
-                        checkArchiveIsCreating(wv, script)
-                    }
+                    else -> automateArchiveRequest(wv, script)
                 }
             }
             Page.Name.RE_AUTH -> {
-                wv.evaluateJs(
-                    script.getReAuthScript(fbCredential!!.password),
-                    error = errorAction
-                )
+                // Do nothing
             }
 
             else -> {
@@ -377,25 +360,6 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                 errorAction()
             }
         }
-    }
-
-    private fun startCheckLoginFailedLooper(wv: WebView, script: AutomationScriptData) {
-        val checkLoginFailed =
-            fun(wv: WebView, script: AutomationScriptData, callback: Action1<Boolean>) {
-                wv.evaluateVerificationJs(script.getCheckLoginFailedScript()!!) { failed ->
-                    callback.invoke(failed)
-                }
-            }
-
-        checkLoginFailed(wv, script, object : Action1<Boolean> {
-            override fun invoke(failed: Boolean) {
-                if (failed) {
-                    showLoginFailedPopup()
-                } else if (!checkLoginFailedLooperStopped) {
-                    checkLoginFailed(wv, script, this)
-                }
-            }
-        })
     }
 
     private fun handleUnexpectedPageDetected(wv: WebView) {
@@ -421,15 +385,6 @@ class ArchiveRequestFragment : BaseSupportFragment() {
         handler.postDelayed({ reload(wv) }, 500)
     }
 
-    private fun showLoginFailedPopup() {
-        // TODO change text later
-        dialogController.alert(
-            "Error",
-            "Incorrect authentication credentials.",
-            tag = "login_failed"
-        ) { finish() }
-    }
-
     private fun showAutomatingState() {
         val bgColor = context?.getDrawable(R.color.cognac)
         layoutState.background = bgColor
@@ -444,6 +399,16 @@ class ArchiveRequestFragment : BaseSupportFragment() {
         layoutState.background = bgColor
         layoutRoot.background = bgColor
         tvMsg.setText(R.string.your_help_is_required)
+        tvMsg.visible()
+        viewCover.gone()
+        tvAutomating.gone()
+    }
+
+    private fun showLoginRequiredState() {
+        val bgColor = context?.getDrawable(R.color.cognac)
+        layoutState.background = bgColor
+        layoutRoot.background = bgColor
+        tvMsg.setText(R.string.login_to_get_your_data)
         tvMsg.visible()
         viewCover.gone()
         tvAutomating.gone()
@@ -483,12 +448,9 @@ class ArchiveRequestFragment : BaseSupportFragment() {
         })
     }
 
-    private fun hasCredential() = fbCredential?.isValid() == true
-
     private fun isArchiveRequested() = archiveRequestedAt != -1L
 
     private fun registerAccount(
-        credentialId: String,
         downloadArchiveCredential: DownloadArchiveCredential,
         accountData: AccountData
     ) {
@@ -498,7 +460,6 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                 registerAccount(
                     account,
                     accountData.keyAlias,
-                    credentialId,
                     downloadArchiveCredential,
                     true
                 )
@@ -506,7 +467,7 @@ class ArchiveRequestFragment : BaseSupportFragment() {
         } else {
             val account = Account()
             saveAccount(account) { alias ->
-                registerAccount(account, alias, credentialId, downloadArchiveCredential, false)
+                registerAccount(account, alias, downloadArchiveCredential, false)
             }
         }
     }
@@ -514,7 +475,6 @@ class ArchiveRequestFragment : BaseSupportFragment() {
     private fun registerAccount(
         account: Account,
         keyAlias: String,
-        credentialId: String,
         downloadArchiveCredential: DownloadArchiveCredential,
         registered: Boolean
     ) {
@@ -523,7 +483,6 @@ class ArchiveRequestFragment : BaseSupportFragment() {
             downloadArchiveCredential.url,
             downloadArchiveCredential.cookie,
             keyAlias,
-            credentialId,
             registered
         )
     }
@@ -648,29 +607,8 @@ class ArchiveRequestFragment : BaseSupportFragment() {
             when {
                 res.isSuccess() -> {
                     progressBar.gone()
-                    val data = res.data()!!
-                    val script = data.first
-                    val hasCredential = data.second
-                    if (hasCredential) {
-                        CredentialData.load(
-                            activity!!,
-                            executor,
-                            { credential ->
-                                fbCredential = credential
-                                loadPage(wv, FB_ENDPOINT, script)
-                            },
-                            { throwable ->
-                                logger.logError(
-                                    Event.ACCOUNT_LOAD_FB_CREDENTIAL_ERROR,
-                                    throwable ?: UnknownException()
-                                )
-                                dialogController.unexpectedAlert {
-                                    finish()
-                                }
-                            })
-                    } else {
-                        loadPage(wv, FB_ENDPOINT, script)
-                    }
+                    val script = res.data()!!
+                    loadPage(wv, FB_ENDPOINT, script)
                 }
 
                 res.isError() -> {
@@ -743,7 +681,7 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                                 .startActivityAsRoot(MainActivity::class.java, bundle)
                         }
                     } else {
-                        registerAccount(fbCredential!!.id, downloadArchiveCredential, accountData)
+                        registerAccount(downloadArchiveCredential, accountData)
                     }
                 }
 

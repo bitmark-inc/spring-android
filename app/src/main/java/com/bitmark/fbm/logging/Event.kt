@@ -46,5 +46,7 @@ enum class Event(val value: String) {
 
     INSIGHTS_LOADING_ERROR("insights_loading_error"),
 
-    RX_UNCAUGHT_ERROR("Rx Uncaught error")
+    RX_UNCAUGHT_ERROR("Rx Uncaught error"),
+
+    DELETE_FB_CREDENTIAL_ERROR("delete_fb_credential_error")
 }

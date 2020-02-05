@@ -95,7 +95,7 @@
     <string name="your_authorization_is_required">Your authorization is required.</string>
     <string name="your_account_has_been_unlinked">Your account has been completely unlinked from this device.</string>
     <string name="automating_please_wait">Automating…\nplease wait.</string>
-    <string name="your_help_is_required">Your help is required.</string>
+    <string name="your_help_is_required">Your help is required</string>
     <string name="others">Others</string>
     <string name="no_activity_for_this_period">No activity for this period.</string>
     <string name="your_mood">Your Mood</string>
@@ -174,6 +174,7 @@
     <string name="how_much_your_worth_to_fb">How much you\'re worth to facebook</string>
     <string name="avg_revenue_per_user">Average revenue per user, or ARPU is how Facebook assesses its ability to monetize users. ARPU is calculated by computing revenue by user geography based on Facebook’s estimate of the geography in which ad impressions are delivered. These numbers are made public in their quarterly earning reports.\n\nYet besides the dollar value, analyzing user value based only on ARPU underestimates the value to Facebook. Even though Facebook doesn’t make much money with their users outside US, Canada, and Western Europe, they still collect lots of data. That data creates the network effect that makes their platform become stronger and more valuable over time.</string>
     <string name="quarterly_earning_reports">quarterly earning reports</string>
+    <string name="login_to_get_your_data">Login to get your data</string>
 
     <string-array name="day_of_week">
         <item>S</item>

@@ -22,8 +22,6 @@ import com.bitmark.fbm.feature.recovery.notice.RecoveryNoticeFragment
 import com.bitmark.fbm.feature.recovery.notice.RecoveryNoticeModule
 import com.bitmark.fbm.feature.register.archiverequest.archiverequest.ArchiveRequestFragment
 import com.bitmark.fbm.feature.register.archiverequest.archiverequest.ArchiveRequestModule
-import com.bitmark.fbm.feature.register.archiverequest.credential.ArchiveRequestCredentialFragment
-import com.bitmark.fbm.feature.register.archiverequest.credential.ArchiveRequestCredentialModule
 import com.bitmark.fbm.feature.statistic.StatisticFragment
 import com.bitmark.fbm.feature.statistic.StatisticModule
 import com.bitmark.fbm.feature.unlink.notice.UnlinkNoticeFragment
@@ -79,10 +77,6 @@ abstract class FragmentBuilderModule {
     @ContributesAndroidInjector(modules = [ArchiveRequestModule::class])
     @FragmentScope
     internal abstract fun bindArchiveRequestFragment(): ArchiveRequestFragment
-
-    @ContributesAndroidInjector(modules = [ArchiveRequestCredentialModule::class])
-    @FragmentScope
-    internal abstract fun bindArchiveRequestCredentialFragment(): ArchiveRequestCredentialFragment
 
     @ContributesAndroidInjector(modules = [StatisticModule::class])
     @FragmentScope

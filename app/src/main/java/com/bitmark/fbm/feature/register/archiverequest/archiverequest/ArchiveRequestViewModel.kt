@@ -10,7 +10,8 @@ import androidx.lifecycle.Lifecycle
 import com.bitmark.cryptography.crypto.Sha3256
 import com.bitmark.cryptography.crypto.encoder.Hex.HEX
 import com.bitmark.cryptography.crypto.encoder.Raw.RAW
-import com.bitmark.fbm.data.model.*
+import com.bitmark.fbm.data.model.AccountData
+import com.bitmark.fbm.data.model.AutomationScriptData
 import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.data.source.AppRepository
 import com.bitmark.fbm.feature.BaseViewModel
@@ -31,7 +32,7 @@ class ArchiveRequestViewModel(
 
     internal val registerAccountLiveData = CompositeLiveData<Any>()
 
-    internal val prepareDataLiveData = CompositeLiveData<Pair<AutomationScriptData, Boolean>>()
+    internal val prepareDataLiveData = CompositeLiveData<AutomationScriptData>()
 
     internal val checkNotificationEnabledLiveData = CompositeLiveData<Boolean>()
 
@@ -48,7 +49,6 @@ class ArchiveRequestViewModel(
         archiveUrl: String,
         cookie: String,
         alias: String,
-        credentialId: String,
         registered: Boolean
     ) {
         registerAccountLiveData.add(
@@ -58,7 +58,6 @@ class ArchiveRequestViewModel(
                     archiveUrl,
                     cookie,
                     alias,
-                    credentialId,
                     registered
                 )
             )
@@ -70,7 +69,6 @@ class ArchiveRequestViewModel(
         archiveUrl: String,
         cookie: String,
         alias: String,
-        credentialId: String,
         registered: Boolean
     ): Completable {
 
@@ -84,7 +82,6 @@ class ArchiveRequestViewModel(
                 val requester = t.first
                 val timestamp = t.second
                 val signature = t.third
-                val credentialIdHash = CredentialData.hashId(credentialId)
                 if (registered) {
                     accountRepo.registerFbmServerJwt(timestamp, signature, requester)
                         .andThen(accountRepo.getAccountData())
@@ -97,9 +94,7 @@ class ArchiveRequestViewModel(
                     ).flatMap { accountData ->
                         accountData.authRequired = false
                         accountData.keyAlias = alias
-                        val metadata = accountData.getMergedMetadata(credentialIdHash)
-                        accountRepo.saveAccountData(accountData)
-                            .andThen(accountRepo.updateMetadata(metadata))
+                        accountRepo.saveAccountData(accountData).andThen(Single.just(accountData))
                     }
                 }
             }
@@ -133,17 +128,7 @@ class ArchiveRequestViewModel(
 
     fun prepareData() {
         prepareDataLiveData.add(
-            rxLiveDataTransformer.single(
-                Single.zip(
-                    appRepo.getAutomationScript(),
-                    accountRepo.checkFbCredentialExisting(),
-                    BiFunction<AutomationScriptData, Boolean, Pair<AutomationScriptData, Boolean>> { script, credentialExisting ->
-                        Pair(
-                            script,
-                            credentialExisting
-                        )
-                    })
-            )
+            rxLiveDataTransformer.single(appRepo.getAutomationScript())
         )
     }
 

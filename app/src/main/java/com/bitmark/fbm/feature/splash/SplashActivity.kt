@@ -23,6 +23,8 @@ import com.bitmark.fbm.BuildConfig
 import com.bitmark.fbm.R
 import com.bitmark.fbm.data.ext.isServiceUnsupportedError
 import com.bitmark.fbm.data.model.AccountData
+import com.bitmark.fbm.data.model.CredentialData
+import com.bitmark.fbm.data.model.delete
 import com.bitmark.fbm.data.model.isValid
 import com.bitmark.fbm.data.source.remote.api.error.UnknownException
 import com.bitmark.fbm.feature.BaseAppCompatActivity
@@ -41,11 +43,13 @@ import com.bitmark.fbm.feature.signin.SignInActivity
 import com.bitmark.fbm.feature.whatsnew.WhatsNewActivity
 import com.bitmark.fbm.logging.Event
 import com.bitmark.fbm.logging.EventLogger
+import com.bitmark.fbm.logging.Tracer
 import com.bitmark.fbm.util.DateTimeUtil
 import com.bitmark.fbm.util.ext.*
 import com.bitmark.sdk.authentication.KeyAuthenticationSpec
 import com.bitmark.sdk.features.Account
 import kotlinx.android.synthetic.main.activity_splash.*
+import java.util.concurrent.Executors
 import javax.inject.Inject
 
 class SplashActivity : BaseAppCompatActivity() {
@@ -69,6 +73,8 @@ class SplashActivity : BaseAppCompatActivity() {
     internal lateinit var logger: EventLogger
 
     private val handler = Handler()
+
+    private val executor = Executors.newSingleThreadExecutor()
 
     private lateinit var account: Account
 
@@ -142,6 +148,7 @@ class SplashActivity : BaseAppCompatActivity() {
     }
 
     override fun deinitComponents() {
+        executor.shutdown()
         handler.removeCallbacksAndMessages(null)
         super.deinitComponents()
     }
@@ -208,67 +215,17 @@ class SplashActivity : BaseAppCompatActivity() {
                     val data = res.data()!!
                     val accountData = data.first
                     val archiveRequestedAt = data.second
-                    val archiveRequested = archiveRequestedAt != -1L
-                    val loggedIn = accountData.isValid() && !archiveRequested
-                    val uri = intent?.data
-                    val loginFromDeepLink =
-                        uri != null && uri.scheme == getString(R.string.scheme) && uri.host == "login"
-                    when {
-                        // account already registered
-                        loggedIn -> prepareData(accountData)
-
-                        // requested archive
-                        archiveRequested -> handler.postDelayed({
-                            val msg =
-                                "${getString(R.string.we_are_waiting_for_fb_1)}\n\n${getString(R.string.you_requested_your_fb_archive_format).format(
-                                    DateTimeUtil.millisToString(
-                                        archiveRequestedAt,
-                                        DateTimeUtil.DATE_FORMAT_3,
-                                        DateTimeUtil.defaultTimeZone()
-                                    ),
-                                    DateTimeUtil.millisToString(
-                                        archiveRequestedAt,
-                                        DateTimeUtil.TIME_FORMAT_1,
-                                        DateTimeUtil.defaultTimeZone()
-                                    )
-                                )}"
-                            val bundle = DataProcessingActivity.getBundle(
-                                getString(R.string.data_requested),
-                                msg,
-                                true
-                            )
-                            navigator.anim(FADE_IN)
-                                .startActivityAsRoot(DataProcessingActivity::class.java, bundle)
-                        }, 250)
-
-                        loginFromDeepLink -> {
-                            try {
-                                val phrase = uri!!.getQueryParameter("phrases")!!
-                                val phraseArray = phrase.split("-").toTypedArray()
-                                if (phraseArray.size in arrayOf(12, 24)) {
-                                    val bundle = SignInActivity.getBundle(phraseArray)
-                                    navigator.anim(RIGHT_LEFT)
-                                        .startActivityAsRoot(SignInActivity::class.java, bundle)
-                                } else {
-                                    logger.logError(
-                                        Event.ACCOUNT_DEEPLINK_INVALID_PHRASE_ERROR,
-                                        "invalid deeplink phrase $phrase"
-                                    )
-                                    showOnboarding()
-                                }
-                            } catch (e: Throwable) {
-                                logger.logError(
-                                    Event.ACCOUNT_DEEPLINK_INVALID_PHRASE_ERROR,
-                                    "invalid deeplink parsing ${e.message}"
-                                )
-                                showOnboarding()
-                            }
-                        }
-
-                        else -> {
-                            // do onboarding
-                            showOnboarding()
-                        }
+                    val fbCredentialExisting = data.third
+                    if (fbCredentialExisting) {
+                        CredentialData.delete(this, executor, {
+                            handleAppState(accountData, archiveRequestedAt)
+                        }, { e ->
+                            Tracer.ERROR.log(TAG, "delete fb credential error ${e?.message}")
+                            logger.logError(Event.DELETE_FB_CREDENTIAL_ERROR, e)
+                            handleAppState(accountData, archiveRequestedAt)
+                        })
+                    } else {
+                        handleAppState(accountData, archiveRequestedAt)
                     }
                 }
 
@@ -340,6 +297,72 @@ class SplashActivity : BaseAppCompatActivity() {
             }
         })
 
+    }
+
+    private fun handleAppState(accountData: AccountData, archiveRequestedAt: Long) {
+        val archiveRequested = archiveRequestedAt != -1L
+        val loggedIn = accountData.isValid() && !archiveRequested
+        val uri = intent?.data
+        val loginFromDeepLink =
+            uri != null && uri.scheme == getString(R.string.scheme) && uri.host == "login"
+
+        when {
+            // account already registered
+            loggedIn -> prepareData(accountData)
+
+            // requested archive
+            archiveRequested -> handler.postDelayed({
+                val msg =
+                    "${getString(R.string.we_are_waiting_for_fb_1)}\n\n${getString(R.string.you_requested_your_fb_archive_format).format(
+                        DateTimeUtil.millisToString(
+                            archiveRequestedAt,
+                            DateTimeUtil.DATE_FORMAT_3,
+                            DateTimeUtil.defaultTimeZone()
+                        ),
+                        DateTimeUtil.millisToString(
+                            archiveRequestedAt,
+                            DateTimeUtil.TIME_FORMAT_1,
+                            DateTimeUtil.defaultTimeZone()
+                        )
+                    )}"
+                val bundle = DataProcessingActivity.getBundle(
+                    getString(R.string.data_requested),
+                    msg,
+                    true
+                )
+                navigator.anim(FADE_IN)
+                    .startActivityAsRoot(DataProcessingActivity::class.java, bundle)
+            }, 250)
+
+            loginFromDeepLink -> {
+                try {
+                    val phrase = uri!!.getQueryParameter("phrases")!!
+                    val phraseArray = phrase.split("-").toTypedArray()
+                    if (phraseArray.size in arrayOf(12, 24)) {
+                        val bundle = SignInActivity.getBundle(phraseArray)
+                        navigator.anim(RIGHT_LEFT)
+                            .startActivityAsRoot(SignInActivity::class.java, bundle)
+                    } else {
+                        logger.logError(
+                            Event.ACCOUNT_DEEPLINK_INVALID_PHRASE_ERROR,
+                            "invalid deeplink phrase $phrase"
+                        )
+                        showOnboarding()
+                    }
+                } catch (e: Throwable) {
+                    logger.logError(
+                        Event.ACCOUNT_DEEPLINK_INVALID_PHRASE_ERROR,
+                        "invalid deeplink parsing ${e.message}"
+                    )
+                    showOnboarding()
+                }
+            }
+
+            else -> {
+                // do onboarding
+                showOnboarding()
+            }
+        }
     }
 
     private fun showDataAnalyzing() {

@@ -13,7 +13,6 @@ import com.bitmark.fbm.R
 import com.bitmark.fbm.feature.*
 import com.bitmark.fbm.feature.Navigator.Companion.RIGHT_LEFT
 import com.bitmark.fbm.feature.register.archiverequest.archiverequest.ArchiveRequestFragment
-import com.bitmark.fbm.feature.register.archiverequest.credential.ArchiveRequestCredentialFragment
 import com.bitmark.fbm.logging.EventLogger
 import com.bitmark.fbm.util.ext.*
 import javax.inject.Inject
@@ -75,14 +74,10 @@ class ArchiveRequestContainerActivity : BaseAppCompatActivity() {
                     navigator.anim(Navigator.NONE)
                         .replaceFragment(
                             R.id.layoutRoot,
-                            if (requestedAt != -1L) {
-                                ArchiveRequestFragment.newInstance(
-                                    requestedAt = requestedAt,
-                                    accountRegistered = accountRegistered
-                                )
-                            } else {
-                                ArchiveRequestCredentialFragment.newInstance(accountRegistered)
-                            },
+                            ArchiveRequestFragment.newInstance(
+                                requestedAt = requestedAt,
+                                accountRegistered = accountRegistered
+                            ),
                             false
                         )
                 }

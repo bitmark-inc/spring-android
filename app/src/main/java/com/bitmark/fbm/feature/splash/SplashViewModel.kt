@@ -20,6 +20,7 @@ import com.bitmark.sdk.features.Account
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
+import io.reactivex.functions.Function3
 import io.reactivex.schedulers.Schedulers
 
 
@@ -30,7 +31,7 @@ class SplashViewModel(
     private val rxLiveDataTransformer: RxLiveDataTransformer
 ) : BaseViewModel(lifecycle) {
 
-    internal val getAccountInfoLiveData = CompositeLiveData<Pair<AccountData, Long>>()
+    internal val getAccountInfoLiveData = CompositeLiveData<Triple<AccountData, Long, Boolean>>()
 
     internal val checkVersionOutOfDateLiveData = CompositeLiveData<Pair<Boolean, String>>()
 
@@ -46,10 +47,12 @@ class SplashViewModel(
                 Single.zip(
                     accountRepo.getAccountData(),
                     accountRepo.getArchiveRequestedAt(),
-                    BiFunction<AccountData, Long, Pair<AccountData, Long>> { account, archiveRequested ->
-                        Pair(
+                    accountRepo.checkFbCredentialExisting(),
+                    Function3<AccountData, Long, Boolean, Triple<AccountData, Long, Boolean>> { account, archiveRequested, fbCredentialExisting ->
+                        Triple(
                             account,
-                            archiveRequested
+                            archiveRequested,
+                            fbCredentialExisting
                         )
                     })
             )

@@ -115,3 +115,30 @@ fun CredentialData.Companion.load(
         })
     }
 }
+
+fun CredentialData.Companion.delete(
+    activity: Activity,
+    executor: Executor = Executors.newSingleThreadExecutor(),
+    success: () -> Unit,
+    error: (Throwable?) -> Unit
+) {
+    executor.execute {
+        val handler = Handler(Looper.getMainLooper())
+        val keyManager = KeyManagerImpl(activity) as KeyManager
+        val keyAuthSpec =
+            KeyAuthenticationSpec.Builder(activity).setKeyAlias(CREDENTIAL_ALIAS)
+                .setAuthenticationRequired(false)
+                .build()
+
+        keyManager.removeKey(CREDENTIAL_ALIAS, keyAuthSpec, object : Callback0 {
+            override fun onSuccess() {
+                handler.post { success() }
+            }
+
+            override fun onError(throwable: Throwable?) {
+                handler.post { error(throwable) }
+            }
+        })
+
+    }
+}
