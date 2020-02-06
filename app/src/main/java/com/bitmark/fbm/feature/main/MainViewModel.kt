@@ -18,7 +18,9 @@ import com.bitmark.fbm.feature.auth.FbmServerAuthentication
 import com.bitmark.fbm.util.livedata.CompositeLiveData
 import com.bitmark.fbm.util.livedata.RxLiveDataTransformer
 import com.bitmark.sdk.features.Account
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.BiFunction
 
 
 class MainViewModel(
@@ -34,7 +36,7 @@ class MainViewModel(
 
     internal val serviceUnsupportedLiveData = MutableLiveData<String>()
 
-    internal val checkAccountRegisteredLiveData = CompositeLiveData<Boolean>()
+    internal val checkAppStateLiveData = CompositeLiveData<Pair<Boolean, Boolean>>()
 
     override fun onCreate() {
         super.onCreate()
@@ -74,10 +76,19 @@ class MainViewModel(
         archiveIssuanceProcessor.stop()
     }
 
-    fun checkAccountRegistered() {
-        checkAccountRegisteredLiveData.add(
+    fun checkAppState() {
+        checkAppStateLiveData.add(
             rxLiveDataTransformer.single(
-                accountRepo.getAccountData().map { accountData -> accountData.isCreatedRemotely() })
+                Single.zip(
+                    accountRepo.getAccountData().map { accountData -> accountData.isCreatedRemotely() },
+                    appRepo.checkDataReady(),
+                    BiFunction { accountRegistered, dataReady ->
+                        Pair(
+                            accountRegistered,
+                            dataReady
+                        )
+                    })
+            )
         )
     }
 }

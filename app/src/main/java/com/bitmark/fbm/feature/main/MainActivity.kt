@@ -8,18 +8,21 @@ package com.bitmark.fbm.feature.main
 
 import android.os.Bundle
 import android.os.Handler
+import android.view.View
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import com.bitmark.fbm.R
 import com.bitmark.fbm.feature.*
 import com.bitmark.fbm.feature.connectivity.ConnectivityHandler
+import com.bitmark.fbm.feature.insights.InsightsContainerFragment
 import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_INSIGHT
 import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_LENS
 import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_USAGE
-import com.bitmark.fbm.feature.usage.UsageContainerFragment
 import com.bitmark.fbm.util.ext.*
 import com.bitmark.sdk.features.Account
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.layout_bottom_notification.*
 import javax.inject.Inject
 
 class MainActivity : BaseAppCompatActivity() {
@@ -41,6 +44,8 @@ class MainActivity : BaseAppCompatActivity() {
     private lateinit var account: Account
 
     private lateinit var vpAdapter: MainViewPagerAdapter
+
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
 
     override fun layoutRes(): Int = R.layout.activity_main
 
@@ -77,7 +82,7 @@ class MainActivity : BaseAppCompatActivity() {
         val seed = intent?.extras?.getString(ACCOUNT_SEED) ?: error("missing ACCOUNT_SEED")
         account = Account.fromSeed(seed)
 
-        viewModel.checkAccountRegistered()
+        viewModel.checkAppState()
 
     }
 
@@ -114,6 +119,12 @@ class MainActivity : BaseAppCompatActivity() {
             (vpAdapter.currentFragment as? BehaviorComponent)?.refresh()
         }
 
+        bottomSheetBehavior = BottomSheetBehavior.from(layoutBottomNotification)
+
+        ivClose.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
     }
 
     override fun deinitComponents() {
@@ -135,17 +146,32 @@ class MainActivity : BaseAppCompatActivity() {
             }
         })
 
-        viewModel.checkAccountRegisteredLiveData.asLiveData()
+        viewModel.checkAppStateLiveData.asLiveData()
             .observe(this, Observer { res ->
                 when {
                     res.isSuccess() -> {
-                        val registered = res.data()!!
-                        if (registered) {
+                        val data = res.data()!!
+                        val accountRegistered = data.first
+                        val dataReady = data.second
+                        if (accountRegistered) {
                             viewModel.startArchiveIssuanceProcessor(account)
                         }
+                        showAppState(accountRegistered, dataReady)
                     }
                 }
             })
+    }
+
+    private fun showAppState(accountRegistered: Boolean, dataReady: Boolean) {
+        if (dataReady) return
+
+        val title =
+            getString(if (accountRegistered) R.string.processing_data else R.string.still_waiting)
+        val message =
+            getString(if (accountRegistered) R.string.your_fb_data_archive_has_been_successfully else R.string.sorry_fb_is_still_prepare)
+        tvTitle.text = title
+        tvMsg.text = message
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
     override fun onResume() {
@@ -164,11 +190,11 @@ class MainActivity : BaseAppCompatActivity() {
 
     override fun onBackPressed() {
         val currentFragment = vpAdapter.currentFragment as? BehaviorComponent
-        if (currentFragment is UsageContainerFragment && !currentFragment.onBackPressed())
+        if (currentFragment is InsightsContainerFragment && !currentFragment.onBackPressed())
             super.onBackPressed()
         else if (currentFragment?.onBackPressed() == false) {
-            bottomNav.setActiveItem(TAB_USAGE, R.color.cognac)
-            viewPager.setCurrentItem(TAB_USAGE, false)
+            bottomNav.setActiveItem(TAB_INSIGHT, R.color.international_klein_blue)
+            viewPager.setCurrentItem(TAB_INSIGHT, false)
         }
     }
 }

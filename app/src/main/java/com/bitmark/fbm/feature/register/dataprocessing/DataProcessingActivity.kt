@@ -59,7 +59,7 @@ class DataProcessingActivity : BaseAppCompatActivity() {
 
         val title = getString(R.string.data_requested)
         val msg =
-            "${getString(R.string.we_are_waiting_for_fb_1)}\n\n${getString(R.string.you_requested_your_fb_archive_format).format(
+            "${getString(R.string.we_are_waiting_for_fb)}\n\n${getString(R.string.you_requested_your_fb_archive_format).format(
                 DateTimeUtil.millisToString(
                     archiveRequestedAt,
                     DateTimeUtil.DATE_FORMAT_3,

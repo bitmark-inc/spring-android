@@ -29,6 +29,24 @@
         android:layout_above="@id/bottomNav"
         android:background="@color/concord" />
 
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/divider">
+
+        <include
+            android:id="@+id/layoutBottomNotification"
+            layout="@layout/layout_bottom_notification"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:behavior_hideable="true"
+            app:behavior_peekHeight="0dp"
+            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+            tools:visibility="visible" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
     <com.bitmark.fbm.util.view.bottomview.NiceBottomBar
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
