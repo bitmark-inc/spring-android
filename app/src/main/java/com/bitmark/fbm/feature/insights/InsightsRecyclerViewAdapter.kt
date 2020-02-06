@@ -23,6 +23,7 @@ import com.bitmark.fbm.util.ext.visible
 import com.bitmark.fbm.util.modelview.InsightModelView
 import kotlinx.android.synthetic.main.item_categories.view.*
 import kotlinx.android.synthetic.main.item_category.view.*
+import kotlinx.android.synthetic.main.item_data_coming.view.*
 import kotlinx.android.synthetic.main.item_how_u_r_tracked.view.*
 import kotlinx.android.synthetic.main.item_income.view.*
 
@@ -33,17 +34,34 @@ class InsightsRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder
         private const val INCOME = 0x00
         private const val CATEGORY = 0x01
         private const val USER_TRACKED = 0x02
+        private const val DATA_COMING = 0x03
     }
 
-    private val items = mutableListOf<InsightModelView>()
+    private val items = mutableListOf<Item>()
 
     private var itemClickListener: ItemClickListener? = null
 
     fun set(insights: List<InsightModelView>) {
-        items.clear()
-        items.addAll(insights)
-        //items.add(InsightModelView(null, null, null))
+        this.items.clear()
+        val items = insights.map { i ->
+            val type = when {
+                i.income != null -> INCOME
+                i.categories != null -> CATEGORY
+                i.notificationEnabled != null -> DATA_COMING
+                else -> USER_TRACKED
+            }
+            Item(type, i)
+        }
+        this.items.addAll(items)
         notifyDataSetChanged()
+    }
+
+    fun markNotificationEnable() {
+        val index = items.indexOfFirst { i -> i.insight.notificationEnabled != null }
+        if (index != -1) {
+            items[index].insight.notificationEnabled = true
+            notifyItemChanged(index)
+        }
     }
 
     fun clear() {
@@ -80,6 +98,13 @@ class InsightsRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder
                     false
                 ), itemClickListener
             )
+            DATA_COMING -> DataComingVH(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_data_coming,
+                    parent,
+                    false
+                ), itemClickListener
+            )
             else -> error("unsupported view type")
         }
     }
@@ -92,18 +117,12 @@ class InsightsRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder
             is CategoryVH -> holder.bind(items[position])
             is UserTrackedVH -> { // do nothing
             }
+            is DataComingVH -> holder.bind(items[position])
             else -> error("unsupported holder")
         }
     }
 
-    override fun getItemViewType(position: Int): Int {
-        val item = items[position]
-        return when {
-            item.income != null -> INCOME
-            item.categories != null -> CATEGORY
-            else -> USER_TRACKED
-        }
-    }
+    override fun getItemViewType(position: Int): Int = items[position].type
 
     class IncomeVH(view: View, listener: ItemClickListener?) : RecyclerView.ViewHolder(view) {
 
@@ -113,17 +132,18 @@ class InsightsRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder
             }
         }
 
-        fun bind(item: InsightModelView) {
+        fun bind(item: Item) {
             with(itemView) {
-                if (item.income == null || item.income <= 0f) {
+                val insight = item.insight
+                if (insight.income == null || insight.income <= 0f) {
                     tvIncome.text = "--"
                     tvMsg.text = context.getString(R.string.sorry_no_data)
                 } else {
-                    tvIncome.text = String.format("$%.2f", item.income)
+                    tvIncome.text = String.format("$%.2f", insight.income)
                     tvMsg.text = context.getString(R.string.income_fb_made_from_you_format)
                         .format(
                             DateTimeUtil.millisToString(
-                                item.incomeFrom!! * 1000,
+                                insight.incomeFrom!! * 1000,
                                 DateTimeUtil.DATE_FORMAT_11,
                                 DateTimeUtil.defaultTimeZone()
                             )
@@ -135,17 +155,18 @@ class InsightsRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder
 
     class CategoryVH(view: View) : RecyclerView.ViewHolder(view) {
 
-        fun bind(item: InsightModelView) {
-            if (item.categories == null) error("categories is null")
+        fun bind(item: Item) {
+            val insight = item.insight
+            if (insight.categories == null) error("categories is null")
             with(itemView) {
                 val root = itemView as LinearLayout
                 root.removeViews(3, root.childCount - 3)
 
-                if (item.categories.isEmpty()) {
+                if (insight.categories.isEmpty()) {
                     tvNoData.visible()
                 } else {
                     tvNoData.gone()
-                    item.categories.forEachIndexed { i, category ->
+                    insight.categories.forEachIndexed { i, category ->
                         val categoryView =
                             LayoutInflater.from(context).inflate(R.layout.item_category, null)
                         categoryView.tvCategory.text = category
@@ -185,10 +206,44 @@ class InsightsRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+    class DataComingVH(view: View, listener: ItemClickListener?) : RecyclerView.ViewHolder(view) {
+
+        init {
+            with(view) {
+                tvNotifyMe.setSafetyOnclickListener {
+                    listener?.onNotifyMeClicked()
+                }
+            }
+        }
+
+        fun bind(item: Item) {
+            with(itemView) {
+                tvDataComingTitle.setText(R.string.more_insights_is_coming)
+                tvDataComingSubtitle.setText(
+                    if (item.insight.notificationEnabled == true) {
+                        R.string.your_fb_data_archive_is_being_processed_2
+                    } else {
+                        R.string.your_fb_data_archive_is_being_processed_1
+                    }
+                )
+                tvNotifyMe.visibility =
+                    if (item.insight.notificationEnabled == true) View.GONE else View.VISIBLE
+            }
+        }
+
+    }
+
+    data class Item(
+        val type: Int,
+        val insight: InsightModelView
+    )
+
     interface ItemClickListener {
 
         fun onIncomeInfoClicked()
 
         fun onReadMoreClicked()
+
+        fun onNotifyMeClicked()
     }
 }

@@ -54,7 +54,7 @@
     <string name="check_now_arrow">Check now »</string>
     <string name="still_waiting">Still Waiting</string>
     <string name="processing_data">Processing Data</string>
-    <string name="your_fb_data_archive_has_been_successfully">Your Facebook data archive has been successfully secured. We’ve started processing your data and will send you a notification when it’s ready. You can safely close this app now.</string>
+    <string name="your_fb_data_archive_has_been_successfully">Your Facebook data archive has been successfully secured. We’ve started processing your data and will send you a notification when it’s ready.</string>
     <string name="week">Week</string>
     <string name="year">Year</string>
     <string name="decade">Decade</string>
@@ -176,6 +176,10 @@
     <string name="login_to_get_your_data">Login to get your data</string>
     <string name="your_fb_escape_hatch">Your Facebook Escape Hatch</string>
     <string name="pls_check_the_new_updates">Please check the new updates…</string>
+    <string name="your_fb_data_archive_is_being_processed_1">Your Facebook data archive is being processed. This might take 1–2 days. We can notify you when it’s done. Or you can check back on your own.</string>
+    <string name="your_fb_data_archive_is_being_processed_2">Your Facebook data archive is being processed. This might take 1–2 days. We will notify you when it’s done.</string>
+    <string name="more_insights_is_coming">More insights coming!</string>
+    <string name="personal_analytics_are_coming">Personal Analytics are coming!</string>
 
     <string-array name="day_of_week">
         <item>S</item>

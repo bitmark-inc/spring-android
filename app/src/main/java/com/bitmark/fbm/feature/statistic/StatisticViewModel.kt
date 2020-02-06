@@ -20,6 +20,7 @@ import com.bitmark.fbm.util.livedata.RxLiveDataTransformer
 import com.bitmark.fbm.util.modelview.SectionModelView
 import com.bitmark.fbm.util.modelview.order
 import io.reactivex.Single
+import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 
@@ -33,51 +34,66 @@ class StatisticViewModel(
 ) :
     BaseViewModel(lifecycle) {
 
-    internal val listUsageStatisticLiveData = CompositeLiveData<List<SectionModelView>>()
+    internal val getDataLiveData =
+        CompositeLiveData<Pair<List<SectionModelView>, Boolean>>()
 
-    internal val prepareDataLiveData = CompositeLiveData<Pair<Boolean, Long>>()
+    internal val getLastActivityTimestamp = CompositeLiveData<Long>()
 
-    fun listUsageStatistic(period: Period, periodStartedAtSec: Long) {
-        val stream =
-            statisticRepo.listUsageStatistic(period, periodStartedAtSec)
-                .onNetworkErrorReturn(listOf())
-                .observeOn(Schedulers.computation())
-                .map { usageStatistics ->
-                    val defaultVMs =
-                        newDefaultSectionMVs(period, periodStartedAtSec).toMutableList()
-                    val vms = when {
-                        usageStatistics.isEmpty() -> defaultVMs
-                        usageStatistics.size == defaultVMs.size -> {
-                            usageStatistics.map { s ->
-                                SectionModelView.newInstance(
-                                    s,
-                                    Random().nextInt(100)
-                                )
-                            }
-                        }
-                        else -> {
-                            val vms =
+    internal val setNotificationEnableLiveData = CompositeLiveData<Any>()
+
+    fun getData(period: Period, periodStartedAtSec: Long) {
+        val listUsageStream = appRepo.checkDataReady().flatMap { ready ->
+            if (ready) {
+                statisticRepo.listUsageStatistic(period, periodStartedAtSec)
+                    .onNetworkErrorReturn(listOf()).map { usageStatistics ->
+                        val defaultVMs =
+                            newDefaultSectionMVs(period, periodStartedAtSec).toMutableList()
+                        val vms = when {
+                            usageStatistics.isEmpty() -> defaultVMs
+                            usageStatistics.size == defaultVMs.size -> {
                                 usageStatistics.map { s ->
                                     SectionModelView.newInstance(
                                         s,
                                         Random().nextInt(100)
                                     )
                                 }
-                            for (i in 0 until defaultVMs.size) {
-                                val vm =
-                                    vms.firstOrNull { v -> v.name == defaultVMs[i].name }
-                                        ?: continue
-                                defaultVMs.replace(vm, i)
                             }
-                            defaultVMs
-                        }
-                    }.toMutableList()
-                    vms.sortWith(Comparator { o1, o2 -> o2.order().compareTo(o1.order()) })
-                    vms.toList()
-                }
-        listUsageStatisticLiveData.add(
+                            else -> {
+                                val vms =
+                                    usageStatistics.map { s ->
+                                        SectionModelView.newInstance(
+                                            s,
+                                            Random().nextInt(100)
+                                        )
+                                    }
+                                for (i in 0 until defaultVMs.size) {
+                                    val vm =
+                                        vms.firstOrNull { v -> v.name == defaultVMs[i].name }
+                                            ?: continue
+                                    defaultVMs.replace(vm, i)
+                                }
+                                defaultVMs
+                            }
+                        }.toMutableList()
+                        vms.sortWith(Comparator { o1, o2 -> o2.order().compareTo(o1.order()) })
+                        vms.toList()
+                    }
+            } else {
+                Single.just(listOf(SectionModelView.newEmptyInstance()))
+            }.observeOn(Schedulers.computation())
+
+        }
+        getDataLiveData.add(
             rxLiveDataTransformer.single(
-                stream
+                Single.zip(
+                    listUsageStream,
+                    appRepo.checkNotificationEnabled(),
+                    BiFunction { usageStatistics, notificationEnabled ->
+                        Pair(
+                            usageStatistics,
+                            notificationEnabled
+                        )
+                    })
             )
         )
     }
@@ -101,14 +117,22 @@ class StatisticViewModel(
             )
         )
 
-    fun prepareData() {
-        prepareDataLiveData.add(rxLiveDataTransformer.single(appRepo.checkDataReady().flatMap { ready ->
-            if (ready) {
-                accountRepo.getLastActivityTimestamp().map { timestamp -> Pair(true, timestamp) }
-                    .onErrorResumeNext { Single.just(Pair(true, -1L)) }
-            } else {
-                Single.just(Pair(false, -1L))
-            }
-        }))
+    fun getLastActivityTimestamp() {
+        getLastActivityTimestamp.add(
+            rxLiveDataTransformer.single(accountRepo.getLastActivityTimestamp()
+                .onErrorResumeNext {
+                    Single.just(-1L)
+                })
+        )
+    }
+
+    fun setNotificationEnable() {
+        setNotificationEnableLiveData.add(
+            rxLiveDataTransformer.completable(
+                appRepo.setNotificationEnabled(
+                    true
+                )
+            )
+        )
     }
 }

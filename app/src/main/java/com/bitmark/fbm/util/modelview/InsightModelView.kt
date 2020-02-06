@@ -10,12 +10,18 @@ package com.bitmark.fbm.util.modelview
 data class InsightModelView(
     val income: Float?,
     val incomeFrom: Long?,
-    val categories: List<String>?
+    val categories: List<String>?,
+    var notificationEnabled: Boolean?
 ) {
 
     companion object {
 
-        fun newInstance(income: Float?, incomeFrom: Long?, categories: List<String>?) =
-            InsightModelView(income, incomeFrom, categories)
+        fun newInstance(
+            income: Float?,
+            incomeFrom: Long?,
+            categories: List<String>?,
+            notificationEnabled: Boolean?
+        ) =
+            InsightModelView(income, incomeFrom, categories, notificationEnabled)
     }
 }

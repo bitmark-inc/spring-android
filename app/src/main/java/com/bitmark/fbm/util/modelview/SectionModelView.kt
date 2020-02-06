@@ -11,9 +11,9 @@ import kotlin.math.roundToInt
 
 
 data class SectionModelView(
-    val name: SectionName,
-    val period: Period,
-    val periodStartedAtSec: Long,
+    val name: SectionName?,
+    val period: Period?,
+    val periodStartedAtSec: Long?,
     val quantity: Int,
     val diffFromPrev: Int?,
     val average: Int,
@@ -24,8 +24,23 @@ data class SectionModelView(
 
         private const val THRESHOLD_VALS_COUNT = 4
 
-        fun newDefaultInstance(name: SectionName, period: Period, periodStartedAtSec: Long) =
-            SectionModelView(name, period, periodStartedAtSec, 0, null, 0, listOf(), null)
+        fun newEmptyInstance() = SectionModelView(null, null, null, 0, null, 0, listOf(), null)
+
+        fun newDefaultInstance(
+            name: SectionName?,
+            period: Period?,
+            periodStartedAtSec: Long?
+        ) =
+            SectionModelView(
+                name,
+                period,
+                periodStartedAtSec,
+                0,
+                null,
+                0,
+                listOf(),
+                null
+            )
 
         fun newInstance(sectionR: SectionR, avg: Int): SectionModelView {
             val sectionName = sectionR.name
@@ -174,4 +189,5 @@ fun SectionModelView.order() = when (name) {
     SectionName.SENTIMENT -> 0
     SectionName.POST -> -1
     SectionName.REACTION -> -2
+    else -> error("unsupported section name")
 }

@@ -80,8 +80,6 @@ class StatisticFragment : BaseSupportFragment() {
 
     private var dataPrepared = false
 
-    private var dataReady = false
-
     private lateinit var adapter: StatisticRecyclerViewAdapter
 
     override fun layoutRes(): Int = R.layout.fragment_statistic
@@ -101,14 +99,14 @@ class StatisticFragment : BaseSupportFragment() {
     override fun onResume() {
         super.onResume()
         handler.postDelayed({
-            if (dataReady) viewModel.listUsageStatistic(period, currentStartedAtSec)
+            viewModel.getData(period, currentStartedAtSec)
         }, Constants.UI_READY_DELAY)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (!dataPrepared) viewModel.prepareData()
+        if (!dataPrepared) viewModel.getLastActivityTimestamp()
     }
 
     override fun initComponents() {
@@ -134,6 +132,12 @@ class StatisticFragment : BaseSupportFragment() {
             }
         })
 
+        adapter.setItemClickListener(object : StatisticRecyclerViewAdapter.ItemClickListener {
+            override fun onNotifyMeClicked() {
+                viewModel.setNotificationEnable()
+            }
+        })
+
         ivNextPeriod.setOnClickListener {
             nextPeriod()
         }
@@ -149,7 +153,7 @@ class StatisticFragment : BaseSupportFragment() {
         currentStartedAtSec =
             getStartOfPeriodSec(period, currentStartedAtSec, 1)
         showPeriod(period, currentStartedAtSec, periodGap)
-        viewModel.listUsageStatistic(period, currentStartedAtSec)
+        viewModel.getData(period, currentStartedAtSec)
     }
 
     private fun prevPeriod() {
@@ -157,7 +161,7 @@ class StatisticFragment : BaseSupportFragment() {
         currentStartedAtSec =
             getStartOfPeriodSec(period, currentStartedAtSec, -1)
         showPeriod(period, currentStartedAtSec, periodGap)
-        viewModel.listUsageStatistic(period, currentStartedAtSec)
+        viewModel.getData(period, currentStartedAtSec)
     }
 
     private fun showPeriod(period: Period, periodStartedAtSec: Long, periodGap: Int) {
@@ -195,12 +199,14 @@ class StatisticFragment : BaseSupportFragment() {
     override fun observe() {
         super.observe()
 
-        viewModel.listUsageStatisticLiveData.asLiveData().observe(this, Observer { res ->
+        viewModel.getDataLiveData.asLiveData().observe(this, Observer { res ->
             when {
                 res.isSuccess() -> {
                     val data = res.data() ?: return@Observer
-                    if (data.any { s -> s.periodStartedAtSec != currentStartedAtSec }) return@Observer
-                    adapter.set(data)
+                    val usageStats = data.first
+                    val notificationEnabled = data.second
+                    if (usageStats.any { s -> s.periodStartedAtSec != null && s.periodStartedAtSec != currentStartedAtSec }) return@Observer
+                    adapter.set(usageStats, notificationEnabled)
                 }
 
                 res.isError() -> {
@@ -220,13 +226,11 @@ class StatisticFragment : BaseSupportFragment() {
             }
         })
 
-        viewModel.prepareDataLiveData.asLiveData().observe(this, Observer { res ->
+        viewModel.getLastActivityTimestamp.asLiveData().observe(this, Observer { res ->
             when {
                 res.isSuccess() -> {
                     dataPrepared = true
-                    val data = res.data()!!
-                    dataReady = data.first
-                    val lastActivityMillis = data.second * 1000
+                    val lastActivityMillis = res.data()!! * 1000
                     if (lastActivityMillis > 0) {
                         if (periodGap == 0) {
                             val startOfPeriodMillis = getStartOfPeriodSec(period) * 1000
@@ -238,15 +242,23 @@ class StatisticFragment : BaseSupportFragment() {
                         }
                     }
 
-                    if (dataReady) {
-                        viewModel.listUsageStatistic(period, currentStartedAtSec)
-                    } else {
-                        // TODO show system statistic
-                    }
+                    viewModel.getData(period, currentStartedAtSec)
                 }
 
                 res.isError() -> {
                     logger.logSharedPrefError(res.throwable(), "check data ready error")
+                }
+            }
+        })
+
+        viewModel.setNotificationEnableLiveData.asLiveData().observe(this, Observer { res ->
+            when {
+                res.isSuccess() -> {
+                    adapter.markNotificationEnable()
+                }
+
+                res.isError() -> {
+                    logger.logSharedPrefError(res.throwable(), "set notification enable error")
                 }
             }
         })

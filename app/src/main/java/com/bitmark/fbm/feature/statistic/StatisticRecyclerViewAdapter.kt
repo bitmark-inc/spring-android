@@ -13,10 +13,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bitmark.fbm.R
 import com.bitmark.fbm.data.model.entity.SectionName
 import com.bitmark.fbm.util.ext.gone
+import com.bitmark.fbm.util.ext.setSafetyOnclickListener
 import com.bitmark.fbm.util.ext.visible
 import com.bitmark.fbm.util.modelview.SectionModelView
 import com.bitmark.fbm.util.view.statistic.GroupView
 import com.bitmark.fbm.util.view.statistic.SectionView
+import kotlinx.android.synthetic.main.item_data_coming.view.*
 import kotlinx.android.synthetic.main.item_sentiment.view.*
 import kotlin.math.roundToInt
 
@@ -30,26 +32,43 @@ class StatisticRecyclerViewAdapter :
 
         private const val STATISTIC = 0x02
 
+        private const val DATA_COMING = 0x03
+
     }
 
     private val items = mutableListOf<Item>()
 
     private var chartClickListener: GroupView.ChartClickListener? = null
 
+    private var itemClickListener: ItemClickListener? = null
+
     fun setChartClickListener(listener: GroupView.ChartClickListener) {
         this.chartClickListener = listener
     }
 
-    fun set(sections: List<SectionModelView>) {
+    fun setItemClickListener(listener: ItemClickListener) {
+        this.itemClickListener = listener
+    }
+
+    fun set(sections: List<SectionModelView>, notificationEnabled: Boolean? = null) {
         items.clear()
         items.addAll(sections.map { s ->
             val type = when (s.name) {
                 SectionName.SENTIMENT -> SENTIMENT
-                else -> STATISTIC
+                SectionName.POST, SectionName.REACTION -> STATISTIC
+                else -> DATA_COMING
             }
-            Item(type, s)
+            Item(type, s, notificationEnabled)
         })
         notifyDataSetChanged()
+    }
+
+    fun markNotificationEnable() {
+        val index = items.indexOfFirst { i -> i.notificationEnabled != null }
+        if (index != -1) {
+            items[index].notificationEnabled = true
+            notifyItemChanged(index)
+        }
     }
 
     fun clear() {
@@ -77,6 +96,14 @@ class StatisticRecyclerViewAdapter :
                 )
             )
 
+            DATA_COMING -> DataComingVH(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_data_coming,
+                    parent,
+                    false
+                ), itemClickListener
+            )
+
             else -> error("invalid view type")
         }
     }
@@ -87,6 +114,7 @@ class StatisticRecyclerViewAdapter :
         when (getItemViewType(position)) {
             STATISTIC -> (holder as? StatisticVH)?.bind(items[position])
             SENTIMENT -> (holder as? SentimentVH)?.bind(items[position])
+            DATA_COMING -> (holder as? DataComingVH)?.bind(items[position])
         }
 
     }
@@ -145,8 +173,41 @@ class StatisticRecyclerViewAdapter :
         }
     }
 
+    class DataComingVH(view: View, listener: ItemClickListener?) : RecyclerView.ViewHolder(view) {
+
+        init {
+            with(view) {
+                tvNotifyMe.setSafetyOnclickListener {
+                    listener?.onNotifyMeClicked()
+                }
+            }
+        }
+
+        fun bind(item: Item) {
+            with(itemView) {
+                tvDataComingTitle.setText(R.string.personal_analytics_are_coming)
+                tvDataComingSubtitle.setText(
+                    if (item.notificationEnabled == true) {
+                        R.string.your_fb_data_archive_is_being_processed_2
+                    } else {
+                        R.string.your_fb_data_archive_is_being_processed_1
+                    }
+                )
+                tvNotifyMe.visibility =
+                    if (item.notificationEnabled == true) View.GONE else View.VISIBLE
+            }
+        }
+
+    }
+
     data class Item(
         val type: Int,
-        val section: SectionModelView?
+        val section: SectionModelView?,
+        var notificationEnabled: Boolean?
     )
+
+    interface ItemClickListener {
+
+        fun onNotifyMeClicked()
+    }
 }

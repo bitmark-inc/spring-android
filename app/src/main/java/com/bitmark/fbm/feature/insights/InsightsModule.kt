@@ -7,6 +7,7 @@
 package com.bitmark.fbm.feature.insights
 
 import com.bitmark.fbm.data.source.AccountRepository
+import com.bitmark.fbm.data.source.AppRepository
 import com.bitmark.fbm.data.source.StatisticRepository
 import com.bitmark.fbm.di.FragmentScope
 import com.bitmark.fbm.feature.DialogController
@@ -28,8 +29,15 @@ class InsightsModule {
         fragment: InsightsFragment,
         statisticRepo: StatisticRepository,
         accountRepo: AccountRepository,
+        appRepo: AppRepository,
         rxLiveDataTransformer: RxLiveDataTransformer
-    ) = InsightsViewModel(fragment.lifecycle, statisticRepo, accountRepo, rxLiveDataTransformer)
+    ) = InsightsViewModel(
+        fragment.lifecycle,
+        statisticRepo,
+        accountRepo,
+        appRepo,
+        rxLiveDataTransformer
+    )
 
     @Provides
     @FragmentScope

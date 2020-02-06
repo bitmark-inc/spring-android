@@ -69,7 +69,7 @@ class InsightsFragment : BaseSupportFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        handler.postDelayed({ viewModel.checkAccountRegistered() }, Constants.UI_READY_DELAY)
+        handler.postDelayed({ viewModel.listInsight() }, Constants.UI_READY_DELAY)
     }
 
     override fun initComponents() {
@@ -86,6 +86,10 @@ class InsightsFragment : BaseSupportFragment() {
         rvInsights.adapter = adapter
 
         adapter.setItemClickListener(object : InsightsRecyclerViewAdapter.ItemClickListener {
+
+            override fun onNotifyMeClicked() {
+                viewModel.setNotificationEnable()
+            }
 
             override fun onReadMoreClicked() {
                 val bundle = SupportActivity.getBundle(
@@ -123,8 +127,8 @@ class InsightsFragment : BaseSupportFragment() {
         viewModel.listInsightLiveData.asLiveData().observe(this, Observer { res ->
             when {
                 res.isSuccess() -> {
-                    val data = res.data() ?: return@Observer
-                    adapter.set(data)
+                    val insights = res.data() ?: return@Observer
+                    adapter.set(insights)
                 }
 
                 res.isError() -> {
@@ -144,19 +148,17 @@ class InsightsFragment : BaseSupportFragment() {
             }
         })
 
-        viewModel.checkAccountRegisteredLiveData.asLiveData()
-            .observe(this, Observer { res ->
-                when {
-                    res.isSuccess() -> {
-                        val registered = res.data()!!
-                        viewModel.listInsight(registered)
-                    }
-
-                    res.isError() -> {
-                        logger.logSharedPrefError(res.throwable(), "check account registered error")
-                    }
+        viewModel.setNotificationEnableLiveData.asLiveData().observe(this, Observer { res ->
+            when {
+                res.isSuccess() -> {
+                    adapter.markNotificationEnable()
                 }
-            })
+
+                res.isError() -> {
+                    logger.logSharedPrefError(res.throwable(), "set notification enable error")
+                }
+            }
+        })
     }
 
     override fun refresh() {
