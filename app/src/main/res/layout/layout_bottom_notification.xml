@@ -15,7 +15,6 @@
         android:layout_marginStart="@dimen/dp_18"
         android:layout_marginTop="@dimen/dp_18"
         android:fontFamily="@font/grotesk_regular_font_family"
-        android:includeFontPadding="false"
         android:textColor="@color/black"
         android:textSize="@dimen/sp_24"
         app:layout_constraintStart_toStartOf="parent"
