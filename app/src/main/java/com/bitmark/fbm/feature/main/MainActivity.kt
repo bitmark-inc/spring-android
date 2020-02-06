@@ -165,8 +165,8 @@ class MainActivity : BaseAppCompatActivity() {
                             viewModel.startArchiveIssuanceProcessor(account)
                         }
 
-                        if (!preventNotification) {
-                            showNotification(accountRegistered, dataReady)
+                        if (!preventNotification && !dataReady) {
+                            showNotification(accountRegistered)
                         }
                     }
                 }
@@ -174,11 +174,8 @@ class MainActivity : BaseAppCompatActivity() {
     }
 
     private fun showNotification(
-        accountRegistered: Boolean,
-        dataReady: Boolean
+        accountRegistered: Boolean
     ) {
-        if (dataReady) return
-
         val title =
             getString(if (accountRegistered) R.string.processing_data else R.string.still_waiting)
         val message =
