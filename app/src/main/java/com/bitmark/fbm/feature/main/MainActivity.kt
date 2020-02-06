@@ -92,9 +92,9 @@ class MainActivity : BaseAppCompatActivity() {
         vpAdapter = MainViewPagerAdapter(supportFragmentManager)
         viewPager.offscreenPageLimit = vpAdapter.count
         viewPager.adapter = vpAdapter
-        viewPager.setCurrentItem(TAB_USAGE, false)
+        viewPager.setCurrentItem(TAB_INSIGHT, false)
 
-        bottomNav.setActiveItem(TAB_USAGE)
+        bottomNav.setActiveItem(TAB_INSIGHT)
         bottomNav.setIndicatorWidth(screenWidth / vpAdapter.count.toFloat())
 
         bottomNav.onItemSelected = { pos ->

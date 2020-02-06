@@ -16,15 +16,15 @@ import com.bitmark.fbm.util.view.ViewPagerAdapter
 class MainViewPagerAdapter(fm: FragmentManager) : ViewPagerAdapter(fm) {
 
     companion object {
-        const val TAB_USAGE = 0x00
-        const val TAB_INSIGHT = 0x01
+        const val TAB_INSIGHT = 0x00
+        const val TAB_USAGE = 0x01
         const val TAB_LENS = 0x02
     }
 
     init {
         super.add(
-            UsageContainerFragment.newInstance(),
             InsightsContainerFragment.newInstance(),
+            UsageContainerFragment.newInstance(),
             LensContainerFragment.newInstance()
         )
     }
