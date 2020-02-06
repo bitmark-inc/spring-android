@@ -36,29 +36,20 @@ data class AccountData(
     var keyAlias: String = ""
 ) : Data {
     companion object {
+
         fun newEmptyInstance() = AccountData("", null, "", "", false, "")
+
+        fun newLocalInstance(id: String, authRequired: Boolean, keyAlias: String) =
+            AccountData(id, null, "", "", authRequired, keyAlias)
     }
 }
 
-fun AccountData.isValid() =
-    id != "" && createdAt != "" && updatedAt != "" && keyAlias != ""
+fun AccountData.isCreatedRemotely() = isCreatedLocally() && createdAt != "" && updatedAt != ""
+
+fun AccountData.isCreatedLocally() = id != "" && keyAlias != ""
 
 val AccountData.keyFileName: String
     get() = "${id}.key"
-
-val AccountData.fbIdHash: String?
-    get() = if (metadata == null) null else metadata!!["fb-identifier"]
-
-fun AccountData.getMergedMetadata(fbIdHash: String): Map<String, String> {
-    return if (metadata == null) {
-        mapOf("fb-identifier" to fbIdHash)
-    } else {
-        val mergedMetadata = metadata!!.toMutableMap()
-        mergedMetadata["fb-identifier"] = fbIdHash
-        metadata = mergedMetadata.toMap()
-        metadata!!
-    }
-}
 
 fun AccountData.mergeWith(accountData: AccountData): AccountData {
     authRequired = accountData.authRequired

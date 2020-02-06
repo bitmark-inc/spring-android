@@ -32,17 +32,18 @@ class ArchiveRequestViewModel(
 
     internal val registerAccountLiveData = CompositeLiveData<Any>()
 
-    internal val prepareDataLiveData = CompositeLiveData<AutomationScriptData>()
+    internal val prepareDataLiveData =
+        CompositeLiveData<Pair<AutomationScriptData, Boolean>>()
 
     internal val checkNotificationEnabledLiveData = CompositeLiveData<Boolean>()
 
     internal val saveArchiveRequestedAtLiveData = CompositeLiveData<Any>()
 
-    internal val getExistingAccountDataLiveData = CompositeLiveData<AccountData>()
+    internal val prepareRegisterAccountLiveData = CompositeLiveData<AccountData>()
 
     internal val saveFbAdsPrefCategoriesLiveData = CompositeLiveData<Any>()
 
-    internal val checkDataReadyLiveData = CompositeLiveData<Boolean>()
+    internal val saveAccountDataLiveData = CompositeLiveData<Any>()
 
     fun registerAccount(
         account: Account,
@@ -128,7 +129,17 @@ class ArchiveRequestViewModel(
 
     fun prepareData() {
         prepareDataLiveData.add(
-            rxLiveDataTransformer.single(appRepo.getAutomationScript())
+            rxLiveDataTransformer.single(
+                Single.zip(
+                    appRepo.getAutomationScript(),
+                    accountRepo.checkAdsPrefCategoryReady(),
+                    BiFunction<AutomationScriptData, Boolean, Pair<AutomationScriptData, Boolean>> { script, categoriesFetched ->
+                        Pair(
+                            script,
+                            categoriesFetched
+                        )
+                    })
+            )
         )
     }
 
@@ -144,8 +155,8 @@ class ArchiveRequestViewModel(
         checkNotificationEnabledLiveData.add(rxLiveDataTransformer.single(appRepo.checkNotificationEnabled()))
     }
 
-    fun getExistingAccountData() {
-        getExistingAccountDataLiveData.add(
+    fun prepareRegisterAccount() {
+        prepareRegisterAccountLiveData.add(
             rxLiveDataTransformer.single(accountRepo.getAccountData())
         )
     }
@@ -160,8 +171,14 @@ class ArchiveRequestViewModel(
         )
     }
 
-    fun checkDataReady() {
-        checkDataReadyLiveData.add(rxLiveDataTransformer.single(appRepo.checkDataReady()))
+    fun saveAccountData(accountData: AccountData) {
+        saveAccountDataLiveData.add(
+            rxLiveDataTransformer.completable(
+                accountRepo.saveAccountData(
+                    accountData
+                )
+            )
+        )
     }
 
 }

@@ -8,7 +8,7 @@ package com.bitmark.fbm.util
 
 object Constants {
 
-    const val MASTER_DELAY_TIME = 200L
+    const val UI_READY_DELAY = 200L
 
     const val GOOGLE_PLAY_HOST = "play.google.com"
 }

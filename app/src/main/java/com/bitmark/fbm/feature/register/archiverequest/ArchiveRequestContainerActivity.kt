@@ -22,9 +22,12 @@ class ArchiveRequestContainerActivity : BaseAppCompatActivity() {
     companion object {
         private const val ACCOUNT_REGISTERED = "account_registered"
 
-        fun getBundle(accountRegistered: Boolean = false): Bundle {
+        private const val ACCOUNT_SEED = "account_seed"
+
+        fun getBundle(accountRegistered: Boolean = false, accountSeed: String? = null): Bundle {
             val bundle = Bundle()
             bundle.putBoolean(ACCOUNT_REGISTERED, accountRegistered)
+            if (accountSeed != null) bundle.putString(ACCOUNT_SEED, accountSeed)
             return bundle
         }
     }
@@ -43,6 +46,8 @@ class ArchiveRequestContainerActivity : BaseAppCompatActivity() {
 
     private var accountRegistered = false
 
+    private var accountSeed: String? = null
+
     override fun layoutRes(): Int = R.layout.activity_archive_request_container
 
     override fun viewModel(): BaseViewModel? = viewModel
@@ -51,6 +56,7 @@ class ArchiveRequestContainerActivity : BaseAppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         accountRegistered = intent?.extras?.getBoolean(ACCOUNT_REGISTERED) ?: false
+        accountSeed = intent?.extras?.getString(ACCOUNT_SEED)
 
         viewModel.getArchiveRequestedAt()
     }
@@ -76,7 +82,8 @@ class ArchiveRequestContainerActivity : BaseAppCompatActivity() {
                             R.id.layoutRoot,
                             ArchiveRequestFragment.newInstance(
                                 requestedAt = requestedAt,
-                                accountRegistered = accountRegistered
+                                accountRegistered = accountRegistered,
+                                accountSeed = accountSeed
                             ),
                             false
                         )

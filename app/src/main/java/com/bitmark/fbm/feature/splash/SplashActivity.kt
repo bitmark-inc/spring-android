@@ -22,10 +22,7 @@ import androidx.lifecycle.Observer
 import com.bitmark.fbm.BuildConfig
 import com.bitmark.fbm.R
 import com.bitmark.fbm.data.ext.isServiceUnsupportedError
-import com.bitmark.fbm.data.model.AccountData
-import com.bitmark.fbm.data.model.CredentialData
-import com.bitmark.fbm.data.model.delete
-import com.bitmark.fbm.data.model.isValid
+import com.bitmark.fbm.data.model.*
 import com.bitmark.fbm.data.source.remote.api.error.UnknownException
 import com.bitmark.fbm.feature.BaseAppCompatActivity
 import com.bitmark.fbm.feature.BaseViewModel
@@ -44,7 +41,6 @@ import com.bitmark.fbm.feature.whatsnew.WhatsNewActivity
 import com.bitmark.fbm.logging.Event
 import com.bitmark.fbm.logging.EventLogger
 import com.bitmark.fbm.logging.Tracer
-import com.bitmark.fbm.util.DateTimeUtil
 import com.bitmark.fbm.util.ext.*
 import com.bitmark.sdk.authentication.KeyAuthenticationSpec
 import com.bitmark.sdk.features.Account
@@ -216,6 +212,7 @@ class SplashActivity : BaseAppCompatActivity() {
                     val accountData = data.first
                     val archiveRequestedAt = data.second
                     val fbCredentialExisting = data.third
+
                     if (fbCredentialExisting) {
                         CredentialData.delete(this, executor, {
                             handleAppState(accountData, archiveRequestedAt)
@@ -241,7 +238,7 @@ class SplashActivity : BaseAppCompatActivity() {
                 res.isSuccess() -> {
                     val invalidArchives = res.data() ?: false
                     if (invalidArchives) {
-                        showDataAnalyzing()
+                        goToMain(account.seed.encodedSeed)
                     } else {
                         viewModel.checkDataReady()
                     }
@@ -277,7 +274,10 @@ class SplashActivity : BaseAppCompatActivity() {
                                 navigator.anim(FADE_IN)
                                     .startActivityAsRoot(MainActivity::class.java, bundle)
                             } else {
-                                val bundle = ArchiveRequestContainerActivity.getBundle(true)
+                                val bundle = ArchiveRequestContainerActivity.getBundle(
+                                    true,
+                                    account.seed.encodedSeed
+                                )
                                 navigator.anim(FADE_IN)
                                     .startActivityAsRoot(
                                         ArchiveRequestContainerActivity::class.java,
@@ -285,7 +285,7 @@ class SplashActivity : BaseAppCompatActivity() {
                                     )
                             }
                         } else {
-                            showDataAnalyzing()
+                            goToMain(account.seed.encodedSeed)
                         }
                     }, 250)
                 }
@@ -301,91 +301,68 @@ class SplashActivity : BaseAppCompatActivity() {
 
     private fun handleAppState(accountData: AccountData, archiveRequestedAt: Long) {
         val archiveRequested = archiveRequestedAt != -1L
-        val loggedIn = accountData.isValid() && !archiveRequested
+        val loggedIn = accountData.isCreatedRemotely() && !archiveRequested
         val uri = intent?.data
         val loginFromDeepLink =
             uri != null && uri.scheme == getString(R.string.scheme) && uri.host == "login"
 
-        when {
-            // account already registered
-            loggedIn -> prepareData(accountData)
+        if (accountData.isCreatedLocally()) {
+            loadAccount(accountData) { account ->
+                this.account = account
 
-            // requested archive
-            archiveRequested -> handler.postDelayed({
-                val msg =
-                    "${getString(R.string.we_are_waiting_for_fb_1)}\n\n${getString(R.string.you_requested_your_fb_archive_format).format(
-                        DateTimeUtil.millisToString(
-                            archiveRequestedAt,
-                            DateTimeUtil.DATE_FORMAT_3,
-                            DateTimeUtil.defaultTimeZone()
-                        ),
-                        DateTimeUtil.millisToString(
-                            archiveRequestedAt,
-                            DateTimeUtil.TIME_FORMAT_1,
-                            DateTimeUtil.defaultTimeZone()
-                        )
-                    )}"
-                val bundle = DataProcessingActivity.getBundle(
-                    getString(R.string.data_requested),
-                    msg,
-                    true
-                )
-                navigator.anim(FADE_IN)
-                    .startActivityAsRoot(DataProcessingActivity::class.java, bundle)
-            }, 250)
+                when {
+                    // account already registered remotely
+                    loggedIn -> viewModel.prepareData(this.account)
 
-            loginFromDeepLink -> {
-                try {
-                    val phrase = uri!!.getQueryParameter("phrases")!!
-                    val phraseArray = phrase.split("-").toTypedArray()
-                    if (phraseArray.size in arrayOf(12, 24)) {
-                        val bundle = SignInActivity.getBundle(phraseArray)
-                        navigator.anim(RIGHT_LEFT)
-                            .startActivityAsRoot(SignInActivity::class.java, bundle)
-                    } else {
-                        logger.logError(
-                            Event.ACCOUNT_DEEPLINK_INVALID_PHRASE_ERROR,
-                            "invalid deeplink phrase $phrase"
+                    // requested archive
+                    archiveRequested -> handler.postDelayed({
+                        val bundle = DataProcessingActivity.getBundle(
+                            archiveRequestedAt,
+                            account.seed.encodedSeed
                         )
-                        showOnboarding()
+                        navigator.anim(FADE_IN)
+                            .startActivityAsRoot(DataProcessingActivity::class.java, bundle)
+                    }, 250)
+
+                    loginFromDeepLink -> {
+                        try {
+                            val phrase = uri!!.getQueryParameter("phrases")!!
+                            val phraseArray = phrase.split("-").toTypedArray()
+                            if (phraseArray.size in arrayOf(12, 24)) {
+                                val bundle = SignInActivity.getBundle(phraseArray)
+                                navigator.anim(RIGHT_LEFT)
+                                    .startActivityAsRoot(SignInActivity::class.java, bundle)
+                            } else {
+                                logger.logError(
+                                    Event.ACCOUNT_DEEPLINK_INVALID_PHRASE_ERROR,
+                                    "invalid deeplink phrase $phrase"
+                                )
+                                showOnboarding()
+                            }
+                        } catch (e: Throwable) {
+                            logger.logError(
+                                Event.ACCOUNT_DEEPLINK_INVALID_PHRASE_ERROR,
+                                "invalid deeplink parsing ${e.message}"
+                            )
+                            showOnboarding()
+                        }
                     }
-                } catch (e: Throwable) {
-                    logger.logError(
-                        Event.ACCOUNT_DEEPLINK_INVALID_PHRASE_ERROR,
-                        "invalid deeplink parsing ${e.message}"
-                    )
-                    showOnboarding()
                 }
             }
-
-            else -> {
-                // do onboarding
-                showOnboarding()
-            }
+        } else {
+            showOnboarding()
         }
     }
 
-    private fun showDataAnalyzing() {
-        val bundle =
-            DataProcessingActivity.getBundle(
-                getString(R.string.processing_data),
-                getString(R.string.your_fb_data_archive_has_been_successfully)
-            )
-        navigator.anim(FADE_IN)
-            .startActivityAsRoot(DataProcessingActivity::class.java, bundle)
+    private fun goToMain(accountSeed: String) {
+        val bundle = MainActivity.getBundle(accountSeed)
+        navigator.anim(RIGHT_LEFT).startActivityAsRoot(MainActivity::class.java, bundle)
     }
 
     private fun showOnboarding() {
         tvToSandPP.visible(true)
         btnGetStarted.visible(true)
         tvLogin.visible(true)
-    }
-
-    private fun prepareData(accountData: AccountData) {
-        loadAccount(accountData) { account ->
-            this.account = account
-            viewModel.prepareData(this.account)
-        }
     }
 
     private fun loadAccount(accountData: AccountData, action: (Account) -> Unit) {

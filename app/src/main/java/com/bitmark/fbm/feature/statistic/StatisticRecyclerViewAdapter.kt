@@ -57,6 +57,8 @@ class StatisticRecyclerViewAdapter :
         notifyDataSetChanged()
     }
 
+    fun isEmpty() = itemCount == 0
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             STATISTIC -> {

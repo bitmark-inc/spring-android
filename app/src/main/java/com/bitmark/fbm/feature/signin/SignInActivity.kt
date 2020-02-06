@@ -62,6 +62,8 @@ class SignInActivity : BaseAppCompatActivity() {
 
     private val handler = Handler()
 
+    private lateinit var account: Account
+
     override fun layoutRes(): Int = R.layout.activity_signin
 
     override fun viewModel(): BaseViewModel? = viewModel
@@ -106,7 +108,7 @@ class SignInActivity : BaseAppCompatActivity() {
 
     private fun submit(phrase: Array<String>) {
         try {
-            val account = Account.fromRecoveryPhrase(*phrase)
+            account = Account.fromRecoveryPhrase(*phrase)
             showKeyEnteringResult(true)
             val authRequired = false
             saveAccount(account, authRequired, successAction = { alias ->
@@ -144,7 +146,10 @@ class SignInActivity : BaseAppCompatActivity() {
                     OneSignal.setSubscription(true)
                     progressBar.gone()
                     blocked = false
-                    val bundle = ArchiveRequestContainerActivity.getBundle(registered)
+                    val bundle = ArchiveRequestContainerActivity.getBundle(
+                        registered,
+                        account.seed.encodedSeed
+                    )
                     navigator.anim(RIGHT_LEFT)
                         .startActivityAsRoot(ArchiveRequestContainerActivity::class.java, bundle)
                 }

@@ -31,6 +31,7 @@ import com.bitmark.fbm.logging.EventLogger
 import com.bitmark.fbm.logging.Tracer
 import com.bitmark.fbm.util.Constants
 import com.bitmark.fbm.util.DateTimeUtil
+import com.bitmark.fbm.util.ext.logSharedPrefError
 import com.bitmark.fbm.util.formatPeriod
 import com.bitmark.fbm.util.formatSubPeriod
 import com.bitmark.fbm.util.view.TopVerticalItemDecorator
@@ -77,6 +78,10 @@ class StatisticFragment : BaseSupportFragment() {
 
     private val handler = Handler()
 
+    private var dataPrepared = false
+
+    private var dataReady = false
+
     private lateinit var adapter: StatisticRecyclerViewAdapter
 
     override fun layoutRes(): Int = R.layout.fragment_statistic
@@ -95,16 +100,15 @@ class StatisticFragment : BaseSupportFragment() {
 
     override fun onResume() {
         super.onResume()
-        if (adapter.itemCount > 0) return
         handler.postDelayed({
-            viewModel.listUsageStatistic(period, currentStartedAtSec)
-        }, Constants.MASTER_DELAY_TIME)
+            if (dataReady) viewModel.listUsageStatistic(period, currentStartedAtSec)
+        }, Constants.UI_READY_DELAY)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (periodGap == 0) viewModel.getLastActivityTimestamp()
+        if (!dataPrepared) viewModel.prepareData()
     }
 
     override fun initComponents() {
@@ -213,22 +217,36 @@ class StatisticFragment : BaseSupportFragment() {
                         )
                     }
                 }
-
-                res.isLoading() -> {
-                }
             }
         })
 
-        viewModel.getLastActivityTimestampLiveData.asLiveData().observe(this, Observer { res ->
+        viewModel.prepareDataLiveData.asLiveData().observe(this, Observer { res ->
             when {
                 res.isSuccess() -> {
-                    val lastActivityMillis = res.data()!! * 1000
-                    if (lastActivityMillis == 0L) return@Observer
-                    val startOfPeriodMillis = getStartOfPeriodSec(period) * 1000
-                    periodGap = calculateGap(period, startOfPeriodMillis, lastActivityMillis)
-                    currentStartedAtSec =
-                        getStartOfPeriodSec(period, currentStartedAtSec, periodGap)
-                    showPeriod(period, currentStartedAtSec, periodGap)
+                    dataPrepared = true
+                    val data = res.data()!!
+                    dataReady = data.first
+                    val lastActivityMillis = data.second * 1000
+                    if (lastActivityMillis > 0) {
+                        if (periodGap == 0) {
+                            val startOfPeriodMillis = getStartOfPeriodSec(period) * 1000
+                            periodGap =
+                                calculateGap(period, startOfPeriodMillis, lastActivityMillis)
+                            currentStartedAtSec =
+                                getStartOfPeriodSec(period, currentStartedAtSec, periodGap)
+                            showPeriod(period, currentStartedAtSec, periodGap)
+                        }
+                    }
+
+                    if (dataReady) {
+                        viewModel.listUsageStatistic(period, currentStartedAtSec)
+                    } else {
+                        // TODO show system statistic
+                    }
+                }
+
+                res.isError() -> {
+                    logger.logSharedPrefError(res.throwable(), "check data ready error")
                 }
             }
         })

@@ -11,13 +11,13 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
-import android.view.View
 import com.bitmark.fbm.R
 import com.bitmark.fbm.feature.BaseAppCompatActivity
 import com.bitmark.fbm.feature.BaseViewModel
 import com.bitmark.fbm.feature.Navigator
 import com.bitmark.fbm.feature.Navigator.Companion.RIGHT_LEFT
 import com.bitmark.fbm.feature.register.archiverequest.ArchiveRequestContainerActivity
+import com.bitmark.fbm.util.DateTimeUtil
 import com.bitmark.fbm.util.ext.setSafetyOnclickListener
 import kotlinx.android.synthetic.main.activity_data_processing.*
 import kotlinx.android.synthetic.main.fragment_archive_request_credential.tvTitle
@@ -27,17 +27,17 @@ class DataProcessingActivity : BaseAppCompatActivity() {
 
     companion object {
 
-        private const val TITLE = "title"
+        private const val ACCOUNT_SEED = "account_seed"
 
-        private const val MESSAGE = "message"
+        private const val ARCHIVE_REQUESTED_AT = "archive_requested_at"
 
-        private const val SHOW_ACTION_BUTTON = "show_action_button"
-
-        fun getBundle(title: String, message: String, showActionButton: Boolean = false): Bundle {
+        fun getBundle(
+            archiveRequestedAt: Long,
+            accountSeed: String? = null
+        ): Bundle {
             val bundle = Bundle()
-            bundle.putString(TITLE, title)
-            bundle.putString(MESSAGE, message)
-            bundle.putBoolean(SHOW_ACTION_BUTTON, showActionButton)
+            bundle.putLong(ARCHIVE_REQUESTED_AT, archiveRequestedAt)
+            if (accountSeed != null) bundle.putString(ACCOUNT_SEED, accountSeed)
             return bundle
         }
 
@@ -53,11 +53,25 @@ class DataProcessingActivity : BaseAppCompatActivity() {
     override fun initComponents() {
         super.initComponents()
 
-        require(intent?.extras?.containsKey(TITLE) == true && intent?.extras?.containsKey(MESSAGE) == true) { "missing required TITLE or MESSAGE bundle params" }
+        val archiveRequestedAt =
+            intent?.extras?.getLong(ARCHIVE_REQUESTED_AT) ?: error("missing ARCHIVE_REQUESTED_AT")
+        val accountSeed = intent?.extras?.getString(ACCOUNT_SEED)
 
-        val title = intent?.extras?.getString(TITLE)
-        val msg = intent?.extras?.getString(MESSAGE)
-        val showActionButton = intent?.extras?.getBoolean(SHOW_ACTION_BUTTON) ?: false
+        val title = getString(R.string.data_requested)
+        val msg =
+            "${getString(R.string.we_are_waiting_for_fb_1)}\n\n${getString(R.string.you_requested_your_fb_archive_format).format(
+                DateTimeUtil.millisToString(
+                    archiveRequestedAt,
+                    DateTimeUtil.DATE_FORMAT_3,
+                    DateTimeUtil.defaultTimeZone()
+                ),
+                DateTimeUtil.millisToString(
+                    archiveRequestedAt,
+                    DateTimeUtil.TIME_FORMAT_1,
+                    DateTimeUtil.defaultTimeZone()
+                )
+            )}"
+
         val requestedAtMsg = getString(R.string.you_requested_your_fb_archive)
         val requestedAtIndex = msg!!.indexOf(requestedAtMsg)
         val spannableString = SpannableString(msg)
@@ -72,11 +86,11 @@ class DataProcessingActivity : BaseAppCompatActivity() {
 
         tvTitle.text = title
         tvMsg.text = spannableString
-        btnCheckNow.visibility = if (showActionButton) View.VISIBLE else View.INVISIBLE
 
         btnCheckNow.setSafetyOnclickListener {
+            val bundle = ArchiveRequestContainerActivity.getBundle(false, accountSeed)
             navigator.anim(RIGHT_LEFT)
-                .startActivityAsRoot(ArchiveRequestContainerActivity::class.java)
+                .startActivityAsRoot(ArchiveRequestContainerActivity::class.java, bundle)
         }
     }
 

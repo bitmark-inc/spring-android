@@ -38,6 +38,8 @@ class MainActivity : BaseAppCompatActivity() {
 
     private val handler = Handler()
 
+    private lateinit var account: Account
+
     private lateinit var vpAdapter: MainViewPagerAdapter
 
     override fun layoutRes(): Int = R.layout.activity_main
@@ -73,8 +75,10 @@ class MainActivity : BaseAppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val seed = intent?.extras?.getString(ACCOUNT_SEED) ?: error("missing ACCOUNT_SEED")
-        val account = Account.fromSeed(seed)
-        viewModel.startArchiveIssuanceProcessor(account)
+        account = Account.fromSeed(seed)
+
+        viewModel.checkAccountRegistered()
+
     }
 
     override fun onDestroy() {
@@ -130,6 +134,18 @@ class MainActivity : BaseAppCompatActivity() {
                 navigator.exitApp()
             }
         })
+
+        viewModel.checkAccountRegisteredLiveData.asLiveData()
+            .observe(this, Observer { res ->
+                when {
+                    res.isSuccess() -> {
+                        val registered = res.data()!!
+                        if (registered) {
+                            viewModel.startArchiveIssuanceProcessor(account)
+                        }
+                    }
+                }
+            })
     }
 
     override fun onResume() {

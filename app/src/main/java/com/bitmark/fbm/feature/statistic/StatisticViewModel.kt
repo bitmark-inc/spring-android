@@ -11,6 +11,7 @@ import com.bitmark.fbm.data.ext.onNetworkErrorReturn
 import com.bitmark.fbm.data.model.entity.Period
 import com.bitmark.fbm.data.model.entity.SectionName
 import com.bitmark.fbm.data.source.AccountRepository
+import com.bitmark.fbm.data.source.AppRepository
 import com.bitmark.fbm.data.source.StatisticRepository
 import com.bitmark.fbm.feature.BaseViewModel
 import com.bitmark.fbm.util.ext.replace
@@ -18,6 +19,7 @@ import com.bitmark.fbm.util.livedata.CompositeLiveData
 import com.bitmark.fbm.util.livedata.RxLiveDataTransformer
 import com.bitmark.fbm.util.modelview.SectionModelView
 import com.bitmark.fbm.util.modelview.order
+import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 
@@ -26,13 +28,14 @@ class StatisticViewModel(
     lifecycle: Lifecycle,
     private val statisticRepo: StatisticRepository,
     private val accountRepo: AccountRepository,
+    private val appRepo: AppRepository,
     private val rxLiveDataTransformer: RxLiveDataTransformer
 ) :
     BaseViewModel(lifecycle) {
 
     internal val listUsageStatisticLiveData = CompositeLiveData<List<SectionModelView>>()
 
-    internal val getLastActivityTimestampLiveData = CompositeLiveData<Long>()
+    internal val prepareDataLiveData = CompositeLiveData<Pair<Boolean, Long>>()
 
     fun listUsageStatistic(period: Period, periodStartedAtSec: Long) {
         val stream =
@@ -98,7 +101,14 @@ class StatisticViewModel(
             )
         )
 
-    fun getLastActivityTimestamp() {
-        getLastActivityTimestampLiveData.add(rxLiveDataTransformer.single(accountRepo.getLastActivityTimestamp()))
+    fun prepareData() {
+        prepareDataLiveData.add(rxLiveDataTransformer.single(appRepo.checkDataReady().flatMap { ready ->
+            if (ready) {
+                accountRepo.getLastActivityTimestamp().map { timestamp -> Pair(true, timestamp) }
+                    .onErrorResumeNext { Single.just(Pair(true, -1L)) }
+            } else {
+                Single.just(Pair(false, -1L))
+            }
+        }))
     }
 }

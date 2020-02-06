@@ -6,7 +6,9 @@
  */
 package com.bitmark.fbm.feature.insights
 
+import android.os.Bundle
 import android.os.Handler
+import android.view.View
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,6 +25,8 @@ import com.bitmark.fbm.feature.support.SupportActivity
 import com.bitmark.fbm.logging.Event
 import com.bitmark.fbm.logging.EventLogger
 import com.bitmark.fbm.logging.Tracer
+import com.bitmark.fbm.util.Constants
+import com.bitmark.fbm.util.ext.logSharedPrefError
 import com.bitmark.fbm.util.ext.scrollToTop
 import com.bitmark.fbm.util.ext.setSafetyOnclickListener
 import com.bitmark.fbm.util.view.TopVerticalItemDecorator
@@ -61,6 +65,12 @@ class InsightsFragment : BaseSupportFragment() {
     override fun layoutRes(): Int = R.layout.fragment_insights
 
     override fun viewModel(): BaseViewModel? = viewModel
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        handler.postDelayed({ viewModel.checkAccountRegistered() }, Constants.UI_READY_DELAY)
+    }
 
     override fun initComponents() {
         super.initComponents()
@@ -131,19 +141,22 @@ class InsightsFragment : BaseSupportFragment() {
                         )
                     }
                 }
-
-                res.isLoading() -> {
-                }
-
             }
         })
-    }
 
-    override fun onResume() {
-        super.onResume()
+        viewModel.checkAccountRegisteredLiveData.asLiveData()
+            .observe(this, Observer { res ->
+                when {
+                    res.isSuccess() -> {
+                        val registered = res.data()!!
+                        viewModel.listInsight(registered)
+                    }
 
-        if (!adapter.isEmpty()) return
-        handler.postDelayed({ viewModel.listInsight() }, 200)
+                    res.isError() -> {
+                        logger.logSharedPrefError(res.throwable(), "check account registered error")
+                    }
+                }
+            })
     }
 
     override fun refresh() {

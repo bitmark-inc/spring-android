@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@drawable/bg_1"
-        />
+        android:src="@drawable/bg_1" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvAppName1"
@@ -29,8 +26,7 @@
         android:textSize="@dimen/sp_80"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvHowYouUseFB"
@@ -39,27 +35,12 @@
         android:layout_marginBottom="@dimen/dp_neg_4"
         android:fontFamily="@font/grotesk_light_font_family"
         android:includeFontPadding="false"
-        android:text="@string/how_you_use_fb"
+        android:text="@string/your_fb_escape_hatch"
         android:textColor="@color/white"
         android:textSize="@dimen/sp_22"
         app:layout_constraintEnd_toEndOf="@id/tvAppName1"
         app:layout_constraintStart_toStartOf="@id/tvAppName1"
-        app:layout_constraintTop_toBottomOf="@id/tvAppName1"
-        />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvFBUseYou"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/grotesk_light_font_family"
-        android:includeFontPadding="false"
-        android:text="@string/how_fb_use_you"
-        android:textColor="@color/white"
-        android:textSize="@dimen/sp_22"
-        app:layout_constraintEnd_toEndOf="@id/tvAppName1"
-        app:layout_constraintStart_toStartOf="@id/tvAppName1"
-        app:layout_constraintTop_toBottomOf="@id/tvHowYouUseFB"
-        />
+        app:layout_constraintTop_toBottomOf="@id/tvAppName1" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvToSandPP"
@@ -78,8 +59,7 @@
         app:layout_constraintBottom_toTopOf="@id/btnGetStarted"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible"
-        />
+        tools:visibility="visible" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnGetStarted"
@@ -100,8 +80,7 @@
         android:textSize="17sp"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@id/tvLogin"
-        tools:visibility="visible"
-        />
+        tools:visibility="visible" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvLogin"
@@ -121,7 +100,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible"
-        />
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

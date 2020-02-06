@@ -8,6 +8,8 @@ package com.bitmark.fbm.feature.insights
 
 import androidx.lifecycle.Lifecycle
 import com.bitmark.fbm.data.model.InsightData
+import com.bitmark.fbm.data.model.isCreatedRemotely
+import com.bitmark.fbm.data.model.newDefaultInstance
 import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.data.source.StatisticRepository
 import com.bitmark.fbm.feature.BaseViewModel
@@ -28,10 +30,12 @@ class InsightsViewModel(
 
     internal val listInsightLiveData = CompositeLiveData<List<InsightModelView>>()
 
-    fun listInsight() {
+    internal val checkAccountRegisteredLiveData = CompositeLiveData<Boolean>()
+
+    fun listInsight(registered: Boolean) {
         val stream = Single.zip(
             accountRepo.listAdsPrefCategory(),
-            statisticRepo.getInsightData(),
+            if (registered) statisticRepo.getInsightData() else Single.just(InsightData.newDefaultInstance()),
             BiFunction<List<String>, InsightData, List<InsightModelView>> { categories, insightData ->
                 listOf(
                     InsightModelView.newInstance(
@@ -45,4 +49,12 @@ class InsightsViewModel(
 
         listInsightLiveData.add(rxLiveDataTransformer.single(stream))
     }
+
+    fun checkAccountRegistered() {
+        checkAccountRegisteredLiveData.add(
+            rxLiveDataTransformer.single(
+                accountRepo.getAccountData().map { accountData -> accountData.isCreatedRemotely() })
+        )
+    }
+
 }

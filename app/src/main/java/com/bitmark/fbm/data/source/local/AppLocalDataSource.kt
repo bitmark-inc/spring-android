@@ -9,7 +9,7 @@ package com.bitmark.fbm.data.source.local
 import com.bitmark.fbm.data.ext.fromJson
 import com.bitmark.fbm.data.ext.newGsonInstance
 import com.bitmark.fbm.data.model.AccountData
-import com.bitmark.fbm.data.model.isValid
+import com.bitmark.fbm.data.model.isCreatedRemotely
 import com.bitmark.fbm.data.model.keyFileName
 import com.bitmark.fbm.data.source.local.api.DatabaseApi
 import com.bitmark.fbm.data.source.local.api.FileStorageApi
@@ -68,7 +68,7 @@ class AppLocalDataSource @Inject constructor(
                 ?: AccountData.newEmptyInstance()
         }.flatMapCompletable { accountData ->
             fileStorageApi.rxCompletable { fileStorageGateway ->
-                if (keepAccountData && accountData.isValid()) {
+                if (keepAccountData && accountData.isCreatedRemotely()) {
                     fileStorageGateway.deleteFileDir(accountData.keyFileName)
                 } else {
                     fileStorageGateway.deleteFileDir()

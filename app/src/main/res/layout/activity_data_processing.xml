@@ -69,9 +69,7 @@
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="@dimen/sp_17"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:visibility="visible"
         />
 
 
