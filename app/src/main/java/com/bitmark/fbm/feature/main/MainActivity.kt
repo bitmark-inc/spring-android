@@ -18,6 +18,7 @@ import com.bitmark.fbm.feature.insights.InsightsContainerFragment
 import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_INSIGHT
 import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_LENS
 import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_USAGE
+import com.bitmark.fbm.util.Constants
 import com.bitmark.fbm.util.ext.*
 import com.bitmark.sdk.features.Account
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -47,6 +48,8 @@ class MainActivity : BaseAppCompatActivity() {
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
 
+    private var preventNotification = false
+
     override fun layoutRes(): Int = R.layout.activity_main
 
     override fun viewModel(): BaseViewModel? = viewModel
@@ -54,9 +57,12 @@ class MainActivity : BaseAppCompatActivity() {
     companion object {
         private const val ACCOUNT_SEED = "account_seed"
 
-        fun getBundle(encodedSeed: String): Bundle {
+        private const val PREVENT_NOTIFICATION = "prevent_notification"
+
+        fun getBundle(encodedSeed: String, preventNotification: Boolean = false): Bundle {
             val bundle = Bundle()
             bundle.putString(ACCOUNT_SEED, encodedSeed)
+            bundle.putBoolean(PREVENT_NOTIFICATION, preventNotification)
             return bundle
         }
     }
@@ -80,6 +86,8 @@ class MainActivity : BaseAppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val seed = intent?.extras?.getString(ACCOUNT_SEED) ?: error("missing ACCOUNT_SEED")
+        preventNotification =
+            intent?.extras?.getBoolean(PREVENT_NOTIFICATION) ?: false
         account = Account.fromSeed(seed)
 
         viewModel.checkAppState()
@@ -156,22 +164,33 @@ class MainActivity : BaseAppCompatActivity() {
                         if (accountRegistered) {
                             viewModel.startArchiveIssuanceProcessor(account)
                         }
-                        showAppState(accountRegistered, dataReady)
+
+                        if (!preventNotification) {
+                            showNotification(accountRegistered, dataReady)
+                        }
                     }
                 }
             })
     }
 
-    private fun showAppState(accountRegistered: Boolean, dataReady: Boolean) {
+    private fun showNotification(
+        accountRegistered: Boolean,
+        dataReady: Boolean
+    ) {
         if (dataReady) return
 
         val title =
             getString(if (accountRegistered) R.string.processing_data else R.string.still_waiting)
         val message =
             getString(if (accountRegistered) R.string.your_fb_data_archive_has_been_successfully else R.string.sorry_fb_is_still_prepare)
-        tvTitle.text = title
-        tvMsg.text = message
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        tvNotifTitle.text = title
+        tvNotifMsg.text = message
+
+        handler.postDelayed(
+            { bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED },
+            Constants.UI_READY_DELAY
+        )
+
     }
 
     override fun onResume() {

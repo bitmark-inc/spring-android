@@ -175,6 +175,7 @@
     <string name="quarterly_earning_reports">quarterly earning reports</string>
     <string name="login_to_get_your_data">Login to get your data</string>
     <string name="your_fb_escape_hatch">Your Facebook Escape Hatch</string>
+    <string name="pls_check_the_new_updates">Please check the new updates…</string>
 
     <string-array name="day_of_week">
         <item>S</item>

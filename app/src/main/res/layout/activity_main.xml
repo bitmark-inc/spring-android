@@ -13,15 +13,6 @@
         android:layout_height="match_parent"
         android:layout_above="@id/bottomNav" />
 
-    <include
-        android:id="@+id/layoutNoNetwork"
-        layout="@layout/layout_nonetwork"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/bottomNav"
-        android:visibility="gone"
-        tools:visibility="visible" />
-
     <View
         android:id="@+id/divider"
         android:layout_width="match_parent"
@@ -41,11 +32,19 @@
             android:layout_height="wrap_content"
             app:behavior_hideable="true"
             app:behavior_peekHeight="0dp"
-            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-            tools:visibility="visible" />
+            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
+
+    <include
+        android:id="@+id/layoutNoNetwork"
+        layout="@layout/layout_nonetwork"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bottomNav"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <com.bitmark.fbm.util.view.bottomview.NiceBottomBar
         android:id="@+id/bottomNav"

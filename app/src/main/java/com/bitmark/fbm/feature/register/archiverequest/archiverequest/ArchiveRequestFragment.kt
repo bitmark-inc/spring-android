@@ -549,7 +549,8 @@ class ArchiveRequestFragment : BaseSupportFragment() {
         viewModel.saveFbAdsPrefCategoriesLiveData.asLiveData().observe(this, Observer { res ->
             when {
                 res.isSuccess() -> {
-                    goToMain(account!!.seed.encodedSeed)
+                    // prevent showing notification at the first time after requesting archive
+                    goToMain(account!!.seed.encodedSeed, true)
                 }
 
                 res.isError() -> {
@@ -674,8 +675,8 @@ class ArchiveRequestFragment : BaseSupportFragment() {
         })
     }
 
-    private fun goToMain(accountSeed: String) {
-        val bundle = MainActivity.getBundle(accountSeed)
+    private fun goToMain(accountSeed: String, preventNotification: Boolean = false) {
+        val bundle = MainActivity.getBundle(accountSeed, preventNotification)
         navigator.anim(RIGHT_LEFT).startActivityAsRoot(MainActivity::class.java, bundle)
     }
 

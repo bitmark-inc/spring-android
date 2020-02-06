@@ -9,7 +9,7 @@
     android:paddingBottom="@dimen/dp_18">
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvTitle"
+        android:id="@+id/tvNotifTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_18"
@@ -22,7 +22,7 @@
         tools:text="@string/still_waiting" />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvMsg"
+        android:id="@+id/tvNotifMsg"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_12"
@@ -31,8 +31,8 @@
         android:textColor="@color/black"
         android:textSize="@dimen/sp_18"
         app:layout_constraintEnd_toEndOf="@id/ivClose"
-        app:layout_constraintStart_toStartOf="@id/tvTitle"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        app:layout_constraintStart_toStartOf="@id/tvNotifTitle"
+        app:layout_constraintTop_toBottomOf="@id/tvNotifTitle"
         tools:text="@string/sorry_fb_is_still_prepare" />
 
     <androidx.appcompat.widget.AppCompatImageView
