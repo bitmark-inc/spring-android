@@ -21,7 +21,6 @@ import com.bitmark.fbm.feature.BaseViewModel
 import com.bitmark.fbm.feature.DialogController
 import com.bitmark.fbm.feature.Navigator
 import com.bitmark.fbm.feature.Navigator.Companion.RIGHT_LEFT
-import com.bitmark.fbm.feature.account.AccountActivity
 import com.bitmark.fbm.feature.notification.buildSimpleNotificationBundle
 import com.bitmark.fbm.feature.notification.cancelNotification
 import com.bitmark.fbm.feature.notification.pushDailyRepeatingNotification
@@ -33,7 +32,6 @@ import com.bitmark.fbm.logging.Tracer
 import com.bitmark.fbm.util.Constants
 import com.bitmark.fbm.util.ext.logSharedPrefError
 import com.bitmark.fbm.util.ext.scrollToTop
-import com.bitmark.fbm.util.ext.setSafetyOnclickListener
 import com.bitmark.fbm.util.view.TopVerticalItemDecorator
 import kotlinx.android.synthetic.main.fragment_insights.*
 import javax.inject.Inject
@@ -115,10 +113,6 @@ class InsightsFragment : BaseSupportFragment() {
             }
 
         })
-
-        ivAccount.setSafetyOnclickListener {
-            navigator.anim(RIGHT_LEFT).startActivity(AccountActivity::class.java)
-        }
     }
 
     override fun deinitComponents() {

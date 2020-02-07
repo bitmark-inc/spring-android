@@ -6,8 +6,6 @@
  */
 package com.bitmark.fbm.di
 
-import com.bitmark.fbm.feature.account.AccountActivity
-import com.bitmark.fbm.feature.account.AccountModule
 import com.bitmark.fbm.feature.biometricauth.BiometricAuthActivity
 import com.bitmark.fbm.feature.biometricauth.BiometricAuthModule
 import com.bitmark.fbm.feature.increaseprivacy.IncreasePrivacyActivity
@@ -59,10 +57,6 @@ abstract class ActivityBuilderModule {
     @ContributesAndroidInjector(modules = [MainModule::class])
     @ActivityScope
     internal abstract fun bindMainActivity(): MainActivity
-
-    @ContributesAndroidInjector(modules = [AccountModule::class])
-    @ActivityScope
-    internal abstract fun bindAccountActivity(): AccountActivity
 
     @ContributesAndroidInjector(modules = [UnlinkContainerModule::class])
     @ActivityScope

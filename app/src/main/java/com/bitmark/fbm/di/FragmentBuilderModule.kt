@@ -10,8 +10,6 @@ import com.bitmark.fbm.feature.insights.InsightsContainerFragment
 import com.bitmark.fbm.feature.insights.InsightsContainerModule
 import com.bitmark.fbm.feature.insights.InsightsFragment
 import com.bitmark.fbm.feature.insights.InsightsModule
-import com.bitmark.fbm.feature.lens.LensContainerFragment
-import com.bitmark.fbm.feature.lens.LensContainerModule
 import com.bitmark.fbm.feature.postdetail.PostDetailFragment
 import com.bitmark.fbm.feature.postdetail.PostDetailModule
 import com.bitmark.fbm.feature.reactiondetail.ReactionDetailFragment
@@ -22,6 +20,10 @@ import com.bitmark.fbm.feature.recovery.notice.RecoveryNoticeFragment
 import com.bitmark.fbm.feature.recovery.notice.RecoveryNoticeModule
 import com.bitmark.fbm.feature.register.archiverequest.archiverequest.ArchiveRequestFragment
 import com.bitmark.fbm.feature.register.archiverequest.archiverequest.ArchiveRequestModule
+import com.bitmark.fbm.feature.settings.SettingsContainerFragment
+import com.bitmark.fbm.feature.settings.SettingsContainerModule
+import com.bitmark.fbm.feature.settings.SettingsFragment
+import com.bitmark.fbm.feature.settings.SettingsModule
 import com.bitmark.fbm.feature.statistic.StatisticFragment
 import com.bitmark.fbm.feature.statistic.StatisticModule
 import com.bitmark.fbm.feature.unlink.notice.UnlinkNoticeFragment
@@ -54,10 +56,6 @@ abstract class FragmentBuilderModule {
     @FragmentScope
     internal abstract fun bindInsightsFragment(): InsightsFragment
 
-    @ContributesAndroidInjector(modules = [LensContainerModule::class])
-    @FragmentScope
-    internal abstract fun bindLensContainerFragment(): LensContainerFragment
-
     @ContributesAndroidInjector(modules = [UnlinkNoticeModule::class])
     @FragmentScope
     internal abstract fun bindUnlinkNoticeFragment(): UnlinkNoticeFragment
@@ -89,5 +87,13 @@ abstract class FragmentBuilderModule {
     @ContributesAndroidInjector(modules = [ReactionDetailModule::class])
     @FragmentScope
     internal abstract fun bindReactionDetailFragment(): ReactionDetailFragment
+
+    @ContributesAndroidInjector(modules = [SettingsModule::class])
+    @FragmentScope
+    internal abstract fun bindSettingsFragment(): SettingsFragment
+
+    @ContributesAndroidInjector(modules = [SettingsContainerModule::class])
+    @FragmentScope
+    internal abstract fun bindSettingsContainerFragment(): SettingsContainerFragment
 
 }

@@ -45,8 +45,6 @@
             android:name=".feature.register.dataprocessing.DataProcessingActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.TransparentStatusBar" />
 
-        <activity android:name=".feature.account.AccountActivity" />
-
         <activity
             android:name=".feature.unlink.UnlinkContainerActivity"
             android:windowSoftInputMode="adjustNothing" />

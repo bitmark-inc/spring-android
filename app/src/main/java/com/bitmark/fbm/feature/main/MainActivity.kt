@@ -16,7 +16,7 @@ import com.bitmark.fbm.feature.*
 import com.bitmark.fbm.feature.connectivity.ConnectivityHandler
 import com.bitmark.fbm.feature.insights.InsightsContainerFragment
 import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_INSIGHT
-import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_LENS
+import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_SETTINGS
 import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_USAGE
 import com.bitmark.fbm.util.Constants
 import com.bitmark.fbm.util.ext.*
@@ -116,7 +116,7 @@ class MainActivity : BaseAppCompatActivity() {
             val color = when (pos) {
                 TAB_USAGE -> R.color.cognac
                 TAB_INSIGHT -> R.color.international_klein_blue
-                TAB_LENS -> R.color.olive
+                TAB_SETTINGS -> R.color.olive
                 else -> error("invalid tab pos")
             }
 

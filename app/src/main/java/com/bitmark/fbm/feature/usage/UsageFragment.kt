@@ -14,9 +14,7 @@ import com.bitmark.fbm.feature.BaseSupportFragment
 import com.bitmark.fbm.feature.BaseViewModel
 import com.bitmark.fbm.feature.BehaviorComponent
 import com.bitmark.fbm.feature.Navigator
-import com.bitmark.fbm.feature.account.AccountActivity
 import com.bitmark.fbm.feature.statistic.StatisticViewPagerAdapter
-import com.bitmark.fbm.util.ext.setSafetyOnclickListener
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.fragment_usage.*
 import javax.inject.Inject
@@ -81,10 +79,6 @@ class UsageFragment : BaseSupportFragment() {
             }
 
         })
-
-        ivAccount.setSafetyOnclickListener {
-            navigator.anim(Navigator.RIGHT_LEFT).startActivity(AccountActivity::class.java)
-        }
 
         sv.setOnScrollChangeListener { _: View?, _: Int, scrollY: Int, _: Int, _: Int ->
             this.scrollY = scrollY

@@ -4,11 +4,10 @@
  * Use of this source code is governed by an ISC
  * license that can be found in the LICENSE file.
  */
-package com.bitmark.fbm.feature.account
+package com.bitmark.fbm.feature.settings
 
 import android.graphics.Color
 import android.graphics.Typeface
-import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.method.LinkMovementMethod
@@ -18,7 +17,7 @@ import android.view.View
 import android.widget.Toast
 import com.bitmark.fbm.BuildConfig
 import com.bitmark.fbm.R
-import com.bitmark.fbm.feature.BaseAppCompatActivity
+import com.bitmark.fbm.feature.BaseSupportFragment
 import com.bitmark.fbm.feature.BaseViewModel
 import com.bitmark.fbm.feature.Navigator
 import com.bitmark.fbm.feature.Navigator.Companion.NONE
@@ -32,41 +31,26 @@ import com.bitmark.fbm.util.ext.openBrowser
 import com.bitmark.fbm.util.ext.openIntercom
 import com.bitmark.fbm.util.ext.setSafetyOnclickListener
 import com.bitmark.fbm.util.view.WebViewActivity
-import kotlinx.android.synthetic.main.activity_account.*
+import kotlinx.android.synthetic.main.fragment_settings.*
 import javax.inject.Inject
 
 
-class AccountActivity : BaseAppCompatActivity() {
+class SettingsFragment : BaseSupportFragment() {
 
     companion object {
 
         private const val SURVEY_URL =
             "https://docs.google.com/forms/d/e/1FAIpQLScL41kNU6SBzo7ndcraUf7O-YJ_JrPqg_rlI588UjLK-_sGtQ/viewform?usp=sf_link"
 
-        private const val GOTO_FAQ = "goto_faq"
-
-        fun getBundle(goToFaq: Boolean = false): Bundle {
-            val bundle = Bundle()
-            bundle.putBoolean(GOTO_FAQ, goToFaq)
-            return bundle
-        }
+        fun newInstance() = SettingsFragment()
     }
 
     @Inject
     internal lateinit var navigator: Navigator
 
-    override fun layoutRes(): Int = R.layout.activity_account
+    override fun layoutRes(): Int = R.layout.fragment_settings
 
     override fun viewModel(): BaseViewModel? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val goToFaq = intent?.extras?.getBoolean(GOTO_FAQ) ?: false
-        if (goToFaq) {
-            goToFaq()
-        }
-    }
 
     override fun initComponents() {
         super.initComponents()
@@ -118,12 +102,8 @@ class AccountActivity : BaseAppCompatActivity() {
 
         tvToSandPP.text = spannableString
         tvToSandPP.movementMethod = LinkMovementMethod.getInstance()
-        tvToSandPP.setLinkTextColor(getColor(R.color.black))
+        tvToSandPP.setLinkTextColor(context!!.getColor(R.color.black))
         tvToSandPP.highlightColor = Color.TRANSPARENT
-
-        ivBack.setOnClickListener {
-            navigator.anim(RIGHT_LEFT).finishActivity()
-        }
 
         tvUnlink.setSafetyOnclickListener {
             navigator.anim(RIGHT_LEFT).startActivity(UnlinkContainerActivity::class.java)
@@ -177,7 +157,7 @@ class AccountActivity : BaseAppCompatActivity() {
     }
 
     private fun toastComingSoon() {
-        Toast.makeText(this, "Coming soon", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Coming soon", Toast.LENGTH_SHORT).show()
     }
 
     private fun goToFaq() {
@@ -185,8 +165,4 @@ class AccountActivity : BaseAppCompatActivity() {
         navigator.anim(RIGHT_LEFT).startActivity(WebViewActivity::class.java, bundle)
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        navigator.anim(RIGHT_LEFT).finishActivity()
-    }
 }
