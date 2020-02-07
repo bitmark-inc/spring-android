@@ -35,8 +35,6 @@ class ArchiveRequestViewModel(
     internal val prepareDataLiveData =
         CompositeLiveData<Pair<AutomationScriptData, Boolean>>()
 
-    internal val checkNotificationEnabledLiveData = CompositeLiveData<Boolean>()
-
     internal val saveArchiveRequestedAtLiveData = CompositeLiveData<Any>()
 
     internal val prepareRegisterAccountLiveData = CompositeLiveData<AccountData>()
@@ -149,10 +147,6 @@ class ArchiveRequestViewModel(
                 accountRepo.setArchiveRequestedAt(timestamp)
             )
         )
-    }
-
-    fun checkNotificationEnabled() {
-        checkNotificationEnabledLiveData.add(rxLiveDataTransformer.single(appRepo.checkNotificationEnabled()))
     }
 
     fun prepareRegisterAccount() {

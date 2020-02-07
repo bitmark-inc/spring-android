@@ -7,7 +7,6 @@
 package com.bitmark.fbm.feature.register.archiverequest.archiverequest
 
 import android.annotation.SuppressLint
-import android.app.AlarmManager
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -29,13 +28,11 @@ import com.bitmark.fbm.feature.Navigator
 import com.bitmark.fbm.feature.Navigator.Companion.RIGHT_LEFT
 import com.bitmark.fbm.feature.connectivity.ConnectivityHandler
 import com.bitmark.fbm.feature.main.MainActivity
-import com.bitmark.fbm.feature.notification.buildSimpleNotificationBundle
 import com.bitmark.fbm.feature.notification.cancelNotification
-import com.bitmark.fbm.feature.notification.pushDailyRepeatingNotification
-import com.bitmark.fbm.feature.register.archiverequest.ArchiveRequestContainerActivity
 import com.bitmark.fbm.logging.Event
 import com.bitmark.fbm.logging.EventLogger
 import com.bitmark.fbm.logging.Tracer
+import com.bitmark.fbm.util.Constants
 import com.bitmark.fbm.util.ext.*
 import com.bitmark.sdk.authentication.KeyAuthenticationSpec
 import com.bitmark.sdk.features.Account
@@ -59,8 +56,6 @@ class ArchiveRequestFragment : BaseSupportFragment() {
         private const val ARCHIVE_REQUESTED_AT = "archive_requested_at"
 
         private const val ACCOUNT_REGISTERED = "account_registered"
-
-        private const val NOTIFICATION_ID = 0xA1
 
         private const val MAX_RELOAD_COUNT = 5
 
@@ -356,7 +351,10 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                                     goToMain(account!!.seed.encodedSeed)
                                 } else {
                                     if (context != null) {
-                                        cancelNotification(context!!, NOTIFICATION_ID)
+                                        cancelNotification(
+                                            context!!,
+                                            Constants.REMINDER_NOTIFICATION_ID
+                                        )
                                     }
                                     automateArchiveDownload(wv, script)
                                 }
@@ -633,28 +631,10 @@ class ArchiveRequestFragment : BaseSupportFragment() {
 
                     // expected page now is either LOGIN (if session is expired) or NEWFEED otherwise
                     expectedPage = listOf(Page.Name.LOGIN, Page.Name.NEW_FEED)
-
-                    viewModel.checkNotificationEnabled()
                 }
 
                 res.isError() -> {
                     logger.logSharedPrefError(res.throwable(), "save archive requested at error")
-                    dialogController.unexpectedAlert { finish() }
-                }
-            }
-        })
-
-        viewModel.checkNotificationEnabledLiveData.asLiveData().observe(this, Observer { res ->
-            when {
-                res.isSuccess() -> {
-                    val enabled = res.data() ?: false
-                    if (enabled) {
-                        scheduleNotification()
-                    }
-                }
-
-                res.isError() -> {
-                    logger.logSharedPrefError(res.throwable(), "check notification enabled error")
                     dialogController.unexpectedAlert { finish() }
                 }
             }
@@ -681,22 +661,6 @@ class ArchiveRequestFragment : BaseSupportFragment() {
     }
 
     private fun finish() = navigator.anim(RIGHT_LEFT).popFragment()
-
-    private fun scheduleNotification() {
-        if (context == null) return
-        val bundle = buildSimpleNotificationBundle(
-            context!!,
-            R.string.spring,
-            R.string.just_remind_you,
-            NOTIFICATION_ID,
-            ArchiveRequestContainerActivity::class.java
-        )
-        pushDailyRepeatingNotification(
-            context!!,
-            bundle,
-            System.currentTimeMillis() + 3 * AlarmManager.INTERVAL_DAY
-        )
-    }
 
     override fun onBackPressed(): Boolean {
         return finish()

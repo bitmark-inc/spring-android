@@ -58,10 +58,6 @@
         <activity android:name=".feature.support.SupportActivity" />
 
         <activity
-            android:name=".feature.register.notification.NotificationActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.TransparentStatusBar" />
-
-        <activity
             android:name=".feature.register.trustnotice.TrustNoticeActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.TransparentStatusBar" />
 

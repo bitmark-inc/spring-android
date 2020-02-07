@@ -6,6 +6,7 @@
  */
 package com.bitmark.fbm.feature.insights
 
+import android.app.AlarmManager
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
@@ -21,6 +22,10 @@ import com.bitmark.fbm.feature.DialogController
 import com.bitmark.fbm.feature.Navigator
 import com.bitmark.fbm.feature.Navigator.Companion.RIGHT_LEFT
 import com.bitmark.fbm.feature.account.AccountActivity
+import com.bitmark.fbm.feature.notification.buildSimpleNotificationBundle
+import com.bitmark.fbm.feature.notification.cancelNotification
+import com.bitmark.fbm.feature.notification.pushDailyRepeatingNotification
+import com.bitmark.fbm.feature.splash.SplashActivity
 import com.bitmark.fbm.feature.support.SupportActivity
 import com.bitmark.fbm.logging.Event
 import com.bitmark.fbm.logging.EventLogger
@@ -152,6 +157,7 @@ class InsightsFragment : BaseSupportFragment() {
             when {
                 res.isSuccess() -> {
                     adapter.markNotificationEnable()
+                    scheduleNotification()
                 }
 
                 res.isError() -> {
@@ -159,6 +165,23 @@ class InsightsFragment : BaseSupportFragment() {
                 }
             }
         })
+    }
+
+    private fun scheduleNotification() {
+        if (context == null) return
+        cancelNotification(context!!, Constants.REMINDER_NOTIFICATION_ID)
+        val bundle = buildSimpleNotificationBundle(
+            context!!,
+            R.string.spring,
+            R.string.just_remind_you,
+            Constants.REMINDER_NOTIFICATION_ID,
+            SplashActivity::class.java
+        )
+        pushDailyRepeatingNotification(
+            context!!,
+            bundle,
+            System.currentTimeMillis() + 3 * AlarmManager.INTERVAL_DAY
+        )
     }
 
     override fun refresh() {

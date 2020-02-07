@@ -20,8 +20,6 @@ import com.bitmark.fbm.feature.register.archiverequest.ArchiveRequestContainerAc
 import com.bitmark.fbm.feature.register.archiverequest.ArchiveRequestContainerModule
 import com.bitmark.fbm.feature.register.dataprocessing.DataProcessingActivity
 import com.bitmark.fbm.feature.register.dataprocessing.DataProcessingModule
-import com.bitmark.fbm.feature.register.notification.NotificationActivity
-import com.bitmark.fbm.feature.register.notification.NotificationModule
 import com.bitmark.fbm.feature.register.onboarding.OnboardingActivity
 import com.bitmark.fbm.feature.register.onboarding.OnboardingModule
 import com.bitmark.fbm.feature.register.trustnotice.TrustNoticeActivity
@@ -81,10 +79,6 @@ abstract class ActivityBuilderModule {
     @ContributesAndroidInjector(modules = [SupportModule::class])
     @ActivityScope
     internal abstract fun bindSupportActivity(): SupportActivity
-
-    @ContributesAndroidInjector(modules = [NotificationModule::class])
-    @ActivityScope
-    internal abstract fun bindNotificationActivity(): NotificationActivity
 
     @ContributesAndroidInjector(modules = [TrustNoticeModule::class])
     @ActivityScope

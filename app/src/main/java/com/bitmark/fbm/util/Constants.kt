@@ -11,4 +11,6 @@ object Constants {
     const val UI_READY_DELAY = 200L
 
     const val GOOGLE_PLAY_HOST = "play.google.com"
+
+    const val REMINDER_NOTIFICATION_ID = 0xAF
 }
