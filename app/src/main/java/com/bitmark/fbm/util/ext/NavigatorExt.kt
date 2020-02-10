@@ -6,12 +6,14 @@
  */
 package com.bitmark.fbm.util.ext
 
+import android.app.KeyguardManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
 import android.provider.Settings
+import androidx.annotation.StringRes
 import com.bitmark.fbm.BuildConfig
 import com.bitmark.fbm.feature.Navigator
 import com.bitmark.fbm.feature.Navigator.Companion.NONE
@@ -149,5 +151,19 @@ fun Navigator.share(url: String) {
     intent.putExtra(Intent.EXTRA_SUBJECT, url)
     intent.putExtra(Intent.EXTRA_TEXT, url)
     startActivity(Intent.createChooser(intent, "Share URL"))
+}
+
+fun Navigator.openKeyGuardConfirmation(
+    context: Context,
+    @StringRes title: Int,
+    @StringRes description: Int,
+    requestCode: Int
+) {
+    val keyguardManager = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+    val intent = keyguardManager.createConfirmDeviceCredentialIntent(
+        context.getString(title),
+        context.getString(description)
+    )
+    startActivityForResult(intent, requestCode)
 }
 

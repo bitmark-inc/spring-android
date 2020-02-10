@@ -6,6 +6,7 @@
  */
 package com.bitmark.fbm.util.ext
 
+import android.app.KeyguardManager
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -64,4 +65,9 @@ val Context.screenWidth: Int
 fun Context.getColorStateList(@ColorRes id: Int) = ContextCompat.getColorStateList(this, id)
 
 fun Context.getFontFamily(id: Int) = ResourcesCompat.getFont(this, id)
+
+fun Context.isDeviceSecure(): Boolean {
+    val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+    return keyguardManager.isDeviceSecure
+}
 

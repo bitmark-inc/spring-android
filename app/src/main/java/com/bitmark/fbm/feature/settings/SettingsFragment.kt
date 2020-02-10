@@ -23,6 +23,7 @@ import com.bitmark.fbm.feature.Navigator
 import com.bitmark.fbm.feature.Navigator.Companion.NONE
 import com.bitmark.fbm.feature.Navigator.Companion.RIGHT_LEFT
 import com.bitmark.fbm.feature.biometricauth.BiometricAuthActivity
+import com.bitmark.fbm.feature.deleteaccount.DeleteAccountActivity
 import com.bitmark.fbm.feature.increaseprivacy.IncreasePrivacyActivity
 import com.bitmark.fbm.feature.recovery.RecoveryContainerActivity
 import com.bitmark.fbm.feature.unlink.UnlinkContainerActivity
@@ -122,7 +123,7 @@ class SettingsFragment : BaseSupportFragment() {
         }
 
         tvDeleteAccount.setSafetyOnclickListener {
-            toastComingSoon()
+            navigator.anim(RIGHT_LEFT).startActivity(DeleteAccountActivity::class.java)
         }
 
         tvIncPrivacy.setSafetyOnclickListener {

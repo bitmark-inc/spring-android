@@ -820,4 +820,32 @@ class AccountRepositoryTest : DataTest() {
         observer.assertErrorMessage("do not contains last_activity_timestamp")
     }
 
+    @Test
+    fun testDeleteAccount() {
+        val observer = TestObserver<Any>()
+
+        whenever(remoteDataSource.deleteAccount()).thenReturn(Completable.complete())
+
+        repository.deleteAccount().subscribe(observer)
+
+        observer.assertNoValues()
+        observer.assertComplete()
+        observer.assertNoErrors()
+        observer.assertTerminated()
+    }
+
+    @Test
+    fun testDeleteAccountError() {
+        val observer = TestObserver<Any>()
+
+        whenever(remoteDataSource.deleteAccount()).thenReturn(Completable.error(HTTP_ERROR))
+
+        repository.deleteAccount().subscribe(observer)
+
+        observer.assertNoValues()
+        observer.assertNotComplete()
+        observer.assertError(HTTP_ERROR)
+        observer.assertTerminated()
+    }
+
 }

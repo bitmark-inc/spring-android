@@ -69,4 +69,7 @@ interface FbmApi {
 
     @PATCH("api/accounts/me")
     fun updateMetadata(@Body body: RequestBody): Single<Map<String, AccountData>>
+
+    @DELETE("api/accounts/me")
+    fun deleteAccount(): Completable
 }

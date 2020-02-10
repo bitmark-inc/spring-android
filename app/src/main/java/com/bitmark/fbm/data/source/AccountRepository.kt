@@ -105,4 +105,6 @@ class AccountRepository(
         accountData.metadata?.get("last_activity_timestamp")?.toLong()
             ?: error("do not contains last_activity_timestamp")
     }
+
+    fun deleteAccount() = remoteDataSource.deleteAccount()
 }

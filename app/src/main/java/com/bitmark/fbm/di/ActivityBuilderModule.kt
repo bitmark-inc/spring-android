@@ -8,6 +8,8 @@ package com.bitmark.fbm.di
 
 import com.bitmark.fbm.feature.biometricauth.BiometricAuthActivity
 import com.bitmark.fbm.feature.biometricauth.BiometricAuthModule
+import com.bitmark.fbm.feature.deleteaccount.DeleteAccountActivity
+import com.bitmark.fbm.feature.deleteaccount.DeleteAccountModule
 import com.bitmark.fbm.feature.increaseprivacy.IncreasePrivacyActivity
 import com.bitmark.fbm.feature.increaseprivacy.IncreasePrivacyModule
 import com.bitmark.fbm.feature.main.MainActivity
@@ -89,4 +91,8 @@ abstract class ActivityBuilderModule {
     @ContributesAndroidInjector(modules = [IncreasePrivacyModule::class])
     @ActivityScope
     internal abstract fun bindIncreasePrivacyActivity(): IncreasePrivacyActivity
+
+    @ContributesAndroidInjector(modules = [DeleteAccountModule::class])
+    @ActivityScope
+    internal abstract fun bindDeleteAccountActivity(): DeleteAccountActivity
 }

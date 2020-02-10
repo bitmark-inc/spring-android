@@ -24,6 +24,8 @@ enum class Event(val value: String) {
 
     ACCOUNT_DEEPLINK_INVALID_PHRASE_ERROR("account_deeplink_invalid_phrase_error"),
 
+    ACCOUNT_DELETE_ERROR("account_delete_error"),
+
     AUTOMATE_PAGE_DETECTION_ERROR("page_detection_error"),
 
     ARCHIVE_REQUEST_PREPARE_DATA_ERROR("archive_request_prepare_data_error"),

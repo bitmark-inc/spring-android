@@ -60,14 +60,14 @@ fun Activity.saveAccount(
                 when (throwable) {
 
                     // authentication error
-                    is AuthenticationException         -> {
+                    is AuthenticationException -> {
                         when (throwable.type) {
                             // action cancel authentication
                             AuthenticationException.Type.CANCELLED -> {
                                 canceledAction.invoke()
                             }
 
-                            else                                   -> {
+                            else -> {
                                 // do nothing
                             }
                         }
@@ -86,7 +86,7 @@ fun Activity.saveAccount(
                             }
 
                             // did not set up pass code
-                            else                                     -> {
+                            else -> {
                                 dialogController.alert(
                                     R.string.error,
                                     R.string.passcode_pin_required
@@ -94,7 +94,7 @@ fun Activity.saveAccount(
                             }
                         }
                     }
-                    else                               -> {
+                    else -> {
                         invalidErrorAction.invoke(throwable)
                     }
                 }
@@ -125,14 +125,14 @@ fun Activity.loadAccount(
                 when (throwable) {
 
                     // authentication error
-                    is AuthenticationException         -> {
+                    is AuthenticationException -> {
                         when (throwable.type) {
                             // action cancel authentication
                             AuthenticationException.Type.CANCELLED -> {
                                 canceledAction.invoke()
                             }
 
-                            else                                   -> {
+                            else -> {
                                 // do nothing
                             }
                         }
@@ -151,7 +151,7 @@ fun Activity.loadAccount(
                             }
 
                             // did not set up pass code
-                            else                                     -> {
+                            else -> {
                                 dialogController.alert(
                                     R.string.error,
                                     R.string.passcode_pin_required
@@ -159,7 +159,7 @@ fun Activity.loadAccount(
                             }
                         }
                     }
-                    else                               -> {
+                    else -> {
                         invalidErrorAction.invoke(throwable)
                     }
                 }
@@ -186,14 +186,14 @@ fun Activity.removeAccount(
             when (throwable) {
 
                 // authentication error
-                is AuthenticationException         -> {
+                is AuthenticationException -> {
                     when (throwable.type) {
                         // action cancel authentication
                         AuthenticationException.Type.CANCELLED -> {
                             canceledAction()
                         }
 
-                        else                                   -> {
+                        else -> {
                             // do nothing
                         }
                     }
@@ -212,7 +212,7 @@ fun Activity.removeAccount(
                         }
 
                         // did not set up pass code
-                        else                                     -> {
+                        else -> {
                             dialogController.alert(
                                 R.string.error,
                                 R.string.passcode_pin_required
@@ -220,7 +220,7 @@ fun Activity.removeAccount(
                         }
                     }
                 }
-                else                               -> {
+                else -> {
                     invalidErrorAction.invoke(throwable)
                 }
             }

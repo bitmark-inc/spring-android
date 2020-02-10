@@ -69,6 +69,8 @@
 
         <activity android:name=".feature.increaseprivacy.IncreasePrivacyActivity" />
 
+        <activity android:name=".feature.deleteaccount.DeleteAccountActivity" />
+
         <receiver
             android:name=".feature.notification.ScheduledNotificationReceiver"
             android:windowSoftInputMode="adjustNothing" />

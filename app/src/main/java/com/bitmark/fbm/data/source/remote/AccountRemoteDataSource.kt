@@ -80,4 +80,6 @@ class AccountRemoteDataSource @Inject constructor(
         return fbmApi.updateMetadata(reqBody)
             .map { res -> res["result"] ?: error("invalid response") }.subscribeOn(Schedulers.io())
     }
+
+    fun deleteAccount() = fbmApi.deleteAccount().subscribeOn(Schedulers.io())
 }

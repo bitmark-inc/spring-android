@@ -182,6 +182,12 @@
     <string name="personal_analytics_are_coming">Personal Analytics are coming!</string>
     <string name="allow_spring_send_you">Allow “Spring” to send you a push notification to remind you to check if your archive is ready?</string>
     <string name="enable_push_notification">Enable Push Notifications</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="when_you_delete_your_account">When you delete your account, you will be completely logged out on this device and all data will be permanently deleted.\n\nYou can export your data first, if you haven’t do so already.</string>
+    <string name="delete_arrow">Delete »</string>
+    <string name="all_of_your_data">All of your data will be permanently deleted from this device.</string>
+    <string name="confirm">Confirm</string>
+    <string name="could_not_delete_account">Could not delete your account. Please try again later.</string>
 
     <string-array name="day_of_week">
         <item>S</item>
