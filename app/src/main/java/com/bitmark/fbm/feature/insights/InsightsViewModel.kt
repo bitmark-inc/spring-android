@@ -6,13 +6,16 @@
  */
 package com.bitmark.fbm.feature.insights
 
+import android.content.res.Resources
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.MutableLiveData
 import com.bitmark.fbm.data.model.InsightData
 import com.bitmark.fbm.data.model.newDefaultInstance
 import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.data.source.AppRepository
 import com.bitmark.fbm.data.source.StatisticRepository
 import com.bitmark.fbm.feature.BaseViewModel
+import com.bitmark.fbm.feature.realtime.RealtimeBus
 import com.bitmark.fbm.util.livedata.CompositeLiveData
 import com.bitmark.fbm.util.livedata.RxLiveDataTransformer
 import com.bitmark.fbm.util.modelview.InsightModelView
@@ -25,7 +28,8 @@ class InsightsViewModel(
     private val statisticRepo: StatisticRepository,
     private val accountRepo: AccountRepository,
     private val appRepo: AppRepository,
-    private val rxLiveDataTransformer: RxLiveDataTransformer
+    private val rxLiveDataTransformer: RxLiveDataTransformer,
+    private val realtimeBus: RealtimeBus
 ) :
     BaseViewModel(lifecycle) {
 
@@ -33,12 +37,20 @@ class InsightsViewModel(
 
     internal val setNotificationEnableLiveData = CompositeLiveData<Any>()
 
+    internal val notificationStateChangedLiveData = MutableLiveData<Boolean>()
+
     fun listInsight() {
         val listInsightStream = appRepo.checkDataReady().flatMap { ready ->
             Single.zip(
                 accountRepo.listAdsPrefCategory(),
                 if (ready) statisticRepo.getInsightData() else Single.just(InsightData.newDefaultInstance()),
-                appRepo.checkNotificationEnabled(),
+                appRepo.checkNotificationEnabled().onErrorResumeNext { e ->
+                    if (e is Resources.NotFoundException) {
+                        Single.just(false)
+                    } else {
+                        Single.error(e)
+                    }
+                },
                 Function3<List<String>, InsightData, Boolean, List<InsightModelView>> { categories, insightData, notificationEnabled ->
                     listOf(
                         // categories
@@ -77,6 +89,18 @@ class InsightsViewModel(
                 )
             )
         )
+    }
+
+    override fun onStart() {
+        super.onStart()
+        realtimeBus.notificationStateChangedPublisher.subscribe(this) { enable ->
+            notificationStateChangedLiveData.value = enable
+        }
+    }
+
+    override fun onDestroy() {
+        realtimeBus.unsubscribe(this)
+        super.onDestroy()
     }
 
 }

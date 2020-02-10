@@ -6,7 +6,9 @@
  */
 package com.bitmark.fbm.feature.statistic
 
+import android.content.res.Resources
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.MutableLiveData
 import com.bitmark.fbm.data.ext.onNetworkErrorReturn
 import com.bitmark.fbm.data.model.entity.Period
 import com.bitmark.fbm.data.model.entity.SectionName
@@ -14,6 +16,7 @@ import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.data.source.AppRepository
 import com.bitmark.fbm.data.source.StatisticRepository
 import com.bitmark.fbm.feature.BaseViewModel
+import com.bitmark.fbm.feature.realtime.RealtimeBus
 import com.bitmark.fbm.util.ext.replace
 import com.bitmark.fbm.util.livedata.CompositeLiveData
 import com.bitmark.fbm.util.livedata.RxLiveDataTransformer
@@ -30,7 +33,8 @@ class StatisticViewModel(
     private val statisticRepo: StatisticRepository,
     private val accountRepo: AccountRepository,
     private val appRepo: AppRepository,
-    private val rxLiveDataTransformer: RxLiveDataTransformer
+    private val rxLiveDataTransformer: RxLiveDataTransformer,
+    private val realtimeBus: RealtimeBus
 ) :
     BaseViewModel(lifecycle) {
 
@@ -40,6 +44,8 @@ class StatisticViewModel(
     internal val getLastActivityTimestamp = CompositeLiveData<Long>()
 
     internal val setNotificationEnableLiveData = CompositeLiveData<Any>()
+
+    internal val notificationStateChangedLiveData = MutableLiveData<Boolean>()
 
     fun getData(period: Period, periodStartedAtSec: Long) {
         val listUsageStream = appRepo.checkDataReady().flatMap { ready ->
@@ -87,7 +93,13 @@ class StatisticViewModel(
             rxLiveDataTransformer.single(
                 Single.zip(
                     listUsageStream,
-                    appRepo.checkNotificationEnabled(),
+                    appRepo.checkNotificationEnabled().onErrorResumeNext { e ->
+                        if (e is Resources.NotFoundException) {
+                            Single.just(false)
+                        } else {
+                            Single.error(e)
+                        }
+                    },
                     BiFunction { usageStatistics, notificationEnabled ->
                         Pair(
                             usageStatistics,
@@ -134,5 +146,17 @@ class StatisticViewModel(
                 )
             )
         )
+    }
+
+    override fun onStart() {
+        super.onStart()
+        realtimeBus.notificationStateChangedPublisher.subscribe(this) { enable ->
+            notificationStateChangedLiveData.value = enable
+        }
+    }
+
+    override fun onDestroy() {
+        realtimeBus.unsubscribe(this)
+        super.onDestroy()
     }
 }

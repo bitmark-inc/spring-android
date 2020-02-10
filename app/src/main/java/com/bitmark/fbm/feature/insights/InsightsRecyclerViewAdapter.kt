@@ -56,10 +56,10 @@ class InsightsRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder
         notifyDataSetChanged()
     }
 
-    fun markNotificationEnable() {
+    fun setNotificationEnable(enable: Boolean) {
         val index = items.indexOfFirst { i -> i.insight.notificationEnabled != null }
         if (index != -1) {
-            items[index].insight.notificationEnabled = true
+            items[index].insight.notificationEnabled = enable
             notifyItemChanged(index)
         }
     }

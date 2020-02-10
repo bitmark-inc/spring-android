@@ -20,7 +20,6 @@ import android.os.Bundle
 import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import com.bitmark.fbm.R
-import com.bitmark.fbm.feature.main.MainActivity
 import com.bitmark.fbm.feature.splash.SplashActivity
 import com.bitmark.fbm.util.ext.getResIdentifier
 
@@ -108,13 +107,14 @@ fun cancelNotification(context: Context, id: Int) {
 fun pushDailyRepeatingNotification(
     context: Context,
     bundle: Bundle,
-    triggerAtMillis: Long = System.currentTimeMillis() + AlarmManager.INTERVAL_DAY
+    triggerAtMillis: Long = System.currentTimeMillis() + AlarmManager.INTERVAL_DAY,
+    requestCode: Int = 0x00
 ) {
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     val intent = Intent(context, ScheduledNotificationReceiver::class.java)
     intent.putExtras(bundle)
     val pendingIntent =
-        PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     alarmManager.setRepeating(
         AlarmManager.RTC_WAKEUP,
         triggerAtMillis,
@@ -122,4 +122,12 @@ fun pushDailyRepeatingNotification(
         pendingIntent
     )
 
+}
+
+fun cancelDailyRepeatingNotification(context: Context, requestCode: Int) {
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    val intent = Intent(context, ScheduledNotificationReceiver::class.java)
+    val pendingIntent =
+        PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+    alarmManager.cancel(pendingIntent)
 }

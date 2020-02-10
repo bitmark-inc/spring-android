@@ -9,7 +9,9 @@ package com.bitmark.fbm
 import android.app.Application
 import android.content.Context
 import com.bitmark.fbm.data.source.AccountRepository
+import com.bitmark.fbm.data.source.AppRepository
 import com.bitmark.fbm.feature.connectivity.ConnectivityHandler
+import com.bitmark.fbm.feature.realtime.RealtimeBus
 import com.bitmark.fbm.logging.EventLogger
 import com.bitmark.fbm.logging.SentryEventLogger
 import dagger.Module
@@ -35,5 +37,9 @@ class AppModule {
     @Singleton
     fun provideEventLogger(accountRepo: AccountRepository): EventLogger =
         SentryEventLogger(accountRepo)
+
+    @Provides
+    @Singleton
+    fun provideRealtimeBus(appRepo: AppRepository) = RealtimeBus(appRepo)
 
 }

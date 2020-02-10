@@ -12,6 +12,7 @@ import com.bitmark.fbm.data.source.StatisticRepository
 import com.bitmark.fbm.di.FragmentScope
 import com.bitmark.fbm.feature.DialogController
 import com.bitmark.fbm.feature.Navigator
+import com.bitmark.fbm.feature.realtime.RealtimeBus
 import com.bitmark.fbm.util.livedata.RxLiveDataTransformer
 import dagger.Module
 import dagger.Provides
@@ -30,13 +31,15 @@ class InsightsModule {
         statisticRepo: StatisticRepository,
         accountRepo: AccountRepository,
         appRepo: AppRepository,
-        rxLiveDataTransformer: RxLiveDataTransformer
+        rxLiveDataTransformer: RxLiveDataTransformer,
+        realtimeBus: RealtimeBus
     ) = InsightsViewModel(
         fragment.lifecycle,
         statisticRepo,
         accountRepo,
         appRepo,
-        rxLiveDataTransformer
+        rxLiveDataTransformer,
+        realtimeBus
     )
 
     @Provides

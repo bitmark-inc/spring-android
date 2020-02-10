@@ -150,7 +150,7 @@ class InsightsFragment : BaseSupportFragment() {
         viewModel.setNotificationEnableLiveData.asLiveData().observe(this, Observer { res ->
             when {
                 res.isSuccess() -> {
-                    adapter.markNotificationEnable()
+                    adapter.setNotificationEnable(true)
                     scheduleNotification()
                 }
 
@@ -158,6 +158,10 @@ class InsightsFragment : BaseSupportFragment() {
                     logger.logSharedPrefError(res.throwable(), "set notification enable error")
                 }
             }
+        })
+
+        viewModel.notificationStateChangedLiveData.observe(this, Observer { enable ->
+            adapter.setNotificationEnable(enable)
         })
     }
 
@@ -174,7 +178,8 @@ class InsightsFragment : BaseSupportFragment() {
         pushDailyRepeatingNotification(
             context!!,
             bundle,
-            System.currentTimeMillis() + 3 * AlarmManager.INTERVAL_DAY
+            System.currentTimeMillis() + 3 * AlarmManager.INTERVAL_DAY,
+            Constants.REMINDER_NOTIFICATION_ID
         )
     }
 

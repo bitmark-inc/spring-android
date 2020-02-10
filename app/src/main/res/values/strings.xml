@@ -180,6 +180,8 @@
     <string name="your_fb_data_archive_is_being_processed_2">Your Facebook data archive is being processed. This might take 1–2 days. We will notify you when it’s done.</string>
     <string name="more_insights_is_coming">More insights coming!</string>
     <string name="personal_analytics_are_coming">Personal Analytics are coming!</string>
+    <string name="allow_spring_send_you">Allow “Spring” to send you a push notification to remind you to check if your archive is ready?</string>
+    <string name="enable_push_notification">Enable Push Notifications</string>
 
     <string-array name="day_of_week">
         <item>S</item>

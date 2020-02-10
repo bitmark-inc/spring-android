@@ -22,7 +22,7 @@ class SharedPrefGateway internal constructor(context: Context) {
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> get(key: String, type: KClass<T>, default: Any? = null): T {
         return when (type) {
-            String::class  -> sharedPreferences.getString(
+            String::class -> sharedPreferences.getString(
                 key,
                 default as? String ?: ""
             ) as T
@@ -30,19 +30,19 @@ class SharedPrefGateway internal constructor(context: Context) {
                 key,
                 default as? Boolean ?: false
             ) as T
-            Float::class   -> sharedPreferences.getFloat(
+            Float::class -> sharedPreferences.getFloat(
                 key,
                 default as? Float ?: 0f
             ) as T
-            Int::class     -> sharedPreferences.getInt(
+            Int::class -> sharedPreferences.getInt(
                 key,
                 default as? Int ?: 0
             ) as T
-            Long::class    -> sharedPreferences.getLong(
+            Long::class -> sharedPreferences.getLong(
                 key,
                 default as? Long ?: 0
             ) as T
-            else           -> newGsonInstance().fromJson(
+            else -> newGsonInstance().fromJson(
                 sharedPreferences.getString(key, ""), type.java
             )
         }
@@ -51,15 +51,17 @@ class SharedPrefGateway internal constructor(context: Context) {
     fun <T> put(key: String, data: T) {
         val editor = sharedPreferences.edit()
         when (data) {
-            is String  -> editor.putString(key, data as String)
+            is String -> editor.putString(key, data as String)
             is Boolean -> editor.putBoolean(key, data as Boolean)
-            is Float   -> editor.putFloat(key, data as Float)
-            is Int     -> editor.putInt(key, data as Int)
-            is Long    -> editor.putLong(key, data as Long)
-            else       -> editor.putString(key, newGsonInstance().toJson(data))
+            is Float -> editor.putFloat(key, data as Float)
+            is Int -> editor.putInt(key, data as Int)
+            is Long -> editor.putLong(key, data as Long)
+            else -> editor.putString(key, newGsonInstance().toJson(data))
         }
         editor.apply()
     }
+
+    fun has(key: String) = sharedPreferences.contains(key)
 
     fun clear(key: String) {
         sharedPreferences.edit().remove(key).apply()

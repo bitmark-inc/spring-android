@@ -28,7 +28,7 @@ import com.bitmark.fbm.feature.Navigator
 import com.bitmark.fbm.feature.Navigator.Companion.RIGHT_LEFT
 import com.bitmark.fbm.feature.connectivity.ConnectivityHandler
 import com.bitmark.fbm.feature.main.MainActivity
-import com.bitmark.fbm.feature.notification.cancelNotification
+import com.bitmark.fbm.feature.notification.cancelDailyRepeatingNotification
 import com.bitmark.fbm.logging.Event
 import com.bitmark.fbm.logging.EventLogger
 import com.bitmark.fbm.logging.Tracer
@@ -351,7 +351,7 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                                     goToMain(account!!.seed.encodedSeed)
                                 } else {
                                     if (context != null) {
-                                        cancelNotification(
+                                        cancelDailyRepeatingNotification(
                                             context!!,
                                             Constants.REMINDER_NOTIFICATION_ID
                                         )

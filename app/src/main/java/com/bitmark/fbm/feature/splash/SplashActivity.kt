@@ -347,6 +347,7 @@ class SplashActivity : BaseAppCompatActivity() {
                             showOnboarding()
                         }
                     }
+                    else -> showOnboarding()
                 }
             }
         } else {

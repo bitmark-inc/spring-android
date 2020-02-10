@@ -63,10 +63,10 @@ class StatisticRecyclerViewAdapter :
         notifyDataSetChanged()
     }
 
-    fun markNotificationEnable() {
+    fun setNotificationEnable(enable: Boolean) {
         val index = items.indexOfFirst { i -> i.notificationEnabled != null }
         if (index != -1) {
-            items[index].notificationEnabled = true
+            items[index].notificationEnabled = enable
             notifyItemChanged(index)
         }
     }

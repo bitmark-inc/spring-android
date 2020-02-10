@@ -6,6 +6,7 @@
  */
 package com.bitmark.fbm.feature.main
 
+import android.app.AlarmManager
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
@@ -18,6 +19,11 @@ import com.bitmark.fbm.feature.insights.InsightsContainerFragment
 import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_INSIGHT
 import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_SETTINGS
 import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_USAGE
+import com.bitmark.fbm.feature.notification.buildSimpleNotificationBundle
+import com.bitmark.fbm.feature.notification.cancelNotification
+import com.bitmark.fbm.feature.notification.pushDailyRepeatingNotification
+import com.bitmark.fbm.feature.splash.SplashActivity
+import com.bitmark.fbm.logging.EventLogger
 import com.bitmark.fbm.util.Constants
 import com.bitmark.fbm.util.ext.*
 import com.bitmark.sdk.features.Account
@@ -40,6 +46,9 @@ class MainActivity : BaseAppCompatActivity() {
     @Inject
     internal lateinit var dialogController: DialogController
 
+    @Inject
+    internal lateinit var logger: EventLogger
+
     private val handler = Handler()
 
     private lateinit var account: Account
@@ -48,7 +57,7 @@ class MainActivity : BaseAppCompatActivity() {
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
 
-    private var preventNotification = false
+    private var firstTimeLaunch = false
 
     override fun layoutRes(): Int = R.layout.activity_main
 
@@ -57,12 +66,12 @@ class MainActivity : BaseAppCompatActivity() {
     companion object {
         private const val ACCOUNT_SEED = "account_seed"
 
-        private const val PREVENT_NOTIFICATION = "prevent_notification"
+        private const val FIRST_TIME_LAUNCH = "first_time_launch"
 
-        fun getBundle(encodedSeed: String, preventNotification: Boolean = false): Bundle {
+        fun getBundle(encodedSeed: String, firstTimeLaunch: Boolean = false): Bundle {
             val bundle = Bundle()
             bundle.putString(ACCOUNT_SEED, encodedSeed)
-            bundle.putBoolean(PREVENT_NOTIFICATION, preventNotification)
+            bundle.putBoolean(FIRST_TIME_LAUNCH, firstTimeLaunch)
             return bundle
         }
     }
@@ -86,11 +95,12 @@ class MainActivity : BaseAppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val seed = intent?.extras?.getString(ACCOUNT_SEED) ?: error("missing ACCOUNT_SEED")
-        preventNotification =
-            intent?.extras?.getBoolean(PREVENT_NOTIFICATION) ?: false
+        firstTimeLaunch =
+            intent?.extras?.getBoolean(FIRST_TIME_LAUNCH) ?: false
         account = Account.fromSeed(seed)
 
         viewModel.checkAppState()
+        viewModel.checkNotificationPermissionRequested()
 
     }
 
@@ -165,17 +175,46 @@ class MainActivity : BaseAppCompatActivity() {
                             viewModel.startArchiveIssuanceProcessor(account)
                         }
 
-                        if (!preventNotification && !dataReady) {
+                        if (!firstTimeLaunch && !dataReady) {
                             showNotification(accountRegistered)
                         }
                     }
                 }
             })
+
+        viewModel.setNotificationEnabledLiveData.asLiveData().observe(this, Observer { res ->
+            when {
+
+                res.isSuccess() -> {
+                    scheduleNotification()
+                }
+
+                res.isError() -> {
+                    logger.logSharedPrefError(res.throwable(), "set notification enable error")
+                }
+            }
+        })
+
+        viewModel.checkNotificationPermissionRequestedLiveData.asLiveData()
+            .observe(this, Observer { res ->
+                when {
+                    res.isSuccess() -> {
+                        val requested = res.data()!!
+                        if (!requested) requestNotificationPermission()
+                    }
+
+                    res.isError() -> {
+                        logger.logSharedPrefError(
+                            res.throwable(),
+                            "check notification permission requested error"
+                        )
+                        requestNotificationPermission()
+                    }
+                }
+            })
     }
 
-    private fun showNotification(
-        accountRegistered: Boolean
-    ) {
+    private fun showNotification(accountRegistered: Boolean) {
         val title =
             getString(if (accountRegistered) R.string.processing_data else R.string.still_waiting)
         val message =
@@ -188,6 +227,36 @@ class MainActivity : BaseAppCompatActivity() {
             Constants.UI_READY_DELAY
         )
 
+    }
+
+    private fun scheduleNotification() {
+        cancelNotification(this, Constants.REMINDER_NOTIFICATION_ID)
+        val bundle = buildSimpleNotificationBundle(
+            this,
+            R.string.spring,
+            R.string.just_remind_you,
+            Constants.REMINDER_NOTIFICATION_ID,
+            SplashActivity::class.java
+        )
+        pushDailyRepeatingNotification(
+            this,
+            bundle,
+            System.currentTimeMillis() + 3 * AlarmManager.INTERVAL_DAY,
+            Constants.REMINDER_NOTIFICATION_ID
+        )
+    }
+
+    private fun requestNotificationPermission() {
+        dialogController.confirm(
+            R.string.enable_push_notification,
+            R.string.allow_spring_send_you,
+            false,
+            "notification_request",
+            R.string.enable,
+            { viewModel.setNotificationEnabled(true) },
+            R.string.cancel,
+            { viewModel.setNotificationEnabled(false) }
+        )
     }
 
     override fun onResume() {

@@ -6,6 +6,7 @@
  */
 package com.bitmark.fbm.feature.main
 
+import android.content.res.Resources
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
 import com.bitmark.fbm.data.model.isCreatedRemotely
@@ -37,6 +38,10 @@ class MainViewModel(
     internal val serviceUnsupportedLiveData = MutableLiveData<String>()
 
     internal val checkAppStateLiveData = CompositeLiveData<Pair<Boolean, Boolean>>()
+
+    internal val setNotificationEnabledLiveData = CompositeLiveData<Any>()
+
+    internal val checkNotificationPermissionRequestedLiveData = CompositeLiveData<Boolean>()
 
     override fun onCreate() {
         super.onCreate()
@@ -89,6 +94,29 @@ class MainViewModel(
                         )
                     })
             )
+        )
+    }
+
+    fun setNotificationEnabled(enable: Boolean) {
+        setNotificationEnabledLiveData.add(
+            rxLiveDataTransformer.completable(
+                appRepo.setNotificationEnabled(
+                    enable
+                )
+            )
+        )
+    }
+
+    fun checkNotificationPermissionRequested() {
+        checkNotificationPermissionRequestedLiveData.add(
+            rxLiveDataTransformer.single(
+                appRepo.checkNotificationEnabled().map { true }.onErrorResumeNext { e ->
+                    if (e is Resources.NotFoundException) {
+                        Single.just(false)
+                    } else {
+                        Single.error(e)
+                    }
+                })
         )
     }
 }

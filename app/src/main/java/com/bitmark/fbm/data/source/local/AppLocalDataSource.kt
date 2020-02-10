@@ -6,6 +6,7 @@
  */
 package com.bitmark.fbm.data.source.local
 
+import android.content.res.Resources
 import com.bitmark.fbm.data.ext.fromJson
 import com.bitmark.fbm.data.ext.newGsonInstance
 import com.bitmark.fbm.data.model.AccountData
@@ -14,6 +15,7 @@ import com.bitmark.fbm.data.model.keyFileName
 import com.bitmark.fbm.data.source.local.api.DatabaseApi
 import com.bitmark.fbm.data.source.local.api.FileStorageApi
 import com.bitmark.fbm.data.source.local.api.SharedPrefApi
+import com.bitmark.fbm.data.source.local.event.NotificationStateChangedListener
 import io.reactivex.Completable
 import javax.inject.Inject
 
@@ -24,13 +26,26 @@ class AppLocalDataSource @Inject constructor(
     fileStorageApi: FileStorageApi
 ) : LocalDataSource(databaseApi, sharedPrefApi, fileStorageApi) {
 
+    private var notificationStateChangedListener: NotificationStateChangedListener? = null
+
+    internal fun setNotificationStateChangedListener(listener: NotificationStateChangedListener) {
+        this.notificationStateChangedListener = listener
+    }
+
     fun setNotificationEnabled(enabled: Boolean) =
         sharedPrefApi.rxCompletable { sharedPrefGateway ->
             sharedPrefGateway.put(SharedPrefApi.NOTIFICATION_ENABLED, enabled)
+        }.doOnComplete {
+            notificationStateChangedListener?.onNotificationStateChanged(enabled)
         }
 
     fun checkNotificationEnabled() = sharedPrefApi.rxSingle { sharedPrefGateway ->
-        sharedPrefGateway.get(SharedPrefApi.NOTIFICATION_ENABLED, Boolean::class)
+        if (sharedPrefGateway.has(SharedPrefApi.NOTIFICATION_ENABLED)) {
+            sharedPrefGateway.get(SharedPrefApi.NOTIFICATION_ENABLED, Boolean::class)
+        } else {
+            throw Resources.NotFoundException("missing ${SharedPrefApi.NOTIFICATION_ENABLED}")
+        }
+
     }
 
     fun checkDataReady() = sharedPrefApi.rxSingle { sharedPrefGateway ->
