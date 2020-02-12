@@ -74,13 +74,15 @@ class SplashActivity : BaseAppCompatActivity() {
 
     private lateinit var account: Account
 
+    private lateinit var appInfoData: AppInfoData
+
     override fun layoutRes(): Int = R.layout.activity_splash
 
     override fun viewModel(): BaseViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.checkVersionOutOfDate()
+        viewModel.getAppInfo()
     }
 
     override fun initComponents() {
@@ -88,15 +90,15 @@ class SplashActivity : BaseAppCompatActivity() {
 
         val tosAndPpString = getString(R.string.by_continuing)
         val spannableString = SpannableString(tosAndPpString)
-        val tosString = getString(R.string.term_of_service)
+        val eulaString = getString(R.string.eula)
         val ppString = getString(R.string.privacy_policy)
 
-        var startIndex = tosAndPpString.indexOf(tosString)
-        var endIndex = startIndex + tosString.length
+        var startIndex = tosAndPpString.indexOf(eulaString)
+        var endIndex = startIndex + eulaString.length
         spannableString.setSpan(
             object : ClickableSpan() {
                 override fun onClick(widget: View) {
-                    navigator.anim(NONE).openBrowser(BuildConfig.TERM_OF_SERVICE)
+                    navigator.anim(NONE).openBrowser(appInfoData.docs.eula)
                 }
 
             }, startIndex,
@@ -152,14 +154,15 @@ class SplashActivity : BaseAppCompatActivity() {
     override fun observe() {
         super.observe()
 
-        viewModel.checkVersionOutOfDateLiveData.asLiveData().observe(this, Observer { res ->
+        viewModel.getAppInfoLiveData.asLiveData().observe(this, Observer { res ->
             when {
                 res.isSuccess() -> {
-                    val data = res.data()!!
-                    val versionOutOfDate = data.first
+                    appInfoData = res.data()!!
+                    val versionOutOfDate =
+                        BuildConfig.VERSION_CODE < appInfoData.androidAppInfo.requiredVersion
                     if (versionOutOfDate) {
                         dialogController.showUpdateRequired {
-                            val updateUrl = data.second
+                            val updateUrl = appInfoData.androidAppInfo.updateUrl
                             navigator.goToUpdateApp(updateUrl)
                             navigator.exitApp()
                         }

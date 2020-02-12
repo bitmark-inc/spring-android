@@ -10,8 +10,9 @@
     <string name="get_started_arrow">Get started »</string>
     <string name="i_already_have_an_account_arrow">I already have an account »</string>
     <string name="how_it_works">How it works</string>
-    <string name="we_will_back_up_your_fb_data">We’ll back up your Facebook data archive into a personal data vault that only you control.</string>
-    <string name="we_will_give_you_private_analytics">We’ll give you private analytics on your Facebook data.</string>
+    <string name="we_will_back_up_your_fb_data">We’ll back up your Facebook data.</string>
+    <string name="we_will_show_how_you_use_fb">We’ll show how you use Facebook and how they use you.</string>
+    <string name="we_will_give_you_a_way">We’ll give you ways to use your data for good (Future).</string>
     <string name="your_vault_will_be_updated">Your vault will be updated each week with new Facebook data and insights.</string>
     <string name="continue_arrow">Continue »</string>
     <string name="get_your_data">Get your data</string>
@@ -152,7 +153,8 @@
     <string name="tos_and_pp">Term of Service and Privacy Policy</string>
     <string name="whats_new_arrow">What\'s new »</string>
     <string name="help_arrow">Help »</string>
-    <string name="by_continuing">By continuing, you agree to the Bitmark \nTerm of Service and Privacy Policy.</string>
+    <string name="by_continuing">By continuing, you agree to the Bitmark \nEULA and Privacy Policy.</string>
+    <string name="eula">EULA</string>
     <string name="increase_privacy">Increase Privacy</string>
     <string name="here_is_6_steps">Here are 6 simple steps you can take to increase your privacy while using Facebook:</string>
     <string name="turn_off_face_reg_arrow"><![CDATA[<u>Turn off Face Recognition »</u>]]></string>

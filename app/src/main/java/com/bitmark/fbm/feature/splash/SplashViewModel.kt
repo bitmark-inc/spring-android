@@ -11,6 +11,7 @@ import com.bitmark.cryptography.crypto.encoder.Hex
 import com.bitmark.cryptography.crypto.encoder.Raw
 import com.bitmark.fbm.data.ext.onNetworkErrorResumeNext
 import com.bitmark.fbm.data.model.AccountData
+import com.bitmark.fbm.data.model.AppInfoData
 import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.data.source.AppRepository
 import com.bitmark.fbm.feature.BaseViewModel
@@ -33,7 +34,7 @@ class SplashViewModel(
 
     internal val getAccountInfoLiveData = CompositeLiveData<Triple<AccountData, Long, Boolean>>()
 
-    internal val checkVersionOutOfDateLiveData = CompositeLiveData<Pair<Boolean, String>>()
+    internal val getAppInfoLiveData = CompositeLiveData<AppInfoData>()
 
     internal val checkFirstTimeEnterNewVersionLiveData = CompositeLiveData<Boolean>()
 
@@ -59,8 +60,8 @@ class SplashViewModel(
         )
     }
 
-    fun checkVersionOutOfDate() {
-        checkVersionOutOfDateLiveData.add(rxLiveDataTransformer.single(appRepo.checkVersionOutOfDate()))
+    fun getAppInfo() {
+        getAppInfoLiveData.add(rxLiveDataTransformer.single(appRepo.getAppInfo()))
     }
 
     fun prepareData(account: Account) {
