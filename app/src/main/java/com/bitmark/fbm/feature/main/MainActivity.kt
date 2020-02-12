@@ -176,7 +176,7 @@ class MainActivity : BaseAppCompatActivity() {
                         }
 
                         if (!firstTimeLaunch && !dataReady) {
-                            showNotification(accountRegistered)
+                            showNotification()
                         }
                     }
                 }
@@ -214,11 +214,11 @@ class MainActivity : BaseAppCompatActivity() {
             })
     }
 
-    private fun showNotification(accountRegistered: Boolean) {
+    private fun showNotification() {
         val title =
-            getString(if (accountRegistered) R.string.processing_data else R.string.still_waiting)
+            getString(R.string.still_waiting)
         val message =
-            getString(if (accountRegistered) R.string.your_fb_data_archive_has_been_successfully else R.string.sorry_fb_is_still_prepare)
+            getString(R.string.sorry_fb_is_still_prepare)
         tvNotifTitle.text = title
         tvNotifMsg.text = message
 
