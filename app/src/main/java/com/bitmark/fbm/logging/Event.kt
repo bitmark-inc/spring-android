@@ -50,5 +50,7 @@ enum class Event(val value: String) {
 
     RX_UNCAUGHT_ERROR("Rx Uncaught error"),
 
-    DELETE_FB_CREDENTIAL_ERROR("delete_fb_credential_error")
+    DELETE_FB_CREDENTIAL_ERROR("delete_fb_credential_error"),
+
+    GET_APP_INFO_ERROR("get_app_info_error")
 }

@@ -150,7 +150,7 @@
     <string name="term_of_service">Term of Service</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="facebook">Facebook</string>
-    <string name="tos_and_pp">Term of Service and Privacy Policy</string>
+    <string name="eula_and_pp">EULA and Privacy Policy</string>
     <string name="whats_new_arrow">What\'s new »</string>
     <string name="help_arrow">Help »</string>
     <string name="by_continuing">By continuing, you agree to the Bitmark \nEULA and Privacy Policy.</string>

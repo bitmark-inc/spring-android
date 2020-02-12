@@ -6,8 +6,10 @@
  */
 package com.bitmark.fbm.feature.settings
 
+import com.bitmark.fbm.data.source.AppRepository
 import com.bitmark.fbm.di.FragmentScope
 import com.bitmark.fbm.feature.Navigator
+import com.bitmark.fbm.util.livedata.RxLiveDataTransformer
 import dagger.Module
 import dagger.Provides
 
@@ -17,4 +19,12 @@ class SettingsModule {
     @Provides
     @FragmentScope
     fun provideNavigator(fragment: SettingsFragment) = Navigator(fragment)
+
+    @Provides
+    @FragmentScope
+    fun provideVM(
+        fragment: SettingsFragment,
+        appRepo: AppRepository,
+        rxLiveDataTransformer: RxLiveDataTransformer
+    ) = SettingsViewModel(fragment.lifecycle, appRepo, rxLiveDataTransformer)
 }

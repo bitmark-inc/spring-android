@@ -8,6 +8,7 @@ package com.bitmark.fbm.feature.settings
 
 import android.graphics.Color
 import android.graphics.Typeface
+import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.method.LinkMovementMethod
@@ -15,8 +16,10 @@ import android.text.style.ClickableSpan
 import android.text.style.StyleSpan
 import android.view.View
 import android.widget.Toast
+import androidx.lifecycle.Observer
 import com.bitmark.fbm.BuildConfig
 import com.bitmark.fbm.R
+import com.bitmark.fbm.data.model.AppInfoData
 import com.bitmark.fbm.feature.BaseSupportFragment
 import com.bitmark.fbm.feature.BaseViewModel
 import com.bitmark.fbm.feature.Navigator
@@ -28,6 +31,8 @@ import com.bitmark.fbm.feature.increaseprivacy.IncreasePrivacyActivity
 import com.bitmark.fbm.feature.recovery.RecoveryContainerActivity
 import com.bitmark.fbm.feature.unlink.UnlinkContainerActivity
 import com.bitmark.fbm.feature.whatsnew.WhatsNewActivity
+import com.bitmark.fbm.logging.Event
+import com.bitmark.fbm.logging.EventLogger
 import com.bitmark.fbm.util.ext.openBrowser
 import com.bitmark.fbm.util.ext.openIntercom
 import com.bitmark.fbm.util.ext.setSafetyOnclickListener
@@ -49,26 +54,42 @@ class SettingsFragment : BaseSupportFragment() {
     @Inject
     internal lateinit var navigator: Navigator
 
+    @Inject
+    internal lateinit var viewModel: SettingsViewModel
+
+    @Inject
+    internal lateinit var logger: EventLogger
+
+    private lateinit var appInfoData: AppInfoData
+
     override fun layoutRes(): Int = R.layout.fragment_settings
 
-    override fun viewModel(): BaseViewModel? = null
+    override fun viewModel(): BaseViewModel? = viewModel
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.getAppInfo()
+    }
 
     override fun initComponents() {
         super.initComponents()
 
         tvVersion.text = getString(R.string.version_format).format(BuildConfig.VERSION_NAME)
 
-        val tosAndPpString = getString(R.string.tos_and_pp)
-        val spannableString = SpannableString(tosAndPpString)
-        val tosString = getString(R.string.term_of_service)
+        val eulaAndPpString = getString(R.string.eula_and_pp)
+        val spannableString = SpannableString(eulaAndPpString)
+        val eulaString = getString(R.string.eula)
         val ppString = getString(R.string.privacy_policy)
 
-        var startIndex = tosAndPpString.indexOf(tosString)
-        var endIndex = startIndex + tosString.length
+        var startIndex = eulaAndPpString.indexOf(eulaString)
+        var endIndex = startIndex + eulaString.length
         spannableString.setSpan(
             object : ClickableSpan() {
                 override fun onClick(widget: View) {
-                    navigator.anim(NONE).openBrowser(BuildConfig.TERM_OF_SERVICE)
+                    if (::appInfoData.isInitialized) {
+                        navigator.anim(NONE).openBrowser(appInfoData.docs.eula)
+                    }
                 }
 
             }, startIndex,
@@ -82,7 +103,7 @@ class SettingsFragment : BaseSupportFragment() {
             Spannable.SPAN_INCLUSIVE_EXCLUSIVE
         )
 
-        startIndex = tosAndPpString.indexOf(ppString)
+        startIndex = eulaAndPpString.indexOf(ppString)
         endIndex = startIndex + ppString.length
         spannableString.setSpan(
             object : ClickableSpan() {
@@ -155,6 +176,22 @@ class SettingsFragment : BaseSupportFragment() {
             navigator.anim(NONE).openBrowser(SURVEY_URL)
         }
 
+    }
+
+    override fun observe() {
+        super.observe()
+
+        viewModel.getAppInfoLiveData.asLiveData().observe(this, Observer { res ->
+            when {
+                res.isSuccess() -> {
+                    appInfoData = res.data()!!
+                }
+
+                res.isError() -> {
+                    logger.logError(Event.GET_APP_INFO_ERROR, res.throwable())
+                }
+            }
+        })
     }
 
     private fun toastComingSoon() {
