@@ -16,10 +16,7 @@ import com.bitmark.fbm.R
 import com.bitmark.fbm.feature.Navigator
 import com.bitmark.fbm.feature.Navigator.Companion.NONE
 import com.bitmark.fbm.feature.Navigator.Companion.RIGHT_LEFT
-import com.bitmark.fbm.util.ext.gone
-import com.bitmark.fbm.util.ext.setSafetyOnclickListener
-import com.bitmark.fbm.util.ext.share
-import com.bitmark.fbm.util.ext.visible
+import com.bitmark.fbm.util.ext.*
 import kotlinx.android.synthetic.main.layout_webview.*
 
 
@@ -31,13 +28,17 @@ class WebViewActivity : AppCompatActivity() {
 
         private const val TITLE = "title"
 
+        private const val SHOW_SHARE = "show_share"
+
         fun getBundle(
             url: String,
-            title: String
+            title: String,
+            showShare: Boolean = true
         ): Bundle {
             val bundle = Bundle()
             bundle.putString(URL, url)
             bundle.putString(TITLE, title)
+            bundle.putBoolean(SHOW_SHARE, showShare)
             return bundle
         }
     }
@@ -90,6 +91,13 @@ class WebViewActivity : AppCompatActivity() {
 
         ivBack.setSafetyOnclickListener {
             navigator.anim(RIGHT_LEFT).finishActivity()
+        }
+
+        val showShare = intent?.extras?.getBoolean(SHOW_SHARE) ?: false
+        if (showShare) {
+            ivShare.visible()
+        } else {
+            ivShare.invisible()
         }
 
         ivShare.setSafetyOnclickListener {

@@ -48,6 +48,8 @@ class SettingsFragment : BaseSupportFragment() {
         private const val SURVEY_URL =
             "https://docs.google.com/forms/d/e/1FAIpQLScL41kNU6SBzo7ndcraUf7O-YJ_JrPqg_rlI588UjLK-_sGtQ/viewform?usp=sf_link"
 
+        private const val FB_DELETE_ACCOUNT_URL = "https://m.facebook.com/help/delete_account/"
+
         fun newInstance() = SettingsFragment()
     }
 
@@ -152,7 +154,8 @@ class SettingsFragment : BaseSupportFragment() {
         }
 
         tvFbDeleteAccount.setSafetyOnclickListener {
-            toastComingSoon()
+            val bundle = WebViewActivity.getBundle(FB_DELETE_ACCOUNT_URL, "", false)
+            navigator.anim(RIGHT_LEFT).startActivity(WebViewActivity::class.java, bundle)
         }
 
         tvAbout.setSafetyOnclickListener {
