@@ -31,6 +31,8 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
 import kotlinx.android.synthetic.main.layout_group_header.view.*
+import java.util.*
+import kotlin.Comparator
 
 
 class GroupView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
@@ -94,6 +96,7 @@ class GroupView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                         }
                         GroupName.FRIEND -> R.string.by_friends_tagged
                         GroupName.PLACE -> R.string.by_place_tagged
+                        else -> error("invalid group name")
                     }
                 }
                 SectionName.REACTION -> {
@@ -105,12 +108,19 @@ class GroupView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                             Period.DECADE -> R.string.by_year
                         }
                         GroupName.FRIEND -> R.string.by_friend
-                        else -> R.string.empty
+                        else -> error("invalid group name")
                     }
                 }
-                else -> R.string.empty
+                SectionName.STATS -> {
+                    when (group.name) {
+                        GroupName.POST_STATS -> R.string.posts_by_type
+                        GroupName.REACTION_STATS -> R.string.reaction_by_type
+                        else -> error("invalid group name")
+                    }
+                }
+                else -> error("invalid section name")
             }
-        ).toUpperCase()
+        ).toUpperCase(Locale.getDefault())
         tvNameSuffix.text = context.getString(
             when (group.sectionName) {
                 SectionName.REACTION -> {
@@ -122,7 +132,7 @@ class GroupView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                 }
                 else -> R.string.empty
             }
-        ).toLowerCase()
+        ).toLowerCase(Locale.getDefault())
 
         val vertical = group.name == GroupName.SUB_PERIOD
 
@@ -130,8 +140,14 @@ class GroupView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             group.reverse()
         }
 
+        val isStatsChart = group.sectionName == SectionName.STATS
+
         val barXValues = getBarXValues(group)
-        val chartView = buildBarChart(group, barXValues)
+        val chartView = if (isStatsChart) {
+            buildMultiBarChart(barXValues)
+        } else {
+            buildSingleBarChart(group, barXValues)
+        }
 
         val width = if (vertical) {
             calculateVerticalWidth(barXValues.size)
@@ -139,7 +155,8 @@ class GroupView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             LayoutParams.MATCH_PARENT
         }
         val h = context.getDimensionPixelSize(R.dimen.dp_180)
-        val height = if (vertical) h else calculateHorizontalHeight(barXValues.size)
+        val height =
+            if (vertical) h else calculateHorizontalHeight(barXValues.size)
         val params = LayoutParams(width, height)
         val margin = context.getDimensionPixelSize(R.dimen.dp_8)
         params.marginStart = margin
@@ -148,7 +165,11 @@ class GroupView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         removeChartView()
         addView(chartView, params)
 
-        val data = getBarData(group, barXValues)
+        val data = if (isStatsChart) {
+            getMultiBarData(group, barXValues, chartView)
+        } else {
+            getSingleBarData(group, barXValues)
+        }
         chartView.data = data
         chartView.notifyDataSetChanged()
     }
@@ -162,7 +183,7 @@ class GroupView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         }
     }
 
-    private fun getBarData(group: GroupModelView, barXValues: List<String>): BarData {
+    private fun getSingleBarData(group: GroupModelView, barXValues: List<String>): BarData {
         val font = ResourcesCompat.getFont(context, R.font.grotesk_light_font_family)
         val vertical = group.name == GroupName.SUB_PERIOD
         val gEntries = group.entries
@@ -231,10 +252,69 @@ class GroupView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         return barData
     }
 
-    private fun calculateHorizontalHeight(xCount: Int) =
-        if (xCount == 0) 0 else context.getDimensionPixelSize(R.dimen.dp_180) * xCount / MAX_HORIZONTAL_COUNT + context.getDimensionPixelSize(
+    private fun getMultiBarData(
+        group: GroupModelView,
+        barXValues: List<String>,
+        chartView: BarChart
+    ): BarData {
+        val gEntries = group.entries
+        val dataSetCount = gEntries[0].yValues.size
+        val valid = gEntries.map { e -> e.yValues.size }.none { size -> size != dataSetCount }
+        if (!valid) error("Invalid data set")
+        val dataSetEntries = mutableListOf<MutableList<BarEntry>>()
+        for (i in 0 until dataSetCount) {
+            dataSetEntries.add(mutableListOf())
+        }
+
+        for (i in barXValues.indices) {
+            val xVal = barXValues[i]
+            val entry = gEntries[i]
+            val resId =
+                if (needResIdAsAdditionalData(group)) {
+                    stringResLabelMap.entries.first { e -> context.getString(e.key) == xVal }.key
+                } else {
+                    null
+                }
+
+            for (j in 0 until dataSetCount) {
+                val data =
+                    ChartItem(
+                        group.sectionName,
+                        group.name,
+                        xVal,
+                        entry.yValues[j],
+                        resId,
+                        null,
+                        null
+                    )
+                dataSetEntries[j].add(BarEntry(i.toFloat(), entry.yValues[j], data))
+            }
+
+        }
+
+        val colors =
+            context.resources.getIntArray(R.array.color_palette_5)
+        val dataSets = dataSetEntries.mapIndexed { i, e ->
+            val dataSet = BarDataSet(e, "")
+            dataSet.colors = listOf(colors[i])
+            dataSet
+        }
+
+        val barData = BarData(dataSets.reversed())
+        barData.barWidth = 0.14f
+        barData.setDrawValues(false)
+        barData.groupBars(0f, 0.62f, 0.05f)
+        chartView.xAxis.axisMaximum = barData.getGroupWidth(0.62f, 0.05f) * barXValues.size
+        return barData
+    }
+
+    private fun calculateHorizontalHeight(xCount: Int) = if (xCount == 0) {
+        0
+    } else {
+        context.getDimensionPixelSize(R.dimen.dp_180) * xCount / MAX_HORIZONTAL_COUNT + context.getDimensionPixelSize(
             R.dimen.dp_28
         ) / xCount
+    }
 
     private fun calculateVerticalWidth(xCount: Int): Int {
         val room =
@@ -296,12 +376,12 @@ class GroupView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         }
     }
 
-    private fun needResIdAsAdditionalData(group: GroupModelView) = group.sectionName in arrayOf(
+    private fun needResIdAsAdditionalData(group: GroupModelView) = (group.sectionName in arrayOf(
         SectionName.POST,
         SectionName.REACTION
-    ) && group.name == GroupName.TYPE
+    ) && group.name == GroupName.TYPE) || group.sectionName == SectionName.STATS
 
-    private fun buildBarChart(group: GroupModelView, barXValues: List<String>): BarChart {
+    private fun buildSingleBarChart(group: GroupModelView, barXValues: List<String>): BarChart {
         val font = ResourcesCompat.getFont(context, R.font.grotesk_light_font_family)
         val vertical = group.name == GroupName.SUB_PERIOD
         val chartView = if (vertical) BarChart(context) else HorizontalBarChart(context)
@@ -364,6 +444,70 @@ class GroupView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             0f,
             context.getDimensionPixelSize(R.dimen.dp_12).toFloat()
         )
+        return chartView
+    }
+
+    private fun buildMultiBarChart(barXValues: List<String>): BarChart {
+        val font = ResourcesCompat.getFont(context, R.font.grotesk_light_font_family)
+        val chartView = HorizontalBarChart(context)
+        chartView.reinitXAxisRenderer(true)
+        chartView.description.isEnabled = false
+        val axisLeft = chartView.axisLeft
+        val axisRight = chartView.axisRight
+        val xAxis = chartView.xAxis
+        axisLeft.setDrawLabels(false)
+        axisLeft.setDrawGridLines(false)
+        axisLeft.setDrawAxisLine(false)
+        axisLeft.axisMinimum = 0f
+        axisRight.setDrawLabels(true)
+        axisRight.setDrawGridLines(true)
+        axisRight.setDrawAxisLine(false)
+        axisRight.typeface = font
+        axisRight.textSize = 12f
+        xAxis.setDrawGridLines(false)
+        xAxis.setDrawAxisLine(true)
+        xAxis.textSize = 12f
+        xAxis.typeface = font
+        xAxis.position = XAxis.XAxisPosition.BOTTOM_INSIDE
+        xAxis.valueFormatter = IndexAxisValueFormatter(barXValues)
+        xAxis.labelCount = barXValues.size
+        xAxis.isGranularityEnabled = true
+        xAxis.granularity = 1f
+        xAxis.axisMinimum = 0f
+        chartView.setScaleEnabled(false)
+        chartView.isDoubleTapToZoomEnabled = false
+        chartView.setPinchZoom(false)
+        chartView.isDragEnabled = false
+        chartView.legend.isEnabled = false
+        chartView.setTouchEnabled(true)
+        chartView.isHighlightPerTapEnabled = true
+        chartView.isHighlightPerDragEnabled = false
+        chartView.animateY(200)
+        chartView.setFitBars(true)
+        chartView.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+            override fun onNothingSelected() {
+
+            }
+
+            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                if (chartClickListener != null) {
+                    var data = e?.data as? ChartItem ?: return
+                    if (data.stringRes != null) {
+                        data = ChartItem(
+                            data.sectionName,
+                            data.groupName,
+                            stringResLabelMap[data.stringRes!!]
+                                ?: error("could not found item is stringResLabelMap"),
+                            data.yVal,
+                            stringRes = data.stringRes,
+                            periodRange = data.periodRange
+                        )
+                    }
+                    chartClickListener?.onClick(data)
+                    postDelayed({ chartView.highlightValues(null) }, 50)
+                }
+            }
+        })
         return chartView
     }
 

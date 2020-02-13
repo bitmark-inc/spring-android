@@ -55,7 +55,7 @@ class StatisticRecyclerViewAdapter :
         items.addAll(sections.map { s ->
             val type = when (s.name) {
                 SectionName.SENTIMENT -> SENTIMENT
-                SectionName.POST, SectionName.REACTION -> STATISTIC
+                SectionName.POST, SectionName.REACTION, SectionName.STATS -> STATISTIC
                 else -> DATA_COMING
             }
             Item(type, s, notificationEnabled)

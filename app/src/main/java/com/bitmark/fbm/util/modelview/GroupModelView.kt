@@ -23,8 +23,8 @@ fun GroupModelView.reverse() {
 }
 
 fun GroupModelView.order() = when (name) {
-    GroupName.TYPE -> 0
-    GroupName.SUB_PERIOD -> -1
+    GroupName.TYPE, GroupName.POST_STATS -> 0
+    GroupName.SUB_PERIOD, GroupName.REACTION_STATS -> -1
     GroupName.FRIEND -> -2
     GroupName.PLACE -> -3
 }
@@ -33,9 +33,17 @@ fun GroupModelView.hasAggregatedData() = aggregatedIndex() != -1
 
 fun GroupModelView.aggregatedIndex() = entries.indexOfFirst { e -> e.isAggregated() }
 
+fun GroupModelView.hasAnyWithFullData() = entries.any { e -> e.hasFullData() }
+
+fun GroupModelView.hasAnyWithData() = entries.any { e -> e.hasAnyData() }
+
 data class Entry(val xValue: Array<String>, val yValues: FloatArray)
 
 fun Entry.sum() = yValues.sum()
 
 fun Entry.isAggregated() = xValue.size > 1
+
+fun Entry.hasFullData() = yValues.none { yVal -> yVal == 0f }
+
+fun Entry.hasAnyData() = yValues.any { yVal -> yVal != 0f }
 

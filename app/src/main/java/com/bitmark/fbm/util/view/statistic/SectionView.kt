@@ -15,18 +15,19 @@ import com.bitmark.fbm.R
 import com.bitmark.fbm.data.model.entity.SectionName
 import com.bitmark.fbm.util.ext.decimalFormat
 import com.bitmark.fbm.util.ext.getDimensionPixelSize
+import com.bitmark.fbm.util.ext.gone
+import com.bitmark.fbm.util.ext.visible
 import com.bitmark.fbm.util.modelview.GroupModelView
 import com.bitmark.fbm.util.modelview.SectionModelView
+import com.bitmark.fbm.util.modelview.hasAnyGroupWithData
+import com.bitmark.fbm.util.modelview.hasAnyGroupWithFullData
+import kotlinx.android.synthetic.main.layout_legend.view.*
 import kotlinx.android.synthetic.main.layout_section.view.*
 import kotlinx.android.synthetic.main.layout_section_header.view.*
 
 
 class SectionView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     LinearLayout(context, attrs, defStyleAttr) {
-
-    companion object {
-        private const val DEFAULT_CHILD_COUNT = 1
-    }
 
     constructor(context: Context) : this(context, null, 0)
 
@@ -53,14 +54,18 @@ class SectionView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         when (section.name) {
             SectionName.POST -> {
                 tvOverview.text = context.getString(R.string.posts_format)
-                    .format(section.quantity.decimalFormat())
+                    .format(section.quantity!!.decimalFormat())
                 tvOverviewSuffix.text = context.getString(R.string.you_made).toLowerCase()
             }
             SectionName.REACTION -> {
                 tvOverview.text =
                     context.getString(R.string.reactions_format)
-                        .format(section.quantity.decimalFormat())
+                        .format(section.quantity!!.decimalFormat())
                 tvOverviewSuffix.text = context.getString(R.string.you_gave).toLowerCase()
+            }
+            SectionName.STATS -> {
+                tvOverview.text = context.getString(R.string.all_of_spring)
+                tvOverviewSuffix.text = context.getString(R.string.aggregate_analysis)
             }
             else -> {
                 // do nothing
@@ -69,22 +74,50 @@ class SectionView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 
         val groups = section.groups
         val isNoData = section.isNoData()
+        val isStatsSection = section.name == SectionName.STATS
+        val defaultChildCount = if (isStatsSection && !isNoData) 2 else 1
 
         tvEmpty.visibility = if (isNoData) View.VISIBLE else View.GONE
-        removeGroups()
+        removeGroups(defaultChildCount)
         if (isNoData) return
 
-        addGroups(groups)
-        bindGroupsData(groups)
+        // init chart legend
+        if (isStatsSection) {
+            ivIcon1.setImageResource(R.drawable.bg_indian_khaki_circle)
+            ivIcon2.setImageResource(R.drawable.bg_cognac_circle)
+            tvName1.setText(R.string.spring_user_avg)
+            tvName2.setText(R.string.your_posts)
+            if (section.hasAnyGroupWithData()) {
+                ivIcon1.visible()
+                tvName1.visible()
+                if (section.hasAnyGroupWithFullData()) {
+                    ivIcon2.visible()
+                    tvName2.visible()
+                } else {
+                    ivIcon2.gone()
+                    tvName2.gone()
+                }
+            } else {
+                ivIcon1.gone()
+                tvName1.gone()
+                ivIcon2.gone()
+                tvName2.gone()
+            }
+
+            layoutLegend.visible()
+        }
+
+        addGroups(groups, defaultChildCount)
+        bindGroupsData(groups, defaultChildCount)
     }
 
-    private fun removeGroups() {
+    private fun removeGroups(defaultChildCount: Int) {
         val count = children.filter { v -> v is GroupView }.count()
         if (count == 0) return
-        removeViews(DEFAULT_CHILD_COUNT, count)
+        removeViews(defaultChildCount, count)
     }
 
-    private fun addGroups(groups: List<GroupModelView>) {
+    private fun addGroups(groups: List<GroupModelView>, defaultChildCount: Int) {
         for (index in groups.indices) {
             val groupView = GroupView(context)
             val params = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
@@ -93,14 +126,14 @@ class SectionView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             if (chartClickListener != null) {
                 groupView.setChartClickListener(chartClickListener!!)
             }
-            addView(groupView, index + DEFAULT_CHILD_COUNT)
+            addView(groupView, index + defaultChildCount)
         }
     }
 
-    private fun bindGroupsData(groups: List<GroupModelView>) {
-        for (index in DEFAULT_CHILD_COUNT until childCount) {
+    private fun bindGroupsData(groups: List<GroupModelView>, defaultChildCount: Int) {
+        for (index in defaultChildCount until childCount) {
             val view = getChildAt(index) as? GroupView
-            view?.bind(groups[index - 1])
+            view?.bind(groups[index - defaultChildCount])
         }
     }
 }

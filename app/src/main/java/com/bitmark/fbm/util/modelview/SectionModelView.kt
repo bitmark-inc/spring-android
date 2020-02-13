@@ -14,9 +14,9 @@ data class SectionModelView(
     val name: SectionName?,
     val period: Period?,
     val periodStartedAtSec: Long?,
-    val quantity: Int,
+    val quantity: Int?,
     val diffFromPrev: Int?,
-    val average: Int,
+    val average: Int?,
     val groups: List<GroupModelView>,
     val value: Float?
 ) : ModelView {
@@ -68,7 +68,7 @@ data class SectionModelView(
                     val xVal = when (sectionName) {
                         SectionName.POST -> PostType.fromIndex(i).value
                         SectionName.REACTION -> Reaction.fromIndex(i).value
-                        else -> error("unsupported section")
+                        else -> error("unsupported section $sectionName")
                     }
                     val yVal = if (data.containsKey(xVal)) data[xVal] else 0
                     Entry(arrayOf(xVal), floatArrayOf(yVal!!.toFloat()))
@@ -180,6 +180,51 @@ data class SectionModelView(
                 sectionR.value
             )
         }
+
+        fun newInstance(
+            period: Period,
+            periodStartedAtSec: Long,
+            statsList: List<StatsR>
+        ): SectionModelView {
+            val sectionName = SectionName.STATS
+            val groupModelViews = statsList.map { stats ->
+                val groupName =
+                    if (stats.type == StatsType.POST) GroupName.POST_STATS else GroupName.REACTION_STATS
+                val typeCount = when (groupName) {
+                    GroupName.POST_STATS -> 4
+                    GroupName.REACTION_STATS -> 6
+                    else -> error("invalid group name $groupName")
+                }
+                val data = stats.data
+                val entries = (0 until typeCount).map { i ->
+                    val xVal = when (groupName) {
+                        GroupName.POST_STATS -> PostType.fromIndex(i).value
+                        GroupName.REACTION_STATS -> Reaction.fromIndex(i).value
+                        else -> error("unsupported group $groupName")
+                    }
+                    val yVal =
+                        if (data.containsKey(xVal)) {
+                            data.getValue(xVal).toArray()
+                        } else {
+                            floatArrayOf(0f, 0f)
+                        }
+                    Entry(arrayOf(xVal), yVal)
+                }
+                GroupModelView(period, sectionName, groupName, typeCount, entries)
+            }
+
+            return SectionModelView(
+                sectionName,
+                period,
+                periodStartedAtSec,
+                null,
+                null,
+                null,
+                groupModelViews,
+                null
+            )
+
+        }
     }
 
     fun isNoData() = groups.isEmpty()
@@ -191,3 +236,7 @@ fun SectionModelView.order() = when (name) {
     SectionName.REACTION -> -2
     else -> error("unsupported section name")
 }
+
+fun SectionModelView.hasAnyGroupWithFullData() = groups.any { g -> g.hasAnyWithFullData() }
+
+fun SectionModelView.hasAnyGroupWithData() = groups.any { g -> g.hasAnyWithData() }

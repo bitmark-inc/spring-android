@@ -20,6 +20,7 @@ import com.github.mikephil.charting.utils.ViewPortHandler
 
 class CustomXAxisRender(
     private val context: Context,
+    private val multiDataSet: Boolean,
     viewPortHandler: ViewPortHandler, xAxis: XAxis,
     trans: Transformer, chart: BarChart
 ) : XAxisRendererHorizontalBarChart(viewPortHandler, xAxis, trans, chart) {
@@ -45,19 +46,19 @@ class CustomXAxisRender(
         val pointF = MPPointF.getInstance(0f, 0f)
 
         when {
-            mXAxis.position == XAxis.XAxisPosition.TOP           -> {
+            mXAxis.position == XAxis.XAxisPosition.TOP -> {
                 pointF.x = 0.0f
                 pointF.y = 0.5f
                 drawLabels(c, mViewPortHandler.contentRight() + xoffset, pointF)
 
             }
-            mXAxis.position == XAxis.XAxisPosition.TOP_INSIDE    -> {
+            mXAxis.position == XAxis.XAxisPosition.TOP_INSIDE -> {
                 pointF.x = 1.0f
                 pointF.y = 0.5f
                 drawLabels(c, mViewPortHandler.contentRight() - xoffset, pointF)
 
             }
-            mXAxis.position == XAxis.XAxisPosition.BOTTOM        -> {
+            mXAxis.position == XAxis.XAxisPosition.BOTTOM -> {
                 pointF.x = 1.0f
                 pointF.y = 0.5f
                 drawLabels(c, mViewPortHandler.contentLeft() - xoffset, pointF)
@@ -69,7 +70,7 @@ class CustomXAxisRender(
                 drawLabels(c, mViewPortHandler.contentLeft() + xoffset, pointF)
 
             }
-            else                                                 -> { // BOTH SIDED
+            else -> { // BOTH SIDED
                 pointF.x = 0.0f
                 pointF.y = 0.5f
                 drawLabels(c, mViewPortHandler.contentRight() + xoffset, pointF)
@@ -116,7 +117,7 @@ class CustomXAxisRender(
                     c,
                     label,
                     pos - context.getDimensionPixelSize(R.dimen.dp_3),
-                    y - context.getDimensionPixelSize(R.dimen.dp_10),
+                    y - context.getDimensionPixelSize(if(multiDataSet) R.dimen.dp_28 else R.dimen.dp_10),
                     anchor,
                     labelRotationAngleDegrees
                 )

@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
     <include
         android:id="@+id/layoutHeader"
         layout="@layout/layout_section_header"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <include
+        android:id="@+id/layoutLegend"
+        layout="@layout/layout_legend"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        />
+        android:layout_marginTop="@dimen/dp_8"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvEmpty"
@@ -26,7 +32,6 @@
         android:textColor="@color/black"
         android:textSize="@dimen/sp_14"
         android:visibility="gone"
-        tools:visibility="visible"
-        />
+        tools:visibility="visible" />
 
 </merge>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivIcon1"
+        android:layout_width="@dimen/dp_18"
+        android:layout_height="@dimen/dp_18"
+        tools:background="@drawable/bg_indian_khaki_circle"
+        tools:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvName1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_4"
+        android:fontFamily="@font/grotesk_light_font_family"
+        android:textColor="@color/black"
+        android:textSize="@dimen/sp_10"
+        tools:text="SPRING users average posts"
+        tools:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivIcon2"
+        android:layout_width="@dimen/dp_18"
+        android:layout_height="@dimen/dp_18"
+        android:layout_marginStart="@dimen/dp_18"
+        tools:background="@drawable/bg_cognac_circle"
+        tools:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvName2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_4"
+        android:fontFamily="@font/grotesk_light_font_family"
+        android:textColor="@color/black"
+        android:textSize="@dimen/sp_10"
+        tools:text="Your posts"
+        tools:visibility="visible" />
+
+</LinearLayout>

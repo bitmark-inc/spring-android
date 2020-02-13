@@ -13,6 +13,7 @@ import com.bitmark.fbm.data.source.local.AppLocalDataSource
 import com.bitmark.fbm.data.source.local.StatisticLocalDataSource
 import com.bitmark.fbm.data.source.local.UsageLocalDataSource
 import com.bitmark.fbm.data.source.local.api.DatabaseGateway
+import com.bitmark.fbm.data.source.local.api.MIGRATION_1_2
 import com.bitmark.fbm.data.source.remote.*
 import dagger.Module
 import dagger.Provides
@@ -63,7 +64,7 @@ class RepositoryModule {
         return Room.databaseBuilder(
             context, DatabaseGateway::class.java,
             DatabaseGateway.DATABASE_NAME
-        ).build()
+        ).addMigrations(MIGRATION_1_2).build()
     }
 
 }

@@ -162,7 +162,7 @@ enum class PostType {
     LINK,
 
     @Expose
-    @SerializedName("unspecified")
+    @SerializedName("undefined")
     UNSPECIFIED;
 
     companion object

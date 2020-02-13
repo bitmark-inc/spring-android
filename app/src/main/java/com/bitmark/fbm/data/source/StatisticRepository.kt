@@ -6,11 +6,10 @@
  */
 package com.bitmark.fbm.data.source
 
-import com.bitmark.fbm.data.model.entity.Period
-import com.bitmark.fbm.data.model.entity.SectionR
-import com.bitmark.fbm.data.model.entity.toPeriodRangeSec
+import com.bitmark.fbm.data.model.entity.*
 import com.bitmark.fbm.data.source.local.StatisticLocalDataSource
 import com.bitmark.fbm.data.source.remote.StatisticRemoteDataSource
+import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
@@ -53,5 +52,29 @@ class StatisticRepository(
         .flatMap { insightData ->
             localDataSource.saveInsightData(insightData).andThen(Single.just(insightData))
         }
+
+    fun getStats(type: StatsType, period: Period, periodStartedAtSec: Long): Single<StatsR> {
+        val range = period.toPeriodRangeSec(periodStartedAtSec)
+        val startedAt = range.first
+        val endedAt = range.last
+        return remoteDataSource.getStats(type, startedAt, endedAt).onErrorResumeNext {
+            localDataSource.checkStoredStats(type, startedAt, endedAt).flatMap { stored ->
+                if (stored) {
+                    localDataSource.getStats(type, startedAt, endedAt)
+                } else {
+                    Single.just(StatsR.newEmptyInstance(type, startedAt, endedAt))
+                }
+            }
+        }.flatMap { stats ->
+            if (stats.isEmpty()) {
+                Completable.complete()
+            } else {
+                Completable.mergeArray(
+                    localDataSource.saveStats(stats),
+                    localDataSource.saveStatsCriteria(type, startedAt, endedAt)
+                )
+            }.andThen(Single.just(stats))
+        }
+    }
 
 }

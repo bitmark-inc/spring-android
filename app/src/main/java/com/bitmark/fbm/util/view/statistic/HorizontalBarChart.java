@@ -21,16 +21,21 @@ import com.github.mikephil.charting.utils.TransformerHorizontalBarChart;
 import com.github.mikephil.charting.utils.Utils;
 
 public class HorizontalBarChart extends BarChart {
+
     public HorizontalBarChart(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public HorizontalBarChart(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
     }
 
     public HorizontalBarChart(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+    }
+
+    public void reinitXAxisRenderer(boolean multiDataSet) {
+        mXAxisRenderer = new CustomXAxisRender(getContext(), multiDataSet, mViewPortHandler, mXAxis, mLeftAxisTransformer, this);
     }
 
     @Override
@@ -48,7 +53,7 @@ public class HorizontalBarChart extends BarChart {
 
         mAxisRendererLeft = new YAxisRendererHorizontalBarChart(mViewPortHandler, mAxisLeft, mLeftAxisTransformer);
         mAxisRendererRight = new YAxisRendererHorizontalBarChart(mViewPortHandler, mAxisRight, mRightAxisTransformer);
-        mXAxisRenderer = new CustomXAxisRender(getContext(), mViewPortHandler, mXAxis, mLeftAxisTransformer, this);
+        mXAxisRenderer = new CustomXAxisRender(getContext(), false, mViewPortHandler, mXAxis, mLeftAxisTransformer, this);
     }
 
     private RectF mOffsetsBuffer = new RectF();

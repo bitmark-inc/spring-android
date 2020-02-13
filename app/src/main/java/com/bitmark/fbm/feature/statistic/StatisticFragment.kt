@@ -208,10 +208,10 @@ class StatisticFragment : BaseSupportFragment() {
             when {
                 res.isSuccess() -> {
                     val data = res.data() ?: return@Observer
-                    val usageStats = data.first
+                    val stats = data.first
                     val notificationEnabled = data.second
-                    if (usageStats.any { s -> s.periodStartedAtSec != null && s.periodStartedAtSec != currentStartedAtSec }) return@Observer
-                    adapter.set(usageStats, notificationEnabled)
+                    if (stats.any { s -> s.periodStartedAtSec != null && s.periodStartedAtSec != currentStartedAtSec }) return@Observer
+                    adapter.set(stats, notificationEnabled)
                 }
 
                 res.isError() -> {

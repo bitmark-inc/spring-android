@@ -7,6 +7,8 @@
 package com.bitmark.fbm.data.source.remote
 
 import com.bitmark.fbm.data.model.entity.Period
+import com.bitmark.fbm.data.model.entity.StatsR
+import com.bitmark.fbm.data.model.entity.StatsType
 import com.bitmark.fbm.data.model.entity.value
 import com.bitmark.fbm.data.source.remote.api.converter.Converter
 import com.bitmark.fbm.data.source.remote.api.middleware.RxErrorHandlingComposer
@@ -28,4 +30,18 @@ class StatisticRemoteDataSource @Inject constructor(
 
     fun getInsightData() =
         fbmApi.getInsight().map { res -> res["result"] }.subscribeOn(Schedulers.io())
+
+    fun getStats(type: StatsType, startedAt: Long, endedAt: Long) = if (type == StatsType.POST) {
+        fbmApi.getPostStats(startedAt, endedAt)
+    } else {
+        fbmApi.getReactionStats(startedAt, endedAt)
+    }.map { res ->
+        StatsR(
+            null,
+            type,
+            startedAt,
+            endedAt,
+            res["result"] ?: error("invalid response")
+        )
+    }
 }

@@ -10,6 +10,7 @@ import com.bitmark.fbm.data.model.*
 import com.bitmark.fbm.data.model.entity.PostR
 import com.bitmark.fbm.data.model.entity.ReactionR
 import com.bitmark.fbm.data.model.entity.SectionR
+import com.bitmark.fbm.data.model.entity.Stats
 import com.bitmark.fbm.data.source.remote.api.request.ArchiveRequestPayload
 import com.bitmark.fbm.data.source.remote.api.request.RegisterJwtRequest
 import io.reactivex.Completable
@@ -72,4 +73,10 @@ interface FbmApi {
 
     @DELETE("api/accounts/me")
     fun deleteAccount(): Completable
+
+    @GET("api/stats/posts")
+    fun getPostStats(@Query("started_at") startedAt: Long, @Query("ended_at") endedAt: Long): Single<Map<String, Map<String, Stats>>>
+
+    @GET("api/stats/reactions")
+    fun getReactionStats(@Query("started_at") startedAt: Long, @Query("ended_at") endedAt: Long): Single<Map<String, Map<String, Stats>>>
 }

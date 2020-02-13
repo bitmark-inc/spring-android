@@ -69,4 +69,9 @@
         <item>@color/tea_green</item>
     </array>
 
+    <array name="color_palette_5">
+        <item>@color/indian_khaki</item>
+        <item>@color/cognac</item>
+    </array>
+
 </resources>

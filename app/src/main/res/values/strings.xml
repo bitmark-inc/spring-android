@@ -190,6 +190,12 @@
     <string name="all_of_your_data">All of your data will be permanently deleted from this device.</string>
     <string name="confirm">Confirm</string>
     <string name="could_not_delete_account">Could not delete your account. Please try again later.</string>
+    <string name="all_of_spring">All of Spring</string>
+    <string name="aggregate_analysis">aggregate analysis</string>
+    <string name="spring_user_avg">SPRING users average</string>
+    <string name="your_posts">Your posts &amp; reactions</string>
+    <string name="posts_by_type">Posts by type</string>
+    <string name="reaction_by_type">Reactions by type</string>
 
     <string-array name="day_of_week">
         <item>S</item>

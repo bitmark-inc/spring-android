@@ -68,4 +68,25 @@ class StatisticLocalDataSource @Inject constructor(
         }
 
     }
+
+    fun checkStoredStats(type: StatsType, startedAt: Long, endedAt: Long) =
+        databaseApi.rxSingle { databaseGateway ->
+            val criteria = CriteriaR.fromStatisticWType("stats_${type.value}", startedAt, endedAt)
+            databaseGateway.criteriaDao().getCriteria(criteria.query).mapToCheckDbRecordResult()
+        }
+
+    fun saveStatsCriteria(type: StatsType, startedAt: Long, endedAt: Long) =
+        databaseApi.rxCompletable { databaseGateway ->
+            val criteria = CriteriaR.fromStatisticWType("stats_${type.value}", startedAt, endedAt)
+            databaseGateway.criteriaDao().save(criteria)
+        }
+
+    fun saveStats(stats: StatsR) = databaseApi.rxCompletable { databaseGateway ->
+        databaseGateway.statsDao().save(stats)
+    }
+
+    fun getStats(type: StatsType, startedAt: Long, endedAt: Long) =
+        databaseApi.rxSingle { databaseGateway ->
+            databaseGateway.statsDao().get(type, startedAt, endedAt)
+        }
 }

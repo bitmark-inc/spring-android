@@ -92,7 +92,11 @@ enum class SectionName {
 
     @Expose
     @SerializedName("sentiment")
-    SENTIMENT;
+    SENTIMENT,
+
+    @Expose
+    @SerializedName("stats")
+    STATS;
 
     companion object
 }
@@ -101,6 +105,7 @@ fun SectionName.Companion.fromString(name: String) = when (name) {
     "post" -> SectionName.POST
     "reaction" -> SectionName.REACTION
     "sentiment" -> SectionName.SENTIMENT
+    "stats" -> SectionName.STATS
     else -> error("invalid name")
 }
 
@@ -109,6 +114,7 @@ val SectionName.value: String
         SectionName.POST -> "post"
         SectionName.REACTION -> "reaction"
         SectionName.SENTIMENT -> "sentiment"
+        SectionName.STATS -> "stats"
     }
 
 data class GroupEntity(
@@ -127,7 +133,9 @@ enum class GroupName {
     TYPE,
     SUB_PERIOD,
     FRIEND,
-    PLACE;
+    PLACE,
+    POST_STATS,
+    REACTION_STATS;
 
     companion object
 }
@@ -138,6 +146,8 @@ val GroupName.value: String
         GroupName.SUB_PERIOD -> "sub_period"
         GroupName.FRIEND -> "friend"
         GroupName.PLACE -> "place"
+        GroupName.POST_STATS -> "post_stats"
+        GroupName.REACTION_STATS -> "reaction_stats"
     }
 
 fun GroupName.Companion.fromString(name: String) = when (name) {
@@ -145,6 +155,8 @@ fun GroupName.Companion.fromString(name: String) = when (name) {
     "sub_period" -> GroupName.SUB_PERIOD
     "friend" -> GroupName.FRIEND
     "place" -> GroupName.PLACE
+    "post_stats" -> GroupName.POST_STATS
+    "reaction_stats" -> GroupName.REACTION_STATS
     else -> error("invalid group name")
 }
 
