@@ -71,7 +71,7 @@ class BiometricAuthActivity : BaseAppCompatActivity(), CompoundButton.OnCheckedC
                     swBiometricAuth.setOnCheckedChangeListener(this)
                 }
 
-                res.isError()   -> {
+                res.isError() -> {
                     logger.logSharedPrefError(res.throwable(), "get account data error")
                     dialogController.unexpectedAlert { navigator.anim(RIGHT_LEFT).finishActivity() }
                 }
@@ -84,7 +84,7 @@ class BiometricAuthActivity : BaseAppCompatActivity(), CompoundButton.OnCheckedC
                     viewModel.getAccountData()
                 }
 
-                res.isError()   -> {
+                res.isError() -> {
                     logger.logSharedPrefError(res.throwable(), "save account key alias error")
                     dialogController.unexpectedAlert { navigator.anim(RIGHT_LEFT).finishActivity() }
                 }
@@ -156,6 +156,7 @@ class BiometricAuthActivity : BaseAppCompatActivity(), CompoundButton.OnCheckedC
         val spec =
             KeyAuthenticationSpec.Builder(this)
                 .setKeyAlias(keyAlias)
+                .setUseAlternativeAuthentication(true)
                 .setAuthenticationDescription(getString(R.string.your_authorization_is_required))
                 .setAuthenticationRequired(authRequired).build()
         this.saveAccount(
