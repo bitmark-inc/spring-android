@@ -108,7 +108,7 @@ class SplashViewModel(
                     } else {
                         Single.just(false)
                     }
-                }
+                }.onNetworkErrorReturn(false)
             }
         }
 
