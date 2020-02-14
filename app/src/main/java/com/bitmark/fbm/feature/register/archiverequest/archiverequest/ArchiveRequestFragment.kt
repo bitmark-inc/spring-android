@@ -17,7 +17,6 @@ import com.bitmark.fbm.R
 import com.bitmark.fbm.data.ext.fromJson
 import com.bitmark.fbm.data.ext.isServiceUnsupportedError
 import com.bitmark.fbm.data.ext.newGsonInstance
-import com.bitmark.fbm.data.model.AccountData
 import com.bitmark.fbm.data.model.AutomationScriptData
 import com.bitmark.fbm.data.model.Page
 import com.bitmark.fbm.data.source.remote.api.error.UnknownException
@@ -128,8 +127,6 @@ class ArchiveRequestFragment : BaseSupportFragment() {
 
     private lateinit var automationScript: AutomationScriptData
 
-    private lateinit var downloadArchiveCredential: DownloadArchiveCredential
-
     override fun layoutRes(): Int = R.layout.fragment_archive_request
 
     override fun viewModel(): BaseViewModel? = null
@@ -206,11 +203,7 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                 val host = URL(urlString).host
                 if (host == ARCHIVE_DOWNLOAD_HOST && !blocked) {
                     val cookie = CookieManager.getInstance().getCookie(urlString)
-                    downloadArchiveCredential = DownloadArchiveCredential(
-                        urlString,
-                        cookie
-                    )
-                    viewModel.prepareRegisterAccount()
+                    viewModel.sendArchiveDownloadRequest(urlString, cookie)
                 }
             } catch (e: Throwable) {
                 Tracer.ERROR.log(
@@ -465,20 +458,6 @@ class ArchiveRequestFragment : BaseSupportFragment() {
 
     private fun isArchiveRequested() = archiveRequestedAt != -1L
 
-    private fun registerAccount(
-        downloadArchiveCredential: DownloadArchiveCredential,
-        accountData: AccountData,
-        registered: Boolean
-    ) {
-        viewModel.registerAccount(
-            account!!,
-            downloadArchiveCredential.url,
-            downloadArchiveCredential.cookie,
-            accountData.keyAlias,
-            registered
-        )
-    }
-
     private fun saveAccount(
         account: Account,
         successAction: (String) -> Unit
@@ -513,7 +492,7 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                     registered = true
                     progressBar.gone()
                     blocked = false
-                    goToMain(account!!.seed.encodedSeed)
+                    goToMain(account!!.seed.encodedSeed, true)
                 }
 
                 res.isError() -> {
@@ -547,13 +526,28 @@ class ArchiveRequestFragment : BaseSupportFragment() {
         viewModel.saveFbAdsPrefCategoriesLiveData.asLiveData().observe(this, Observer { res ->
             when {
                 res.isSuccess() -> {
-                    // prevent showing notification at the first time after requesting archive
-                    goToMain(account!!.seed.encodedSeed, true)
+                    if (account == null) {
+                        // do not have any bitmark account before
+                        account = Account()
+                        saveAccount(account!!) { keyAlias ->
+                            viewModel.registerAccount(account!!, keyAlias)
+                        }
+                    } else {
+                        // has bitmark account before
+                        // maybe already had Spring account, maybe not
+                        if (registered) {
+                            viewModel.registerJwt(account!!)
+                        } else {
+                            saveAccount(account!!) { keyAlias ->
+                                viewModel.registerAccount(account!!, keyAlias)
+                            }
+                        }
+                    }
                 }
 
                 res.isError() -> {
                     logger.logSharedPrefError(res.throwable(), "save fb ads pref categories error")
-                    goToMain(account!!.seed.encodedSeed)
+                    dialogController.unexpectedAlert { finish() }
                 }
             }
         })
@@ -566,20 +560,7 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                     automationScript = data.first
                     categoriesFetched = data.second
 
-                    if (account == null) {
-                        account = Account()
-                        saveAccount(account!!) { keyAlias ->
-                            viewModel.saveAccountData(
-                                AccountData.newLocalInstance(
-                                    account!!.accountNumber,
-                                    false,
-                                    keyAlias
-                                )
-                            )
-                        }
-                    } else {
-                        loadPage(wv, FB_ENDPOINT, automationScript)
-                    }
+                    loadPage(wv, FB_ENDPOINT, automationScript)
                 }
 
                 res.isError() -> {
@@ -610,19 +591,6 @@ class ArchiveRequestFragment : BaseSupportFragment() {
             }
         })
 
-        viewModel.saveAccountDataLiveData.asLiveData().observe(this, Observer { res ->
-            when {
-                res.isSuccess() -> {
-                    loadPage(wv, FB_ENDPOINT, automationScript)
-                }
-
-                res.isError() -> {
-                    logger.logSharedPrefError(res.throwable(), "save account data error")
-                    dialogController.unexpectedAlert { finish() }
-                }
-            }
-        })
-
         viewModel.saveArchiveRequestedAtLiveData.asLiveData().observe(this, Observer { res ->
             when {
                 res.isSuccess() -> {
@@ -640,23 +608,45 @@ class ArchiveRequestFragment : BaseSupportFragment() {
             }
         })
 
-        viewModel.prepareRegisterAccountLiveData.asLiveData().observe(this, Observer { res ->
+        viewModel.sendArchiveDownloadRequestLiveData.asLiveData().observe(this, Observer { res ->
             when {
                 res.isSuccess() -> {
-                    val accountData = res.data()!!
-                    registerAccount(downloadArchiveCredential, accountData, registered)
+                    progressBar.gone()
+                    blocked = false
+                    goToMain(account!!.seed.encodedSeed)
                 }
 
                 res.isError() -> {
-                    logger.logSharedPrefError(res.throwable(), "get existing account error")
-                    dialogController.unexpectedAlert { finish() }
+                    wv.setDownloadListener(null)
+                    progressBar.gone()
+                    logger.logError(
+                        Event.ARCHIVE_REQUEST_SEND_FB_DOWNLOAD_CREDENTIAL_ERROR,
+                        res.throwable() ?: UnknownException("unknown")
+                    )
+
+                    if (!connectivityHandler.isConnected()) {
+                        dialogController.showNoInternetConnection {
+                            finish()
+                        }
+                    } else if (!res.throwable()!!.isServiceUnsupportedError()) {
+                        dialogController.alert(
+                            R.string.error,
+                            R.string.could_not_register_account
+                        ) { finish() }
+                    }
+                    blocked = false
+                }
+
+                res.isLoading() -> {
+                    progressBar.visible()
+                    blocked = true
                 }
             }
         })
     }
 
-    private fun goToMain(accountSeed: String, preventNotification: Boolean = false) {
-        val bundle = MainActivity.getBundle(accountSeed, preventNotification)
+    private fun goToMain(accountSeed: String, firstTimeLaunch: Boolean = false) {
+        val bundle = MainActivity.getBundle(accountSeed, firstTimeLaunch)
         navigator.anim(RIGHT_LEFT).startActivityAsRoot(MainActivity::class.java, bundle)
     }
 

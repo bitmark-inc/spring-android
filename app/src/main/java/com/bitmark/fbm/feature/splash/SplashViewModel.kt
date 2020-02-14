@@ -9,7 +9,7 @@ package com.bitmark.fbm.feature.splash
 import androidx.lifecycle.Lifecycle
 import com.bitmark.cryptography.crypto.encoder.Hex
 import com.bitmark.cryptography.crypto.encoder.Raw
-import com.bitmark.fbm.data.ext.onNetworkErrorResumeNext
+import com.bitmark.fbm.data.ext.onNetworkErrorReturn
 import com.bitmark.fbm.data.model.AccountData
 import com.bitmark.fbm.data.model.AppInfoData
 import com.bitmark.fbm.data.source.AccountRepository
@@ -21,7 +21,6 @@ import com.bitmark.sdk.features.Account
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
-import io.reactivex.functions.Function3
 import io.reactivex.schedulers.Schedulers
 
 
@@ -32,29 +31,26 @@ class SplashViewModel(
     private val rxLiveDataTransformer: RxLiveDataTransformer
 ) : BaseViewModel(lifecycle) {
 
-    internal val getAccountInfoLiveData = CompositeLiveData<Triple<AccountData, Long, Boolean>>()
+    internal val getAccountInfoLiveData = CompositeLiveData<Pair<AccountData, Boolean>>()
 
     internal val getAppInfoLiveData = CompositeLiveData<AppInfoData>()
 
     internal val checkFirstTimeEnterNewVersionLiveData = CompositeLiveData<Boolean>()
 
-    internal val prepareDataLiveData = CompositeLiveData<Boolean>()
+    internal val prepareDataLiveData = CompositeLiveData<Pair<Boolean, Long>>()
 
     internal val checkDataReadyLiveData = CompositeLiveData<Pair<Boolean, Boolean>>()
+
+    internal val deleteAppDataLiveData = CompositeLiveData<Any>()
 
     fun getAccountInfo() {
         getAccountInfoLiveData.add(
             rxLiveDataTransformer.single(
                 Single.zip(
                     accountRepo.getAccountData(),
-                    accountRepo.getArchiveRequestedAt(),
                     accountRepo.checkFbCredentialExisting(),
-                    Function3<AccountData, Long, Boolean, Triple<AccountData, Long, Boolean>> { account, archiveRequested, fbCredentialExisting ->
-                        Triple(
-                            account,
-                            archiveRequested,
-                            fbCredentialExisting
-                        )
+                    BiFunction { account, fbCredentialExisting ->
+                        Pair(account, fbCredentialExisting)
                     })
             )
         )
@@ -67,19 +63,17 @@ class SplashViewModel(
     fun prepareData(account: Account) {
         prepareDataLiveData.add(
             rxLiveDataTransformer.single(
-                registerJwtStream(account)
+                Single.zip(registerJwtStream(account)
                     .andThen(accountRepo.syncAccountData().ignoreElement())
-                    .andThen(checkInvalidArchiveStream()).onNetworkErrorResumeNext {
-                        Single.just(false)
-                    }
-                /*.flatMap { invalid ->
-                    if (invalid) {
-                        // keep account data for next time using
-                        appRepo.deleteAppData(true).andThen(Single.just(true))
-                    } else {
-                        Single.just(false)
-                    }
-                }*/)
+                    .andThen(checkInvalidArchiveStream()).onNetworkErrorReturn(false),
+                    accountRepo.getArchiveRequestedAt(),
+                    BiFunction { invalidArchives, archiveRequestedAt ->
+                        Pair(
+                            invalidArchives,
+                            archiveRequestedAt
+                        )
+                    })
+            )
         )
     }
 
@@ -148,6 +142,10 @@ class SplashViewModel(
                     saveLastVerCode.andThen(Single.just(firstTimeEnter))
                 })
         )
+    }
+
+    fun deleteAppData() {
+        deleteAppDataLiveData.add(rxLiveDataTransformer.completable(appRepo.deleteAppData()))
     }
 
 }

@@ -9,7 +9,6 @@ package com.bitmark.fbm.feature.main
 import android.content.res.Resources
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
-import com.bitmark.fbm.data.model.isCreatedRemotely
 import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.data.source.AppRepository
 import com.bitmark.fbm.data.source.remote.api.event.RemoteApiBus
@@ -21,7 +20,6 @@ import com.bitmark.fbm.util.livedata.RxLiveDataTransformer
 import com.bitmark.sdk.features.Account
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.BiFunction
 
 
 class MainViewModel(
@@ -37,7 +35,7 @@ class MainViewModel(
 
     internal val serviceUnsupportedLiveData = MutableLiveData<String>()
 
-    internal val checkAppStateLiveData = CompositeLiveData<Pair<Boolean, Boolean>>()
+    internal val checkWaitingForArchiveLiveData = CompositeLiveData<Boolean>()
 
     internal val setNotificationEnabledLiveData = CompositeLiveData<Any>()
 
@@ -81,18 +79,10 @@ class MainViewModel(
         archiveIssuanceProcessor.stop()
     }
 
-    fun checkAppState() {
-        checkAppStateLiveData.add(
+    fun checkWaitingForArchive() {
+        checkWaitingForArchiveLiveData.add(
             rxLiveDataTransformer.single(
-                Single.zip(
-                    accountRepo.getAccountData().map { accountData -> accountData.isCreatedRemotely() },
-                    appRepo.checkDataReady(),
-                    BiFunction { accountRegistered, dataReady ->
-                        Pair(
-                            accountRegistered,
-                            dataReady
-                        )
-                    })
+                accountRepo.getArchiveRequestedAt().map { archiveRequestedAt -> archiveRequestedAt != -1L }
             )
         )
     }

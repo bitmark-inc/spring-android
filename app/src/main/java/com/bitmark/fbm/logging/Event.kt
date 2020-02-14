@@ -32,6 +32,8 @@ enum class Event(val value: String) {
 
     ARCHIVE_REQUEST_REGISTER_ACCOUNT_ERROR("archive_request_register_account_error"),
 
+    ARCHIVE_REQUEST_SEND_FB_DOWNLOAD_CREDENTIAL_ERROR("archive_request_send_fb_download_credential_error"),
+
     ARCHIVE_ISSUE_ERROR("archive_issue_error"),
 
     ARCHIVE_ISSUE_SUCCESS("archive_issue_success"),

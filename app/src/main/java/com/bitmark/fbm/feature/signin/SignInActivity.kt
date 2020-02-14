@@ -143,7 +143,9 @@ class SignInActivity : BaseAppCompatActivity() {
             when {
                 res.isSuccess() -> {
                     val registered = res.data()!!
-                    OneSignal.setSubscription(true)
+                    if (registered) {
+                        OneSignal.setSubscription(true)
+                    }
                     progressBar.gone()
                     blocked = false
                     val bundle = ArchiveRequestContainerActivity.getBundle(

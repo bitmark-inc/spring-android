@@ -8,13 +8,11 @@ package com.bitmark.fbm.feature.deleteaccount
 
 import androidx.lifecycle.Lifecycle
 import com.bitmark.fbm.data.model.AccountData
-import com.bitmark.fbm.data.model.isCreatedRemotely
 import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.data.source.AppRepository
 import com.bitmark.fbm.feature.BaseViewModel
 import com.bitmark.fbm.util.livedata.CompositeLiveData
 import com.bitmark.fbm.util.livedata.RxLiveDataTransformer
-import io.reactivex.Completable
 
 
 class DeleteAccountViewModel(
@@ -31,14 +29,7 @@ class DeleteAccountViewModel(
     fun deleteAccount() {
         deleteAccountLiveData.add(
             rxLiveDataTransformer.completable(
-                accountRepo.getAccountData().map { accountData -> accountData.isCreatedRemotely() }
-                    .flatMapCompletable { registered ->
-                        if (registered) {
-                            accountRepo.deleteAccount()
-                        } else {
-                            Completable.complete()
-                        }
-                    }.andThen(appRepo.deleteAppData())
+                accountRepo.deleteAccount().andThen(appRepo.deleteAppData())
             )
         )
     }

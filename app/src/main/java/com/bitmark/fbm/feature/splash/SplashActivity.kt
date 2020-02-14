@@ -18,6 +18,7 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.StyleSpan
 import android.view.View
+import android.webkit.CookieManager
 import androidx.lifecycle.Observer
 import com.bitmark.fbm.BuildConfig
 import com.bitmark.fbm.R
@@ -213,19 +214,18 @@ class SplashActivity : BaseAppCompatActivity() {
                 res.isSuccess() -> {
                     val data = res.data()!!
                     val accountData = data.first
-                    val archiveRequestedAt = data.second
-                    val fbCredentialExisting = data.third
+                    val fbCredentialExisting = data.second
 
                     if (fbCredentialExisting) {
                         CredentialData.delete(this, executor, {
-                            handleAppState(accountData, archiveRequestedAt)
+                            handleAppState(accountData)
                         }, { e ->
                             Tracer.ERROR.log(TAG, "delete fb credential error ${e?.message}")
                             logger.logError(Event.DELETE_FB_CREDENTIAL_ERROR, e)
-                            handleAppState(accountData, archiveRequestedAt)
+                            handleAppState(accountData)
                         })
                     } else {
-                        handleAppState(accountData, archiveRequestedAt)
+                        handleAppState(accountData)
                     }
                 }
 
@@ -239,11 +239,20 @@ class SplashActivity : BaseAppCompatActivity() {
         viewModel.prepareDataLiveData.asLiveData().observe(this, Observer { res ->
             when {
                 res.isSuccess() -> {
-                    val invalidArchives = res.data() ?: false
-                    if (invalidArchives) {
-                        goToMain(account.seed.encodedSeed)
-                    } else {
-                        viewModel.checkDataReady()
+                    val data = res.data()!!
+                    val invalidArchives = data.first
+                    val archiveRequestedAt = data.second
+                    when {
+                        archiveRequestedAt != -1L -> handler.postDelayed({
+                            val bundle = DataProcessingActivity.getBundle(
+                                archiveRequestedAt,
+                                this.account.seed.encodedSeed
+                            )
+                            navigator.anim(FADE_IN)
+                                .startActivityAsRoot(DataProcessingActivity::class.java, bundle)
+                        }, 250)
+                        invalidArchives -> goToMain(account.seed.encodedSeed)
+                        else -> viewModel.checkDataReady()
                     }
                 }
 
@@ -300,33 +309,36 @@ class SplashActivity : BaseAppCompatActivity() {
             }
         })
 
+        viewModel.deleteAppDataLiveData.asLiveData().observe(this, Observer { res ->
+            when {
+                res.isSuccess() -> {
+                    CookieManager.getInstance().removeAllCookies {
+                        CookieManager.getInstance().flush()
+                        showOnboarding()
+                    }
+                }
+
+                res.isError() -> {
+                    logger.logSharedPrefError(res.throwable(), "delete app data error")
+                    dialogController.unexpectedAlert { navigator.finishActivity(true) }
+                }
+            }
+        })
+
     }
 
-    private fun handleAppState(accountData: AccountData, archiveRequestedAt: Long) {
-        val archiveRequested = archiveRequestedAt != -1L
-        val loggedIn = accountData.isCreatedRemotely() && !archiveRequested
-        val uri = intent?.data
-        val loginFromDeepLink =
-            uri != null && uri.scheme == getString(R.string.scheme) && uri.host == "login"
+    private fun handleAppState(accountData: AccountData) {
 
-        if (accountData.isCreatedLocally()) {
+        if (accountData.isRegistered()) {
+            val uri = intent?.data
+            val loginFromDeepLink =
+                uri != null && uri.scheme == getString(R.string.scheme) && uri.host == "login"
+
+
             loadAccount(accountData) { account ->
                 this.account = account
 
                 when {
-                    // account already registered remotely
-                    loggedIn -> viewModel.prepareData(this.account)
-
-                    // requested archive
-                    archiveRequested -> handler.postDelayed({
-                        val bundle = DataProcessingActivity.getBundle(
-                            archiveRequestedAt,
-                            account.seed.encodedSeed
-                        )
-                        navigator.anim(FADE_IN)
-                            .startActivityAsRoot(DataProcessingActivity::class.java, bundle)
-                    }, 250)
-
                     loginFromDeepLink -> {
                         try {
                             val phrase = uri!!.getQueryParameter("phrases")!!
@@ -340,21 +352,24 @@ class SplashActivity : BaseAppCompatActivity() {
                                     Event.ACCOUNT_DEEPLINK_INVALID_PHRASE_ERROR,
                                     "invalid deeplink phrase $phrase"
                                 )
-                                showOnboarding()
+                                // make sure the app is in initialization state
+                                viewModel.deleteAppData()
                             }
                         } catch (e: Throwable) {
                             logger.logError(
                                 Event.ACCOUNT_DEEPLINK_INVALID_PHRASE_ERROR,
                                 "invalid deeplink parsing ${e.message}"
                             )
-                            showOnboarding()
+                            // make sure the app is in initialization state
+                            viewModel.deleteAppData()
                         }
                     }
-                    else -> showOnboarding()
+                    else -> viewModel.prepareData(this.account)
                 }
             }
         } else {
-            showOnboarding()
+            // make sure the app is in initialization state
+            viewModel.deleteAppData()
         }
     }
 

@@ -38,15 +38,10 @@ data class AccountData(
     companion object {
 
         fun newEmptyInstance() = AccountData("", null, "", "", false, "")
-
-        fun newLocalInstance(id: String, authRequired: Boolean, keyAlias: String) =
-            AccountData(id, null, "", "", authRequired, keyAlias)
     }
 }
 
-fun AccountData.isCreatedRemotely() = isCreatedLocally() && createdAt != "" && updatedAt != ""
-
-fun AccountData.isCreatedLocally() = id != "" && keyAlias != ""
+fun AccountData.isRegistered() = id != "" && keyAlias != "" && createdAt != "" && updatedAt != ""
 
 val AccountData.keyFileName: String
     get() = "${id}.key"

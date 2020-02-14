@@ -65,7 +65,7 @@ class SignInViewModel(
             accountData.keyAlias = keyAlias
             accountData.authRequired = authRequired
             val intercomId =
-                "FBM_android_%s".format(Sha3256.hash(RAW.decode(accountData.id)))
+                "Spring_android_%s".format(Sha3256.hash(RAW.decode(accountData.id)))
             Completable.mergeArray(
                 accountRepo.saveAccountData(accountData),
                 appRepo.registerNotificationService(accountData.id),

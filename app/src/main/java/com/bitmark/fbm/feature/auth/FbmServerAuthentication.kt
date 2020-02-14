@@ -14,7 +14,7 @@ import com.bitmark.fbm.AppLifecycleHandler
 import com.bitmark.fbm.R
 import com.bitmark.fbm.data.ext.onNetworkErrorComplete
 import com.bitmark.fbm.data.model.AccountData
-import com.bitmark.fbm.data.model.isCreatedRemotely
+import com.bitmark.fbm.data.model.isRegistered
 import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.feature.DialogController
 import com.bitmark.fbm.feature.Navigator
@@ -80,7 +80,7 @@ class FbmServerAuthentication @Inject constructor(
             isProcessing = false
             val activity = appLifecycleHandler.getRunningActivity() ?: return@subscribe
             dialogController = DialogController(activity)
-            if (e == null && accountData.isCreatedRemotely()) {
+            if (e == null && accountData.isRegistered()) {
                 loadAccount(
                     activity,
                     accountData.id,

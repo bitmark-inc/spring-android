@@ -99,8 +99,9 @@ class MainActivity : BaseAppCompatActivity() {
             intent?.extras?.getBoolean(FIRST_TIME_LAUNCH) ?: false
         account = Account.fromSeed(seed)
 
-        viewModel.checkAppState()
+        viewModel.checkWaitingForArchive()
         viewModel.checkNotificationPermissionRequested()
+        viewModel.startArchiveIssuanceProcessor(account)
 
     }
 
@@ -164,18 +165,12 @@ class MainActivity : BaseAppCompatActivity() {
             }
         })
 
-        viewModel.checkAppStateLiveData.asLiveData()
+        viewModel.checkWaitingForArchiveLiveData.asLiveData()
             .observe(this, Observer { res ->
                 when {
                     res.isSuccess() -> {
-                        val data = res.data()!!
-                        val accountRegistered = data.first
-                        val dataReady = data.second
-                        if (accountRegistered) {
-                            viewModel.startArchiveIssuanceProcessor(account)
-                        }
-
-                        if (!firstTimeLaunch && !dataReady) {
+                        val waiting = res.data()!!
+                        if (!firstTimeLaunch && waiting) {
                             showNotification()
                         }
                     }

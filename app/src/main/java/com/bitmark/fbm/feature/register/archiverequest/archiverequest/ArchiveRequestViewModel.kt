@@ -10,7 +10,6 @@ import androidx.lifecycle.Lifecycle
 import com.bitmark.cryptography.crypto.Sha3256
 import com.bitmark.cryptography.crypto.encoder.Hex.HEX
 import com.bitmark.cryptography.crypto.encoder.Raw.RAW
-import com.bitmark.fbm.data.model.AccountData
 import com.bitmark.fbm.data.model.AutomationScriptData
 import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.data.source.AppRepository
@@ -37,38 +36,45 @@ class ArchiveRequestViewModel(
 
     internal val saveArchiveRequestedAtLiveData = CompositeLiveData<Any>()
 
-    internal val prepareRegisterAccountLiveData = CompositeLiveData<AccountData>()
-
     internal val saveFbAdsPrefCategoriesLiveData = CompositeLiveData<Any>()
 
-    internal val saveAccountDataLiveData = CompositeLiveData<Any>()
+    internal val sendArchiveDownloadRequestLiveData = CompositeLiveData<Any>()
 
     fun registerAccount(
         account: Account,
-        archiveUrl: String,
-        cookie: String,
-        alias: String,
-        registered: Boolean
+        alias: String
     ) {
         registerAccountLiveData.add(
             rxLiveDataTransformer.completable(
                 registerAccountStream(
                     account,
-                    archiveUrl,
-                    cookie,
-                    alias,
-                    registered
+                    alias
                 )
             )
         )
     }
 
+    fun registerJwt(account: Account) {
+        registerAccountLiveData.add(rxLiveDataTransformer.completable(registerJwtStream(account)))
+    }
+
+    private fun registerJwtStream(account: Account) = Single.fromCallable {
+        val requester = account.accountNumber
+        val timestamp = System.currentTimeMillis().toString()
+        val signature = HEX.encode(account.sign(RAW.decode(timestamp)))
+        Triple(requester, timestamp, signature)
+    }.subscribeOn(Schedulers.computation()).observeOn(Schedulers.io())
+        .flatMapCompletable { t ->
+            val requester = t.first
+            val timestamp = t.second
+            val signature = t.third
+            accountRepo.registerFbmServerJwt(timestamp, signature, requester)
+                .andThen(accountRepo.syncAccountData()).ignoreElement()
+        }
+
     private fun registerAccountStream(
         account: Account,
-        archiveUrl: String,
-        cookie: String,
-        alias: String,
-        registered: Boolean
+        alias: String
     ): Completable {
 
         val registerAccountStream = Single.fromCallable {
@@ -81,48 +87,43 @@ class ArchiveRequestViewModel(
                 val requester = t.first
                 val timestamp = t.second
                 val signature = t.third
-                if (registered) {
-                    accountRepo.registerFbmServerJwt(timestamp, signature, requester)
-                        .andThen(accountRepo.getAccountData())
-                } else {
-                    accountRepo.registerFbmServerAccount(
-                        timestamp,
-                        signature,
-                        requester,
-                        HEX.encode(account.encKeyPair.publicKey().toBytes())
-                    ).flatMap { accountData ->
-                        accountData.authRequired = false
-                        accountData.keyAlias = alias
-                        accountRepo.saveAccountData(accountData).andThen(Single.just(accountData))
-                    }
+                accountRepo.registerFbmServerAccount(
+                    timestamp,
+                    signature,
+                    requester,
+                    HEX.encode(account.encKeyPair.publicKey().toBytes())
+                ).flatMap { accountData ->
+                    accountData.authRequired = false
+                    accountData.keyAlias = alias
+                    accountRepo.saveAccountData(accountData).andThen(Single.just(accountData))
                 }
             }
 
 
-        return Single.zip(registerAccountStream,
-            accountRepo.getArchiveRequestedAt(),
-            BiFunction<AccountData, Long, Pair<AccountData, Long>> { accountData, archiveRequestedAt ->
-                Pair(
-                    accountData,
-                    archiveRequestedAt
-                )
-            })
-            .flatMapCompletable { p ->
-                val accountData = p.first
-                val archiveRequestedAt = p.second
+        return registerAccountStream
+            .flatMapCompletable { accountData ->
                 val intercomId =
-                    "FBM_android_%s".format(Sha3256.hash(RAW.decode(accountData.id)))
+                    "Spring_android_%s".format(Sha3256.hash(RAW.decode(accountData.id)))
                 Completable.mergeArray(
                     accountRepo.registerIntercomUser(intercomId),
+                    appRepo.registerNotificationService(accountData.id)
+                )
+            }
+    }
+
+    fun sendArchiveDownloadRequest(archiveUrl: String, cookie: String) {
+        sendArchiveDownloadRequestLiveData.add(
+            rxLiveDataTransformer.completable(
+                accountRepo.getArchiveRequestedAt().flatMapCompletable { archiveRequestedAt ->
                     accountRepo.sendArchiveDownloadRequest(
                         archiveUrl,
                         cookie,
                         0L,
                         archiveRequestedAt / 1000
-                    ),
-                    appRepo.registerNotificationService(accountData.id)
-                )
-            }.andThen(accountRepo.clearArchiveRequestedAt())
+                    )
+                }.andThen(accountRepo.clearArchiveRequestedAt())
+            )
+        )
     }
 
     fun prepareData() {
@@ -149,27 +150,11 @@ class ArchiveRequestViewModel(
         )
     }
 
-    fun prepareRegisterAccount() {
-        prepareRegisterAccountLiveData.add(
-            rxLiveDataTransformer.single(accountRepo.getAccountData())
-        )
-    }
-
     fun saveFbAdsPrefCategories(categories: List<String>) {
         saveFbAdsPrefCategoriesLiveData.add(
             rxLiveDataTransformer.completable(
                 accountRepo.saveAdsPrefCategories(
                     categories
-                )
-            )
-        )
-    }
-
-    fun saveAccountData(accountData: AccountData) {
-        saveAccountDataLiveData.add(
-            rxLiveDataTransformer.completable(
-                accountRepo.saveAccountData(
-                    accountData
                 )
             )
         )
