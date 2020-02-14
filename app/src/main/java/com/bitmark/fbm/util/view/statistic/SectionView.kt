@@ -87,9 +87,10 @@ class SectionView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             ivIcon2.setImageResource(R.drawable.bg_cognac_circle)
             tvName1.setText(R.string.spring_user_avg)
             tvName2.setText(R.string.your_posts)
+
+            ivIcon1.visible()
+            tvName1.visible()
             if (section.hasAnyGroupWithData()) {
-                ivIcon1.visible()
-                tvName1.visible()
                 if (section.hasAnyGroupWithFullData()) {
                     ivIcon2.visible()
                     tvName2.visible()
@@ -98,8 +99,6 @@ class SectionView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                     tvName2.gone()
                 }
             } else {
-                ivIcon1.gone()
-                tvName1.gone()
                 ivIcon2.gone()
                 tvName2.gone()
             }

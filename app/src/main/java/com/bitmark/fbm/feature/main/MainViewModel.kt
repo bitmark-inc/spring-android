@@ -100,13 +100,20 @@ class MainViewModel(
     fun checkNotificationPermissionRequested() {
         checkNotificationPermissionRequestedLiveData.add(
             rxLiveDataTransformer.single(
-                appRepo.checkNotificationEnabled().map { true }.onErrorResumeNext { e ->
-                    if (e is Resources.NotFoundException) {
-                        Single.just(false)
+                appRepo.checkDataReady().flatMap { ready ->
+                    if (ready) {
+                        Single.just(true)
                     } else {
-                        Single.error(e)
+                        appRepo.checkNotificationEnabled().map { true }.onErrorResumeNext { e ->
+                            if (e is Resources.NotFoundException) {
+                                Single.just(false)
+                            } else {
+                                Single.error(e)
+                            }
+                        }
                     }
-                })
+                }
+            )
         )
     }
 }
