@@ -464,6 +464,7 @@ class GroupView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         axisRight.setDrawAxisLine(false)
         axisRight.typeface = font
         axisRight.textSize = 12f
+        axisRight.axisMinimum = 0f
         xAxis.setDrawGridLines(false)
         xAxis.setDrawAxisLine(true)
         xAxis.textSize = 12f
