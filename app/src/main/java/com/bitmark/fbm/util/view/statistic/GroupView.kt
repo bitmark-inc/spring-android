@@ -15,10 +15,9 @@ import com.bitmark.fbm.R
 import com.bitmark.fbm.data.model.entity.*
 import com.bitmark.fbm.util.DateTimeUtil
 import com.bitmark.fbm.util.ext.getDimensionPixelSize
-import com.bitmark.fbm.util.modelview.GroupModelView
-import com.bitmark.fbm.util.modelview.hasAggregatedData
-import com.bitmark.fbm.util.modelview.reverse
-import com.bitmark.fbm.util.modelview.sum
+import com.bitmark.fbm.util.ext.gone
+import com.bitmark.fbm.util.ext.visible
+import com.bitmark.fbm.util.modelview.*
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
@@ -31,6 +30,7 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
 import kotlinx.android.synthetic.main.layout_group_header.view.*
+import kotlinx.android.synthetic.main.layout_section.view.*
 import java.util.*
 import kotlin.Comparator
 
@@ -134,44 +134,50 @@ class GroupView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             }
         ).toLowerCase(Locale.getDefault())
 
-        val vertical = group.name == GroupName.SUB_PERIOD
-
-        if (!vertical) {
-            group.reverse()
-        }
-
-        val isStatsChart = group.sectionName == SectionName.STATS
-
-        val barXValues = getBarXValues(group)
-        val chartView = if (isStatsChart) {
-            buildMultiBarChart(barXValues)
-        } else {
-            buildSingleBarChart(group, barXValues)
-        }
-
-        val width = if (vertical) {
-            calculateVerticalWidth(barXValues.size)
-        } else {
-            LayoutParams.MATCH_PARENT
-        }
-        val h = context.getDimensionPixelSize(R.dimen.dp_180)
-        val height =
-            if (vertical) h else calculateHorizontalHeight(barXValues.size)
-        val params = LayoutParams(width, height)
-        val margin = context.getDimensionPixelSize(R.dimen.dp_8)
-        params.marginStart = margin
-        params.marginEnd = margin
-
         removeChartView()
-        addView(chartView, params)
 
-        val data = if (isStatsChart) {
-            getMultiBarData(group, barXValues, chartView)
+        if (!group.hasAnyWithData()) {
+            tvEmpty.visible()
         } else {
-            getSingleBarData(group, barXValues)
+            tvEmpty.gone()
+            val vertical = group.name == GroupName.SUB_PERIOD
+
+            if (!vertical) {
+                group.reverse()
+            }
+
+            val isStatsChart = group.sectionName == SectionName.STATS
+
+            val barXValues = getBarXValues(group)
+            val chartView = if (isStatsChart) {
+                buildMultiBarChart(barXValues)
+            } else {
+                buildSingleBarChart(group, barXValues)
+            }
+
+            val width = if (vertical) {
+                calculateVerticalWidth(barXValues.size)
+            } else {
+                LayoutParams.MATCH_PARENT
+            }
+            val h = context.getDimensionPixelSize(R.dimen.dp_180)
+            val height =
+                if (vertical) h else calculateHorizontalHeight(barXValues.size)
+            val params = LayoutParams(width, height)
+            val margin = context.getDimensionPixelSize(R.dimen.dp_8)
+            params.marginStart = margin
+            params.marginEnd = margin
+
+            addView(chartView, params)
+
+            val data = if (isStatsChart) {
+                getMultiBarData(group, barXValues, chartView)
+            } else {
+                getSingleBarData(group, barXValues)
+            }
+            chartView.data = data
+            chartView.notifyDataSetChanged()
         }
-        chartView.data = data
-        chartView.notifyDataSetChanged()
     }
 
     private fun removeChartView() {
