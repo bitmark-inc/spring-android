@@ -301,7 +301,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/dp_14"
             android:layout_marginBottom="@dimen/dp_8"
             android:fontFamily="@font/grotesk_light_font_family"
             android:includeFontPadding="false"

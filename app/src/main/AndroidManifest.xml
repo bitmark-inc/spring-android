@@ -12,6 +12,7 @@
 
         <activity
             android:name=".feature.splash.SplashActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.TransparentStatusBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,46 +31,67 @@
 
         <activity
             android:name=".feature.main.MainActivity"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".feature.register.onboarding.OnboardingActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.TransparentStatusBar" />
 
         <activity
             android:name=".feature.register.archiverequest.ArchiveRequestContainerActivity"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.TransparentStatusBar" />
 
         <activity
             android:name=".feature.register.dataprocessing.DataProcessingActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.TransparentStatusBar" />
 
         <activity
             android:name=".feature.unlink.UnlinkContainerActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing" />
 
-        <activity android:name=".feature.biometricauth.BiometricAuthActivity" />
+        <activity
+            android:name=".feature.biometricauth.BiometricAuthActivity"
+            android:screenOrientation="portrait" />
 
-        <activity android:name=".feature.recovery.RecoveryContainerActivity" />
+        <activity
+            android:name=".feature.recovery.RecoveryContainerActivity"
+            android:screenOrientation="portrait" />
 
-        <activity android:name=".feature.support.SupportActivity" />
+        <activity
+            android:name=".feature.support.SupportActivity"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".feature.register.trustnotice.TrustNoticeActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.TransparentStatusBar" />
 
-        <activity android:name=".feature.signin.SignInActivity" />
+        <activity
+            android:name=".feature.signin.SignInActivity"
+            android:screenOrientation="portrait" />
 
-        <activity android:name=".feature.whatsnew.WhatsNewActivity" />
+        <activity
+            android:name=".feature.whatsnew.WhatsNewActivity"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".util.view.WebViewActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.TransparentStatusBar" />
 
-        <activity android:name=".feature.increaseprivacy.IncreasePrivacyActivity" />
+        <activity
+            android:name=".feature.increaseprivacy.IncreasePrivacyActivity"
+            android:screenOrientation="portrait" />
 
-        <activity android:name=".feature.deleteaccount.DeleteAccountActivity" />
+        <activity
+            android:name=".feature.deleteaccount.DeleteAccountActivity"
+            android:screenOrientation="portrait" />
 
         <receiver
             android:name=".feature.notification.ScheduledNotificationReceiver"

@@ -10,7 +10,7 @@ import com.bitmark.fbm.R
 import com.bitmark.fbm.feature.BaseAppCompatActivity
 import com.bitmark.fbm.feature.BaseViewModel
 import com.bitmark.fbm.feature.Navigator
-import com.bitmark.fbm.feature.register.archiverequest.ArchiveRequestContainerActivity
+import com.bitmark.fbm.feature.register.onboarding.OnboardingActivity
 import com.bitmark.fbm.util.ext.setSafetyOnclickListener
 import kotlinx.android.synthetic.main.activity_trust_notice.*
 import javax.inject.Inject
@@ -35,7 +35,7 @@ class TrustNoticeActivity : BaseAppCompatActivity() {
 
         btnContinue.setSafetyOnclickListener {
             navigator.anim(Navigator.RIGHT_LEFT)
-                .startActivity(ArchiveRequestContainerActivity::class.java)
+                .startActivity(OnboardingActivity::class.java)
         }
     }
 

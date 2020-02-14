@@ -37,6 +37,7 @@ import com.bitmark.fbm.feature.main.MainActivity
 import com.bitmark.fbm.feature.register.archiverequest.ArchiveRequestContainerActivity
 import com.bitmark.fbm.feature.register.dataprocessing.DataProcessingActivity
 import com.bitmark.fbm.feature.register.onboarding.OnboardingActivity
+import com.bitmark.fbm.feature.register.trustnotice.TrustNoticeActivity
 import com.bitmark.fbm.feature.signin.SignInActivity
 import com.bitmark.fbm.feature.whatsnew.WhatsNewActivity
 import com.bitmark.fbm.logging.Event
@@ -138,7 +139,7 @@ class SplashActivity : BaseAppCompatActivity() {
         tvToSandPP.highlightColor = Color.TRANSPARENT
 
         btnGetStarted.setSafetyOnclickListener {
-            navigator.anim(RIGHT_LEFT).startActivity(OnboardingActivity::class.java)
+            navigator.anim(RIGHT_LEFT).startActivity(TrustNoticeActivity::class.java)
         }
 
         tvLogin.setSafetyOnclickListener {

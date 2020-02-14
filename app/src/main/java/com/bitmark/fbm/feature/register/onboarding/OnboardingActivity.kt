@@ -11,7 +11,7 @@ import com.bitmark.fbm.feature.BaseAppCompatActivity
 import com.bitmark.fbm.feature.BaseViewModel
 import com.bitmark.fbm.feature.Navigator
 import com.bitmark.fbm.feature.Navigator.Companion.RIGHT_LEFT
-import com.bitmark.fbm.feature.register.trustnotice.TrustNoticeActivity
+import com.bitmark.fbm.feature.register.archiverequest.ArchiveRequestContainerActivity
 import com.bitmark.fbm.util.ext.setSafetyOnclickListener
 import kotlinx.android.synthetic.main.activity_onboarding.*
 import javax.inject.Inject
@@ -30,7 +30,7 @@ class OnboardingActivity : BaseAppCompatActivity() {
 
         btnContinue.setSafetyOnclickListener {
             navigator.anim(RIGHT_LEFT)
-                .startActivity(TrustNoticeActivity::class.java)
+                .startActivity(ArchiveRequestContainerActivity::class.java)
         }
 
         ivBack.setOnClickListener {
