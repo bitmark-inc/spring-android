@@ -139,8 +139,8 @@
     <string name="try_again">Try again</string>
     <string name="release_note">Release Note</string>
     <string-array name="release_note_info">
-        <item name="content">What’s New in This Update\n\n&#x2014; Options to increase Facebook privacy\n&#x2014; Categories used by Advertisers\n&#x2014; Spring FAQ\n&#x2014; Misc bug fixes and UX improvements \n\nWe value your feedback, if you have ideas or suggestions on how to make our app even better, please let us know.</item>
-        <item name="date">2020-01-22T00:00:00.000000Z</item>
+        <item name="content">Highlights of the new features\n&#x2014; Add how are you tracked\n&#x2014; Introduce new aggregate analysis charts\n&#x2014; Delete all the data and account information about you on our server\n\nEnhancements\n&#x2014; Bug fixes and performance improvements\n&#x2014; Reduce the onboarding steps\n&#x2014; Redesigned bottom navigation bar\n\nWe value your feedback, if you have ideas or suggestions on how to make our app even better, please let us know.</item>
+        <item name="date">2020-02-17T00:00:00.000000Z</item>
     </string-array>
     <string name="let_us_know">let us know</string>
     <string name="settings">SETTINGS</string>
