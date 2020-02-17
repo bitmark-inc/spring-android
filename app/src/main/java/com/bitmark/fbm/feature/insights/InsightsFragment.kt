@@ -33,6 +33,7 @@ import com.bitmark.fbm.util.Constants
 import com.bitmark.fbm.util.ext.logSharedPrefError
 import com.bitmark.fbm.util.ext.scrollToTop
 import com.bitmark.fbm.util.view.TopVerticalItemDecorator
+import com.bitmark.fbm.util.view.WebViewActivity
 import kotlinx.android.synthetic.main.fragment_insights.*
 import javax.inject.Inject
 
@@ -45,6 +46,9 @@ class InsightsFragment : BaseSupportFragment() {
 
         private const val INCOME_QUATERLY_EARNING_LINK =
             "https://investor.fb.com/financials/?section=quarterlyearnings"
+
+        private const val HOW_U_R_TRACKED_URL =
+            "https://raw.githubusercontent.com/bitmark-inc/spring/master/how-are-you-tracked.md"
 
         fun newInstance() = InsightsFragment()
     }
@@ -95,11 +99,12 @@ class InsightsFragment : BaseSupportFragment() {
             }
 
             override fun onReadMoreClicked() {
-                val bundle = SupportActivity.getBundle(
-                    getString(R.string.how_u_r_tracked),
-                    getString(R.string.how_u_r_tracked_content)
+                val bundle = WebViewActivity.getBundle(
+                    HOW_U_R_TRACKED_URL,
+                    "",
+                    false
                 )
-                navigator.anim(RIGHT_LEFT).startActivity(SupportActivity::class.java, bundle)
+                navigator.anim(RIGHT_LEFT).startActivity(WebViewActivity::class.java, bundle)
             }
 
             override fun onIncomeInfoClicked() {

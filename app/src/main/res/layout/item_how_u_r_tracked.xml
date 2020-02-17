@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_6"
         android:fontFamily="@font/grotesk_light_font_family"
-        android:text="@string/how_u_r_tracked_content"
+        android:text="@string/fb_constantly_track_you"
         android:textColor="@color/black"
         android:textSize="@dimen/sp_12"
         app:layout_constraintEnd_toEndOf="parent"
@@ -41,14 +41,12 @@
         android:id="@+id/tvReadMore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginTop="@dimen/dp_32"
+        android:layout_marginTop="@dimen/dp_24"
         android:clickable="true"
         android:focusable="true"
-        android:fontFamily="@font/grotesk_light_font_family"
+        android:fontFamily="@font/grotesk_regular_font_family"
         android:text="@string/read_more_arrow"
-        android:textColor="@color/color_international_klein_blue_stateful"
-        android:textSize="@dimen/sp_10"
-        android:textStyle="italic" />
+        android:textColor="@color/color_cognac_stateful"
+        android:textSize="@dimen/sp_16" />
 
 </LinearLayout>

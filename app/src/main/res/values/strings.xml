@@ -146,6 +146,7 @@
     <string name="settings">SETTINGS</string>
     <string name="export_data_arrow">Export data »</string>
     <string name="delete_account_arrow">Delete account »</string>
+    <string name="delete_data_arrow">Delete data »</string>
     <string name="increase_privacy_arrow">Increase privacy »</string>
     <string name="term_of_service">Term of Service</string>
     <string name="privacy_policy">Privacy Policy</string>
@@ -171,7 +172,7 @@
     <string name="select_no_one"><![CDATA[Select <b>“No One”</b>]]></string>
     <string name="how_u_r_tracked">How you are tracked?</string>
     <string name="read_more_arrow">Read more »</string>
-    <string name="how_u_r_tracked_content">Fringilla elementum massa convallis lectus rhoncus faucibus. Semper egestas vel porta dolor ut egestas quis non luctus. Lectus in porta ut diam tellus nulla pretium. Eget faucibus vulputate mi pharetra rutrum a. Porttitor varius tellus condimentum elementum iaculis. Adipiscing lacus, cursus feugiat egestas ut varius. Nunc pharetra massa proin quam pulvinar non feugiat dictumst molestie.</string>
+    <string name="fb_constantly_track_you">Facebook constantly tracks you. It doesn’t matter if you are logged in to the Facebook site or not. Here are of the ways they collect your data:</string>
     <string name="how_much_your_worth_to_fb">How much you\'re worth to facebook</string>
     <string name="avg_revenue_per_user">Average revenue per user, or ARPU is how Facebook assesses its ability to monetize users. ARPU is calculated by computing revenue by user geography based on Facebook’s estimate of the geography in which ad impressions are delivered. These numbers are made public in their quarterly earning reports.\n\nYet besides the dollar value, analyzing user value based only on ARPU underestimates the value to Facebook. Even though Facebook doesn’t make much money with their users outside US, Canada, and Western Europe, they still collect lots of data. That data creates the network effect that makes their platform become stronger and more valuable over time.</string>
     <string name="quarterly_earning_reports">quarterly earning reports</string>

@@ -56,6 +56,9 @@ class InsightsViewModel(
                         // categories
                         InsightModelView.newInstance(null, null, categories, null),
 
+                        // how you are tracked
+                        InsightModelView.newInstance(null, null, null, null),
+
                         if (ready) {
                             // fb income
                             InsightModelView.newInstance(

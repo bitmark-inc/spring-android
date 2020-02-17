@@ -145,7 +145,7 @@ class SettingsFragment : BaseSupportFragment() {
             toastComingSoon()
         }
 
-        tvDeleteAccount.setSafetyOnclickListener {
+        tvDeleteData.setSafetyOnclickListener {
             navigator.anim(RIGHT_LEFT).startActivity(DeleteAccountActivity::class.java)
         }
 
