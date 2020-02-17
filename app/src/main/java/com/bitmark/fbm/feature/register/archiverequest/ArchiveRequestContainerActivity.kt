@@ -91,7 +91,7 @@ class ArchiveRequestContainerActivity : BaseAppCompatActivity() {
 
                 res.isError() -> {
                     logger.logSharedPrefError(res.throwable(), "could not get archive requested at")
-                    dialogController.unexpectedAlert { navigator.anim(RIGHT_LEFT).finishActivity() }
+                    dialogController.unexpectedAlert { navigator.openIntercom(true) }
                 }
             }
         })

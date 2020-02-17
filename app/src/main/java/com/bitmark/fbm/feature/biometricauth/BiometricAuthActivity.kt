@@ -73,7 +73,7 @@ class BiometricAuthActivity : BaseAppCompatActivity(), CompoundButton.OnCheckedC
 
                 res.isError() -> {
                     logger.logSharedPrefError(res.throwable(), "get account data error")
-                    dialogController.unexpectedAlert { navigator.anim(RIGHT_LEFT).finishActivity() }
+                    dialogController.unexpectedAlert { navigator.openIntercom(true) }
                 }
             }
         })
@@ -86,7 +86,7 @@ class BiometricAuthActivity : BaseAppCompatActivity(), CompoundButton.OnCheckedC
 
                 res.isError() -> {
                     logger.logSharedPrefError(res.throwable(), "save account key alias error")
-                    dialogController.unexpectedAlert { navigator.anim(RIGHT_LEFT).finishActivity() }
+                    dialogController.unexpectedAlert { navigator.openIntercom(true) }
                 }
             }
         })

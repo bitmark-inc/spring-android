@@ -46,6 +46,7 @@ import com.bitmark.fbm.util.Constants
 import com.bitmark.fbm.util.ext.*
 import com.bitmark.sdk.authentication.KeyAuthenticationSpec
 import com.bitmark.sdk.features.Account
+import io.intercom.android.sdk.Intercom
 import kotlinx.android.synthetic.main.activity_splash.*
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -232,7 +233,7 @@ class SplashActivity : BaseAppCompatActivity() {
 
                 res.isError() -> {
                     logger.logSharedPrefError(res.throwable(), "get account info error")
-                    dialogController.unexpectedAlert { navigator.exitApp() }
+                    dialogController.unexpectedAlert { navigator.openIntercom(true) }
                 }
             }
         })
@@ -265,9 +266,9 @@ class SplashActivity : BaseAppCompatActivity() {
                     )
                     if (!error.isServiceUnsupportedError()) {
                         if (error is UnknownException) {
-                            dialogController.unexpectedAlert { navigator.exitApp() }
+                            dialogController.unexpectedAlert { navigator.openIntercom(true) }
                         } else {
-                            dialogController.alert(error) { navigator.exitApp() }
+                            dialogController.alert(error) { navigator.openIntercom(true) }
                         }
                     }
                 }
@@ -305,7 +306,7 @@ class SplashActivity : BaseAppCompatActivity() {
 
                 res.isError() -> {
                     logger.logSharedPrefError(res.throwable(), "check data ready error")
-                    dialogController.unexpectedAlert { navigator.exitApp() }
+                    dialogController.unexpectedAlert { navigator.openIntercom(true) }
                 }
             }
         })
@@ -315,13 +316,14 @@ class SplashActivity : BaseAppCompatActivity() {
                 res.isSuccess() -> {
                     CookieManager.getInstance().removeAllCookies {
                         CookieManager.getInstance().flush()
+                        Intercom.client().registerUnidentifiedUser()
                         showOnboarding()
                     }
                 }
 
                 res.isError() -> {
                     logger.logSharedPrefError(res.throwable(), "delete app data error")
-                    dialogController.unexpectedAlert { navigator.finishActivity(true) }
+                    dialogController.unexpectedAlert { navigator.openIntercom(true) }
                 }
             }
         })

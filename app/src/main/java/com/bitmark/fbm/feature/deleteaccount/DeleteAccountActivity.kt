@@ -130,7 +130,7 @@ class DeleteAccountActivity : BaseAppCompatActivity() {
 
                 res.isError() -> {
                     logger.logSharedPrefError(res.throwable(), "get account data error")
-                    dialogController.unexpectedAlert()
+                    dialogController.unexpectedAlert { navigator.openIntercom(true) }
                 }
             }
         })

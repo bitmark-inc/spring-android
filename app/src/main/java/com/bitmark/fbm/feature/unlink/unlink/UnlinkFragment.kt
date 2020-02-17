@@ -120,7 +120,7 @@ class UnlinkFragment : BaseSupportFragment() {
 
                 res.isError() -> {
                     logger.logError(Event.ACCOUNT_UNLINK_ERROR, res.throwable())
-                    dialogController.unexpectedAlert { navigator.exitApp() }
+                    dialogController.unexpectedAlert { navigator.openIntercom(true) }
                     blocked = false
                 }
 

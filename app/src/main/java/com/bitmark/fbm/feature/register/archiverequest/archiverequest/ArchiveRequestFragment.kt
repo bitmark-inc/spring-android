@@ -478,7 +478,7 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                 dialogController.alert(
                     getString(R.string.error),
                     e?.message ?: getString(R.string.unexpected_error)
-                ) { navigator.exitApp() }
+                ) { navigator.openIntercom(true) }
             })
     }
 
@@ -504,14 +504,12 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                     )
 
                     if (!connectivityHandler.isConnected()) {
-                        dialogController.showNoInternetConnection {
-                            finish()
-                        }
+                        dialogController.showNoInternetConnection()
                     } else if (!res.throwable()!!.isServiceUnsupportedError()) {
                         dialogController.alert(
                             R.string.error,
                             R.string.could_not_register_account
-                        ) { finish() }
+                        ) { navigator.openIntercom(true) }
                     }
                     blocked = false
                 }
@@ -547,7 +545,7 @@ class ArchiveRequestFragment : BaseSupportFragment() {
 
                 res.isError() -> {
                     logger.logSharedPrefError(res.throwable(), "save fb ads pref categories error")
-                    dialogController.unexpectedAlert { finish() }
+                    dialogController.unexpectedAlert { navigator.openIntercom(true) }
                 }
             }
         })
@@ -569,17 +567,15 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                     logger.logError(Event.ARCHIVE_REQUEST_PREPARE_DATA_ERROR, error)
 
                     if (!connectivityHandler.isConnected()) {
-                        dialogController.showNoInternetConnection {
-                            finish()
-                        }
+                        dialogController.showNoInternetConnection()
                     } else if (!res.throwable()!!.isServiceUnsupportedError()) {
                         if (error is UnknownException) {
                             dialogController.unexpectedAlert {
-                                finish()
+                                navigator.openIntercom(true)
                             }
                         } else {
                             dialogController.alert(error) {
-                                finish()
+                                navigator.openIntercom(true)
                             }
                         }
                     }
@@ -603,7 +599,7 @@ class ArchiveRequestFragment : BaseSupportFragment() {
 
                 res.isError() -> {
                     logger.logSharedPrefError(res.throwable(), "save archive requested at error")
-                    dialogController.unexpectedAlert { finish() }
+                    dialogController.unexpectedAlert { navigator.openIntercom(true) }
                 }
             }
         })
@@ -625,9 +621,7 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                     )
 
                     if (!connectivityHandler.isConnected()) {
-                        dialogController.showNoInternetConnection {
-                            finish()
-                        }
+                        dialogController.showNoInternetConnection()
                     } else if (!res.throwable()!!.isServiceUnsupportedError()) {
                         dialogController.alert(
                             R.string.error,

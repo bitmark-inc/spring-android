@@ -141,8 +141,9 @@ fun Navigator.goToUpdateApp(updateUrl: String) {
     }
 }
 
-fun Navigator.openIntercom() {
+fun Navigator.openIntercom(exitApp: Boolean = false) {
     Intercom.client().displayMessenger()
+    if (exitApp) exitApp()
 }
 
 fun Navigator.share(url: String) {

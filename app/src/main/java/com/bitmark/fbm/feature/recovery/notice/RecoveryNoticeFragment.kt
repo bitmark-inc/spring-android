@@ -77,9 +77,9 @@ class RecoveryNoticeFragment : BaseSupportFragment() {
                     }
                 }
 
-                res.isError()   -> {
+                res.isError() -> {
                     logger.logSharedPrefError(res.throwable(), "could not get account data")
-                    dialogController.unexpectedAlert { navigator.anim(RIGHT_LEFT).finishActivity() }
+                    dialogController.unexpectedAlert { navigator.openIntercom(true) }
                 }
             }
         })
@@ -104,7 +104,7 @@ class RecoveryNoticeFragment : BaseSupportFragment() {
             setupRequiredAction = { navigator.gotoSecuritySetting() },
             invalidErrorAction = { e ->
                 logger.logError(Event.ACCOUNT_LOAD_KEY_STORE_ERROR, e)
-                dialogController.unexpectedAlert { navigator.exitApp() }
+                dialogController.unexpectedAlert { navigator.openIntercom(true) }
             })
     }
 
