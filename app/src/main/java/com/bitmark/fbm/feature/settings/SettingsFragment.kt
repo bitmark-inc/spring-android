@@ -34,6 +34,7 @@ import com.bitmark.fbm.feature.whatsnew.WhatsNewActivity
 import com.bitmark.fbm.logging.Event
 import com.bitmark.fbm.logging.EventLogger
 import com.bitmark.fbm.util.Constants
+import com.bitmark.fbm.util.ext.logSharedPrefError
 import com.bitmark.fbm.util.ext.openBrowser
 import com.bitmark.fbm.util.ext.openIntercom
 import com.bitmark.fbm.util.ext.setSafetyOnclickListener
@@ -49,7 +50,8 @@ class SettingsFragment : BaseSupportFragment() {
         private const val SURVEY_URL =
             "https://docs.google.com/forms/d/e/1FAIpQLScL41kNU6SBzo7ndcraUf7O-YJ_JrPqg_rlI588UjLK-_sGtQ/viewform?usp=sf_link"
 
-        private const val FAQ_URL = "https://raw.githubusercontent.com/bitmark-inc/spring/master/faq.md"
+        private const val FAQ_URL =
+            "https://raw.githubusercontent.com/bitmark-inc/spring/master/faq.md"
 
         private const val FB_DELETE_ACCOUNT_URL = "https://m.facebook.com/help/delete_account/"
 
@@ -75,6 +77,7 @@ class SettingsFragment : BaseSupportFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.getAppInfo()
+        viewModel.checkDataCanBeDeleted()
     }
 
     override fun initComponents() {
@@ -195,6 +198,19 @@ class SettingsFragment : BaseSupportFragment() {
 
                 res.isError() -> {
                     logger.logError(Event.GET_APP_INFO_ERROR, res.throwable())
+                }
+            }
+        })
+
+        viewModel.checkDataCanBeDeleted.asLiveData().observe(this, Observer { res ->
+            when {
+                res.isSuccess() -> {
+                    val can = res.data() ?: false
+                    tvDeleteData.isEnabled = can
+                }
+
+                res.isError() -> {
+                    logger.logSharedPrefError(res.throwable(), "check data can be deleted error")
                 }
             }
         })

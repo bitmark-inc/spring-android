@@ -142,18 +142,30 @@ class SignInActivity : BaseAppCompatActivity() {
         viewModel.prepareDataLiveData.asLiveData().observe(this, Observer { res ->
             when {
                 res.isSuccess() -> {
-                    val registered = res.data()!!
-                    if (registered) {
-                        OneSignal.setSubscription(true)
+                    val data = res.data()!!
+                    val registered = data.first
+                    val deletingAccount = data.second
+                    if (deletingAccount) {
+                        dialogController.alert(
+                            R.string.error,
+                            R.string.your_account_is_being_deleted
+                        )
+                    } else {
+                        if (registered) {
+                            OneSignal.setSubscription(true)
+                        }
+                        val bundle = ArchiveRequestContainerActivity.getBundle(
+                            registered,
+                            account.seed.encodedSeed
+                        )
+                        navigator.anim(RIGHT_LEFT)
+                            .startActivityAsRoot(
+                                ArchiveRequestContainerActivity::class.java,
+                                bundle
+                            )
                     }
                     progressBar.gone()
                     blocked = false
-                    val bundle = ArchiveRequestContainerActivity.getBundle(
-                        registered,
-                        account.seed.encodedSeed
-                    )
-                    navigator.anim(RIGHT_LEFT)
-                        .startActivityAsRoot(ArchiveRequestContainerActivity::class.java, bundle)
                 }
                 res.isError() -> {
                     progressBar.gone()

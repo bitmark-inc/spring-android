@@ -22,7 +22,13 @@ class SettingsViewModel(
 
     internal val getAppInfoLiveData = CompositeLiveData<AppInfoData>()
 
+    internal val checkDataCanBeDeleted = CompositeLiveData<Boolean>()
+
     fun getAppInfo() {
         getAppInfoLiveData.add(rxLiveDataTransformer.single(appRepo.getAppInfo()))
+    }
+
+    fun checkDataCanBeDeleted() {
+        checkDataCanBeDeleted.add(rxLiveDataTransformer.single(appRepo.checkDataReady()))
     }
 }

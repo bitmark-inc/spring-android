@@ -28,7 +28,7 @@ fun Throwable.toRemoteError() = when (this) {
         }
         val message = when (this) {
             is com.bitmark.apiservice.utils.error.HttpException -> "error: $errorMessage, reason: $reason"
-            is retrofit2.HttpException -> message()
+            is retrofit2.HttpException -> response()?.errorBody()?.string() ?: message()
             else -> message ?: ""
         }
         HttpException(code, message)

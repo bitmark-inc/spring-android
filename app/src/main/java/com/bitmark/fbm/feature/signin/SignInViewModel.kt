@@ -15,6 +15,7 @@ import com.bitmark.fbm.data.ext.isHttpError
 import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.data.source.AppRepository
 import com.bitmark.fbm.data.source.remote.api.error.HttpException
+import com.bitmark.fbm.data.source.remote.api.error.errorCode
 import com.bitmark.fbm.data.source.remote.api.event.RemoteApiBus
 import com.bitmark.fbm.feature.BaseViewModel
 import com.bitmark.fbm.util.livedata.CompositeLiveData
@@ -34,7 +35,7 @@ class SignInViewModel(
     private val remoteApiBus: RemoteApiBus
 ) : BaseViewModel(lifecycle) {
 
-    internal val prepareDataLiveData = CompositeLiveData<Boolean>()
+    internal val prepareDataLiveData = CompositeLiveData<Pair<Boolean, Boolean>>()
 
     internal val serviceUnsupportedLiveData = MutableLiveData<String>()
 
@@ -71,12 +72,28 @@ class SignInViewModel(
                 appRepo.registerNotificationService(accountData.id),
                 appRepo.setDataReady(),
                 accountRepo.registerIntercomUser(intercomId)
-            ).andThen(Single.just(true))
+            ).andThen(Single.just(Pair(first = true, second = false)))
         }).onErrorResumeNext { e ->
-            if (e.isHttpError() && (e as HttpException).code == 401) {
-                Single.just(false)
+            if (e.isHttpError()) {
+                when {
+                    // did not has spring account
+                    (e as HttpException).code == 401 -> Single.just(
+                        Pair(
+                            first = false,
+                            second = false
+                        )
+                    )
+                    // deleting account
+                    e.errorCode == 1008 -> Single.just(
+                        Pair(
+                            first = false,
+                            second = true
+                        )
+                    )
+                    else -> Single.error(e)
+                }
             } else {
-                Single.error<Boolean>(e)
+                Single.error(e)
             }
         }
 

@@ -158,6 +158,7 @@
                     android:fontFamily="@font/grotesk_light_font_family"
                     android:includeFontPadding="false"
                     android:text="@string/delete_data_arrow"
+                    android:enabled="false"
                     android:textColor="@color/color_black_stateful"
                     android:textSize="@dimen/sp_18" />
 
