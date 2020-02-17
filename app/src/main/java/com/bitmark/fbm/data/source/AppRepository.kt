@@ -8,6 +8,7 @@ package com.bitmark.fbm.data.source
 
 import com.bitmark.fbm.BuildConfig
 import com.bitmark.fbm.data.source.local.AppLocalDataSource
+import com.bitmark.fbm.data.source.local.Jwt
 import com.bitmark.fbm.data.source.local.event.NotificationStateChangedListener
 import com.bitmark.fbm.data.source.remote.AppRemoteDataSource
 import io.reactivex.Completable
@@ -48,11 +49,11 @@ class AppRepository(
 
     fun getAppInfo() = remoteDataSource.getAppInfo()
 
-    fun deleteAppData(keepAccountData: Boolean = false) = Completable.mergeArray(
+    fun deleteAppData(keepAccountData: Boolean = false): Completable = Completable.mergeArray(
         localDataSource.deleteDb(),
         localDataSource.deleteSharePref(keepAccountData),
         localDataSource.deleteFileStorage(keepAccountData)
-    )
+    ).andThen(Completable.fromCallable { Jwt.getInstance().clear() })
 
     fun getLastVersionCode() = localDataSource.getLastVersionCode()
 
