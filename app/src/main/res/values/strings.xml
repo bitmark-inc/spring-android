@@ -200,6 +200,8 @@
     <string name="view_insights">View insights »</string>
     <string name="fb_is_now_preparing">Facebook is now preparing your data archive. This may take up to a few days, depending on how much data you have.\n\nWhen you receive a notification from Facebook that your archive is ready, come back here. We’ll handle the rest.</string>
     <string name="your_account_is_being_deleted">Your account is being deleted. It might take a while.\nPlease try to sign-in later.</string>
+    <string name="your_fb_data_archive_is_not_ready">Your Facebook data archive is not ready yet. This may take another day or two, depending on how much data you have.</string>
+    <string name="personal_api_arrow">Personal API »</string>
 
     <string-array name="day_of_week">
         <item>S</item>

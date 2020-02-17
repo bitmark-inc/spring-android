@@ -140,6 +140,17 @@
                     android:textSize="@dimen/sp_24" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvPersonalApi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_14"
+                    android:fontFamily="@font/grotesk_light_font_family"
+                    android:includeFontPadding="false"
+                    android:text="@string/personal_api_arrow"
+                    android:textColor="@color/color_black_stateful"
+                    android:textSize="@dimen/sp_18" />
+
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvExportData"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

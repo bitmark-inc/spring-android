@@ -213,7 +213,7 @@ class MainActivity : BaseAppCompatActivity() {
         val title =
             getString(R.string.still_waiting)
         val message =
-            getString(R.string.sorry_fb_is_still_prepare)
+            getString(R.string.your_fb_data_archive_is_not_ready)
         tvNotifTitle.text = title
         tvNotifMsg.text = message
 

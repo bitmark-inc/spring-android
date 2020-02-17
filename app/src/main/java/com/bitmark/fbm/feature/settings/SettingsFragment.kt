@@ -147,6 +147,10 @@ class SettingsFragment : BaseSupportFragment() {
             navigator.anim(RIGHT_LEFT).startActivity(RecoveryContainerActivity::class.java)
         }
 
+        tvPersonalApi.setSafetyOnclickListener {
+            toastComingSoon()
+        }
+
         tvExportData.setSafetyOnclickListener {
             toastComingSoon()
         }
