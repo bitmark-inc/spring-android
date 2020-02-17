@@ -28,9 +28,23 @@ fun buildSimpleNotificationBundle(
     notificationId: Int = 0,
     receiver: Class<*> = SplashActivity::class.java
 ): Bundle {
+    return buildSimpleNotificationBundle(
+        context.getString(title),
+        context.getString(message),
+        notificationId,
+        receiver
+    )
+}
+
+fun buildSimpleNotificationBundle(
+    title: String,
+    message: String,
+    notificationId: Int = 0,
+    receiver: Class<*> = SplashActivity::class.java
+): Bundle {
     val bundle = Bundle()
-    bundle.putString("title", context.getString(title))
-    bundle.putString("message", context.getString(message))
+    bundle.putString("title", title)
+    bundle.putString("message", message)
     bundle.putString("receiver", receiver.name)
     bundle.putInt("notification_id", notificationId)
     return bundle

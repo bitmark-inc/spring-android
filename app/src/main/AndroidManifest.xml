@@ -108,5 +108,14 @@
         <meta-data
             android:name="io.sentry.dsn"
             android:value="https://130cf5848b034aba80d026039d64974e@sentry.io/1857021" />
+
+        <service
+            android:name=".feature.notification.AppNotificationExtenderService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE">
+            <intent-filter>
+                <action android:name="com.onesignal.NotificationExtender" />
+            </intent-filter>
+        </service>
     </application>
 </manifest>
