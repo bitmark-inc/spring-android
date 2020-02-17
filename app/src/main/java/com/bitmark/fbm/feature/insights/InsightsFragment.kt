@@ -44,7 +44,7 @@ class InsightsFragment : BaseSupportFragment() {
 
         private const val TAG = "InsightsFragment"
 
-        private const val INCOME_QUATERLY_EARNING_LINK =
+        private const val INCOME_QUATERLY_EARNING_URL =
             "https://investor.fb.com/financials/?section=quarterlyearnings"
 
         private const val HOW_U_R_TRACKED_URL =
@@ -112,7 +112,7 @@ class InsightsFragment : BaseSupportFragment() {
                     getString(R.string.how_much_your_worth_to_fb),
                     getString(R.string.avg_revenue_per_user),
                     getString(R.string.quarterly_earning_reports),
-                    INCOME_QUATERLY_EARNING_LINK
+                    INCOME_QUATERLY_EARNING_URL
                 )
                 navigator.anim(RIGHT_LEFT).startActivity(SupportActivity::class.java, bundle)
             }

@@ -36,13 +36,13 @@ import com.bitmark.fbm.feature.Navigator.Companion.RIGHT_LEFT
 import com.bitmark.fbm.feature.main.MainActivity
 import com.bitmark.fbm.feature.register.archiverequest.ArchiveRequestContainerActivity
 import com.bitmark.fbm.feature.register.dataprocessing.DataProcessingActivity
-import com.bitmark.fbm.feature.register.onboarding.OnboardingActivity
 import com.bitmark.fbm.feature.register.trustnotice.TrustNoticeActivity
 import com.bitmark.fbm.feature.signin.SignInActivity
 import com.bitmark.fbm.feature.whatsnew.WhatsNewActivity
 import com.bitmark.fbm.logging.Event
 import com.bitmark.fbm.logging.EventLogger
 import com.bitmark.fbm.logging.Tracer
+import com.bitmark.fbm.util.Constants
 import com.bitmark.fbm.util.ext.*
 import com.bitmark.sdk.authentication.KeyAuthenticationSpec
 import com.bitmark.sdk.features.Account
@@ -119,7 +119,7 @@ class SplashActivity : BaseAppCompatActivity() {
         spannableString.setSpan(
             object : ClickableSpan() {
                 override fun onClick(widget: View) {
-                    navigator.anim(NONE).openBrowser(BuildConfig.PRIVACY_POLICY)
+                    navigator.anim(NONE).openBrowser(Constants.PRIVACY_URL)
                 }
 
             }, startIndex,

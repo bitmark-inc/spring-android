@@ -33,6 +33,7 @@ import com.bitmark.fbm.feature.unlink.UnlinkContainerActivity
 import com.bitmark.fbm.feature.whatsnew.WhatsNewActivity
 import com.bitmark.fbm.logging.Event
 import com.bitmark.fbm.logging.EventLogger
+import com.bitmark.fbm.util.Constants
 import com.bitmark.fbm.util.ext.openBrowser
 import com.bitmark.fbm.util.ext.openIntercom
 import com.bitmark.fbm.util.ext.setSafetyOnclickListener
@@ -47,6 +48,8 @@ class SettingsFragment : BaseSupportFragment() {
 
         private const val SURVEY_URL =
             "https://docs.google.com/forms/d/e/1FAIpQLScL41kNU6SBzo7ndcraUf7O-YJ_JrPqg_rlI588UjLK-_sGtQ/viewform?usp=sf_link"
+
+        private const val FAQ_URL = "https://raw.githubusercontent.com/bitmark-inc/spring/master/faq.md"
 
         private const val FB_DELETE_ACCOUNT_URL = "https://m.facebook.com/help/delete_account/"
 
@@ -110,7 +113,7 @@ class SettingsFragment : BaseSupportFragment() {
         spannableString.setSpan(
             object : ClickableSpan() {
                 override fun onClick(widget: View) {
-                    navigator.anim(NONE).openBrowser(BuildConfig.PRIVACY_POLICY)
+                    navigator.anim(NONE).openBrowser(Constants.PRIVACY_URL)
                 }
 
             }, startIndex,
@@ -202,7 +205,7 @@ class SettingsFragment : BaseSupportFragment() {
     }
 
     private fun goToFaq() {
-        val bundle = WebViewActivity.getBundle(BuildConfig.FAQ, getString(R.string.faq))
+        val bundle = WebViewActivity.getBundle(FAQ_URL, getString(R.string.faq))
         navigator.anim(RIGHT_LEFT).startActivity(WebViewActivity::class.java, bundle)
     }
 

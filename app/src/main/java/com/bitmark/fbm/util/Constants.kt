@@ -13,4 +13,6 @@ object Constants {
     const val GOOGLE_PLAY_HOST = "play.google.com"
 
     const val REMINDER_NOTIFICATION_ID = 0xAF
+
+    const val PRIVACY_URL = "https://raw.githubusercontent.com/bitmark-inc/spring/master/privacy-policy.md"
 }
