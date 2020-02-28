@@ -13,9 +13,9 @@ import com.bitmark.fbm.data.model.*
 import com.bitmark.fbm.data.model.entity.*
 import com.bitmark.fbm.data.source.remote.api.error.HttpException
 import com.bitmark.fbm.data.source.remote.api.error.NetworkException
-import com.nhaarman.mockitokotlin2.any
 import java.io.IOException
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 val ALPHABETNUMERIC = "qwertyuiopasdfghjklzxcvbnm0123456789"
@@ -261,6 +261,20 @@ val SECTIONRS = listOf(SECTIONR_1, SECTIONR_2)
 val INSIGHT_DATA = InsightData(1f, 0L)
 
 val STATSR = StatsR(1, StatsType.POST, 0L, 1L, mapOf("123" to Stats(1f, 1f)))
+
+val JWT_DATA = JwtData("test_token", TimeUnit.MINUTES.toSeconds(30))
+
+val ARCHIVE_DATA = ArchiveData(
+    1,
+    "2018-09-16T04:08:04.000000Z",
+    "2018-09-16T04:08:04.000000Z",
+    ArchiveStatus.SUBMITTED,
+    "2018-09-16T04:08:04.000000Z",
+    "2018-09-16T04:08:04.000000Z",
+    "402e895c66b9d8e3920a01489b21e33c265bf191ccdd33f040d50168496435d3"
+)
+
+val ARCHIVE_DATA_LIST = listOf(ARCHIVE_DATA)
 
 fun anyString(): String {
     val random = Random()
