@@ -13,8 +13,8 @@ import com.bitmark.fbm.data.source.remote.BitmarkRemoteDataSource
 
 class BitmarkRepository(private val remoteDataSource: BitmarkRemoteDataSource) {
 
-    fun listAsset( assetId: String) =
-        remoteDataSource.listAsset( assetId)
+    fun listAsset(assetId: String) =
+        remoteDataSource.listAsset(assetId)
 
     fun issueBitmark(params: IssuanceParams) = remoteDataSource.issueBitmark(params)
 
