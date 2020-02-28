@@ -10,8 +10,10 @@ import com.bitmark.apiservice.utils.record.AssetRecord
 import com.bitmark.apiservice.utils.record.BitmarkRecord
 import com.bitmark.apiservice.utils.record.Head
 import com.bitmark.fbm.data.model.*
+import com.bitmark.fbm.data.model.entity.*
 import com.bitmark.fbm.data.source.remote.api.error.HttpException
 import com.bitmark.fbm.data.source.remote.api.error.NetworkException
+import com.nhaarman.mockitokotlin2.any
 import java.io.IOException
 import java.util.*
 
@@ -249,6 +251,16 @@ val BITMARK_RECORD_2 = BitmarkRecord().apply {
 }
 
 val BITMARK_RECORDS = listOf(BITMARK_RECORD_1, BITMARK_RECORD_2)
+
+val SECTIONR_1 = SectionR(1, SectionName.POST, Period.WEEK, 0, 0f, 0, mapOf(), 0f)
+
+val SECTIONR_2 = SectionR(2, SectionName.REACTION, Period.WEEK, 0, 0f, 0, mapOf(), 0f)
+
+val SECTIONRS = listOf(SECTIONR_1, SECTIONR_2)
+
+val INSIGHT_DATA = InsightData(1f, 0L)
+
+val STATSR = StatsR(1, StatsType.POST, 0L, 1L, mapOf("123" to Stats(1f, 1f)))
 
 fun anyString(): String {
     val random = Random()
