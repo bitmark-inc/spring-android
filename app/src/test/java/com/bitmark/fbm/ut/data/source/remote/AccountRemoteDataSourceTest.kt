@@ -141,13 +141,13 @@ class AccountRemoteDataSourceTest : DataTest() {
     fun testGetArchives() {
         val observer = TestObserver<Any>()
 
-        whenever(fbmApi.getArchives()).thenReturn(Single.just(mapOf("result" to ARCHIVE_DATA_LIST)))
+        whenever(fbmApi.getArchives()).thenReturn(Single.just(mapOf("result" to PROCESSED_ARCHIVE_DATA)))
 
         remoteDataSource.getArchives().subscribe(observer)
 
         observer.assertComplete()
         observer.assertNoErrors()
-        observer.assertValue(ARCHIVE_DATA_LIST)
+        observer.assertValue(PROCESSED_ARCHIVE_DATA)
         observer.assertTerminated()
     }
 

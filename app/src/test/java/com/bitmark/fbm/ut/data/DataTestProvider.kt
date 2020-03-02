@@ -260,21 +260,19 @@ val SECTIONRS = listOf(SECTIONR_1, SECTIONR_2)
 
 val INSIGHT_DATA = InsightData(1f, 0L)
 
-val STATSR = StatsR(1, StatsType.POST, 0L, 1L, mapOf("123" to Stats(1f, 1f)))
+val STATS = Stats(1f, 1f)
+
+val STATSR = StatsR(null, StatsType.POST, 0L, 1L, mapOf("123" to STATS))
 
 val JWT_DATA = JwtData("test_token", TimeUnit.MINUTES.toSeconds(30))
 
-val ARCHIVE_DATA = ArchiveData(
-    1,
-    "2018-09-16T04:08:04.000000Z",
-    "2018-09-16T04:08:04.000000Z",
-    ArchiveStatus.SUBMITTED,
-    "2018-09-16T04:08:04.000000Z",
-    "2018-09-16T04:08:04.000000Z",
-    "402e895c66b9d8e3920a01489b21e33c265bf191ccdd33f040d50168496435d3"
-)
+val POST = PostR("content", 0L, "title", PostType.UPDATE, "location_id", null, null, null)
 
-val ARCHIVE_DATA_LIST = listOf(ARCHIVE_DATA)
+val POSTS = listOf(POST)
+
+val REACTION = ReactionR(0, "actor", Reaction.LOVE, 0L, "title")
+
+val REACTIONS = listOf(REACTION)
 
 fun anyString(): String {
     val random = Random()
