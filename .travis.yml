@@ -47,7 +47,7 @@ before_script:
   - echo -n >keystores/release.properties && echo "key.alias=springks"$'\n'"key.store.password=$key.store.password"$'\n'"key.alias.password=$key.alias.password" >keystores/release.properties
 
 script:
-  - ./gradlew clean jacocoTestInhouseDebugUnitTestReport
+  - ./gradlew clean testInhouseDebugUnitTestCoverage
 
 after_success:
   - bash <(curl -s https://codecov.io/bash) -t $CODE_COV

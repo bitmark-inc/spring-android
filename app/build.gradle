@@ -18,7 +18,7 @@ apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 
 apply plugin: "com.betomorrow.appcenter"
 
-apply plugin: 'jacoco-android'
+apply plugin: 'jacoco'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -107,6 +107,7 @@ android {
             debuggable true
             minifyEnabled false
             signingConfig signingConfigs.debug
+            testCoverageEnabled true
         }
 
         release {
@@ -335,28 +336,65 @@ tasks.withType(Test) {
     jacoco.includeNoLocationClasses = true
 }
 
-jacocoAndroidUnitTestReport {
-    excludes += [
-            '**/R.class',
-            '**/R$*.class',
-            '**/BuildConfig.*',
-            '**/Manifest*.*',
-            '**/*Test*.*',
-            'android/**/*.*',
-            '**/*_Provide*/**',
-            '**/*_Factory*/**',
-            '**/*_MembersInjector.class',
-            '**/*Dagger*',
-            '**/*Dao_Impl*',
-            '**/data/model/*',
-            '**/di/*',
-            '**/keymanagement/*',
-            'com.bumptech.glide'
-    ]
+afterEvaluate {
 
-    csv.enabled false
-    html.enabled true
-    xml.enabled true
+    (android.hasProperty('applicationVariants')
+            ? android.'applicationVariants'
+            : android.'libraryVariants').all { variant ->
+        def variantName = variant.name
+        def unitTestTask = "test${variantName.capitalize()}UnitTest"
+        def uiTestCoverageTask = "create${variantName.capitalize()}CoverageReport"
+
+        tasks.create(name: "${unitTestTask}Coverage", type: JacocoReport, dependsOn: [
+                "$unitTestTask",
+                "$uiTestCoverageTask"
+        ]) {
+            group = "Reporting"
+            description = "Generate Jacoco coverage reports for the ${variantName.capitalize()} build"
+
+            reports {
+                html.enabled = true
+                xml.enabled = true
+                csv.enabled = false
+            }
+
+            def fileFilter = [
+                    '**/R.class',
+                    '**/R$*.class',
+                    '**/BuildConfig.*',
+                    '**/Manifest*.*',
+                    '**/*Test*.*',
+                    'android/**/*.*',
+                    '**/*_Provide*/**',
+                    '**/*_Factory*/**',
+                    '**/*_MembersInjector.class',
+                    '**/*Dagger*',
+                    '**/*Dao_Impl*',
+                    '**/data/model/*',
+                    '**/di/*',
+                    '**/keymanagement/*',
+                    'com.bumptech.glide'
+            ]
+
+            classDirectories.setFrom(files([
+                    fileTree(dir: "${buildDir}/tmp/kotlin-classes/${variantName}", excludes: fileFilter)
+            ]))
+
+            def coverageSourceDirs = [
+                    "$project.rootDir/app/src/main/java",
+                    "$project.projectDir/src/${variantName}/java"
+            ]
+            additionalSourceDirs.setFrom(files(coverageSourceDirs))
+            sourceDirectories.setFrom(files(coverageSourceDirs))
+
+            def uiTestsData = fileTree(dir: "${buildDir}/outputs/code_coverage/${variantName}AndroidTest/connected/", includes: ["**/*.ec"])
+
+            executionData(files([
+                    "$project.buildDir/jacoco/${unitTestTask}.exec",
+                    uiTestsData
+            ]))
+        }
+    }
 }
 
 apply plugin: 'com.google.gms.google-services'
