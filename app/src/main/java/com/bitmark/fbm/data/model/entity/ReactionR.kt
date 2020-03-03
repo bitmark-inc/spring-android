@@ -26,7 +26,7 @@ data class ReactionR(
     @Expose
     @SerializedName("reaction_id")
     @ColumnInfo(name = "id")
-    val id: Long,
+    val id: String,
 
     @Expose
     @SerializedName("actor")
@@ -97,24 +97,24 @@ val Reaction.Companion.UNSUPPORTED_TYPE: Array<Reaction>
 
 val Reaction.value: String
     get() = when (this) {
-        Reaction.LIKE    -> "LIKE"
-        Reaction.LOVE    -> "LOVE"
-        Reaction.HAHA    -> "HAHA"
-        Reaction.WOW     -> "WOW"
-        Reaction.SAD     -> "SORRY"
-        Reaction.ANGRY   -> "ANGER"
+        Reaction.LIKE -> "LIKE"
+        Reaction.LOVE -> "LOVE"
+        Reaction.HAHA -> "HAHA"
+        Reaction.WOW -> "WOW"
+        Reaction.SAD -> "SORRY"
+        Reaction.ANGRY -> "ANGER"
         Reaction.DOROTHY -> "DOROTHY"
-        Reaction.TOTO    -> "TOTO"
+        Reaction.TOTO -> "TOTO"
     }
 
 fun Reaction.Companion.fromString(reaction: String) = when (reaction) {
-    "LIKE"    -> Reaction.LIKE
-    "LOVE"    -> Reaction.LOVE
-    "HAHA"    -> Reaction.HAHA
-    "WOW"     -> Reaction.WOW
-    "SORRY"   -> Reaction.SAD
-    "ANGER"   -> Reaction.ANGRY
-    "TOTO"    -> Reaction.TOTO
+    "LIKE" -> Reaction.LIKE
+    "LOVE" -> Reaction.LOVE
+    "HAHA" -> Reaction.HAHA
+    "WOW" -> Reaction.WOW
+    "SORRY" -> Reaction.SAD
+    "ANGER" -> Reaction.ANGRY
+    "TOTO" -> Reaction.TOTO
     "DOROTHY" -> Reaction.DOROTHY
-    else      -> error("invalid reaction string: $reaction")
+    else -> error("invalid reaction string: $reaction")
 }

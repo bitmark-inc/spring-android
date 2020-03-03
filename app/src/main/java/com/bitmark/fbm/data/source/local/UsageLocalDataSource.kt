@@ -75,7 +75,7 @@ class UsageLocalDataSource @Inject constructor(
         val saveCommentStreams =
             ps.filter { p -> p.comments != null && p.comments!!.isNotEmpty() }.map { p ->
                 val comments = p.comments
-                comments?.applyPostId(p.timestampSec)
+                comments?.applyPostId(p.id)
                 saveComments(comments!!).ignoreElement()
             }
         if (saveCommentStreams.isEmpty()) {
