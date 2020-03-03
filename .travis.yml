@@ -45,7 +45,10 @@ before_script:
   - echo -n >sentry.properties && echo "defaults.project=bitmark-fbm-android"$'\n'"defaults.org=bitmark-inc"$'\n'"auth.token=$SENTRY_AUTH_TOKEN" >sentry.properties
   - echo -n >app/src/main/resources/sentry.properties && echo "dsn=$SENTRY_DSN" >app/src/main/resources/sentry.properties
   - echo -n >keystores/release.properties && echo "key.alias=springks"$'\n'"key.store.password=$key.store.password"$'\n'"key.alias.password=$key.alias.password" >keystores/release.properties
-
+  - echo no | android create avd --force -n test -t android-24 --abi armeabi-v7a
+  - emulator -avd test -no-window &
+  - android-wait-for-emulator
+  - adb shell input keyevent 82 &
 script:
   - ./gradlew clean testInhouseDebugUnitTestCoverage
 
