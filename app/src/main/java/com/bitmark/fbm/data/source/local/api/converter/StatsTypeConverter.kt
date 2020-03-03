@@ -18,5 +18,5 @@ class StatsTypeConverter {
     fun fromStatsType(type: StatsType) = type.value
 
     @TypeConverter
-    fun toPostType(type: String) = StatsType.fromString(type)
+    fun toStatsType(type: String) = StatsType.fromString(type)
 }
