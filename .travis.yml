@@ -1,5 +1,7 @@
 language: android
 dist: trusty
+jdk: oraclejdk8
+sudo: required
 
 android:
   components:
@@ -9,11 +11,16 @@ android:
     - android-28
     - extra-google-m2repository
     - extra-android-m2repository
+    - sys-img-armeabi-v7a-android-24
 
   licenses:
     - android-sdk-preview-license-.+
     - android-sdk-license-.+
     - google-gdk-license-.+
+
+env:
+  global:
+    - ADB_INSTALL_TIMEOUT=5
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -35,7 +42,6 @@ before_install:
   - echo -e "\n24333f8a63b6825ea9c5514f83c2829b004d1fee" > "$ANDROID_HOME/licenses/android-sdk-license"
   - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
 
-install:
 before_script:
   - rm -fr $HOME/.gradle/caches/modules-2/files-2.1/com.bitmark.sdk
   - mkdir -p app/src/main/resources && touch app/src/main/resources/sentry.properties
