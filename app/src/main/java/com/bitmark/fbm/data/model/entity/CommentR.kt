@@ -18,7 +18,7 @@ import com.google.gson.annotations.SerializedName
     ), Index(value = ["timestamp"]), Index(value = ["post_id"])],
     foreignKeys = [ForeignKey(
         entity = PostR::class,
-        parentColumns = ["timestamp"],
+        parentColumns = ["id"],
         childColumns = ["post_id"],
         onDelete = ForeignKey.CASCADE,
         onUpdate = ForeignKey.CASCADE
@@ -28,14 +28,14 @@ data class CommentR(
 
     @Expose
     @SerializedName("id")
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     @ColumnInfo(name = "id")
-    val id: Long,
+    val id: String,
 
     @Expose
     @SerializedName("post_id")
     @ColumnInfo(name = "post_id")
-    var postId: Long,
+    var postId: String,
 
     @Expose
     @SerializedName("timestamp")
@@ -53,7 +53,7 @@ data class CommentR(
     val author: String
 ) : Record
 
-fun List<CommentR>.applyPostId(id: Long) {
+fun List<CommentR>.applyPostId(id: String) {
     for (comment in this) {
         comment.postId = id
     }

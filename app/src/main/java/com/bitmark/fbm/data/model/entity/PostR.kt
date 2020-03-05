@@ -16,10 +16,10 @@ import java.net.URLEncoder
 
 @Entity(
     tableName = "Post",
-    indices = [Index(
-        value = ["timestamp"],
-        unique = true
-    ), Index(value = ["type"]), Index(value = ["location_id"])],
+    indices = [Index(value = ["id"], unique = true),
+        Index(value = ["timestamp"], unique = true),
+        Index(value = ["type"]),
+        Index(value = ["location_id"])],
     foreignKeys = [ForeignKey(
         entity = LocationR::class,
         parentColumns = ["id"],
@@ -31,6 +31,12 @@ import java.net.URLEncoder
 data class PostR(
 
     @Expose
+    @SerializedName("id")
+    @ColumnInfo(name = "id")
+    @PrimaryKey
+    val id: String,
+
+    @Expose
     @SerializedName("post")
     @ColumnInfo(name = "content")
     val content: String?,
@@ -38,7 +44,6 @@ data class PostR(
     @Expose
     @SerializedName("timestamp")
     @ColumnInfo(name = "timestamp")
-    @PrimaryKey
     val timestampSec: Long,
 
     @Expose
@@ -122,7 +127,7 @@ fun MediaType.string() = when (this) {
 fun MediaType.Companion.fromString(type: String) = when (type) {
     "photo" -> MediaType.PHOTO
     "video" -> MediaType.VIDEO
-    else    -> error("unsupported media type $type")
+    else -> error("unsupported media type $type")
 }
 
 fun List<PostR>.applyRequiredValues() {
@@ -173,19 +178,19 @@ fun PostType.Companion.indexOf(type: String) = PostType.fromString(type).ordinal
 fun PostType.Companion.fromIndex(index: Int) = PostType.values()[index]
 
 fun PostType.Companion.fromString(type: String) = when (type) {
-    "update"      -> PostType.UPDATE
-    "media"       -> PostType.MEDIA
-    "story"       -> PostType.STORY
-    "link"        -> PostType.LINK
+    "update" -> PostType.UPDATE
+    "media" -> PostType.MEDIA
+    "story" -> PostType.STORY
+    "link" -> PostType.LINK
     "unspecified" -> PostType.UNSPECIFIED
-    else          -> error("invalid type: $type")
+    else -> error("invalid type: $type")
 }
 
 val PostType.value: String
     get() = when (this) {
-        PostType.UPDATE      -> "update"
-        PostType.MEDIA       -> "media"
-        PostType.STORY       -> "story"
-        PostType.LINK        -> "link"
+        PostType.UPDATE -> "update"
+        PostType.MEDIA -> "media"
+        PostType.STORY -> "story"
+        PostType.LINK -> "link"
         PostType.UNSPECIFIED -> "unspecified"
     }
