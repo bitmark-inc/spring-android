@@ -13,7 +13,7 @@ import com.google.gson.annotations.SerializedName
 data class FriendData(
     @Expose
     @SerializedName("id")
-    val id: Long,
+    val id: String,
 
     @Expose
     @SerializedName("name")

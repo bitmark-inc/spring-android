@@ -19,31 +19,34 @@ val CRITERIA_4 = CriteriaR.fromStatisticWType("usage", 315532800000L, 3471552000
 
 val POST_1 =
     PostR(
+        "uuid1",
         "content1",
         315532800L,
         "title1",
         PostType.UPDATE,
         null,
-        listOf(FriendData(1L, "user1")),
+        listOf(FriendData("uuid1", "user1")),
         null,
         null
     )
 
 val POST_2 =
     PostR(
+        "uuid2",
         "content2",
         347155200L,
         "title2",
         PostType.LINK,
         null,
-        listOf(FriendData(1L, "user1"), FriendData(2L, "user2")),
+        listOf(FriendData("uuid1", "user1"), FriendData("uuid2", "user2")),
         null,
         "https://url.com"
     )
 
 val POST_3 =
     PostR(
-        "content2",
+        "uuid3",
+        "content3",
         347155200L,
         "title2",
         PostType.LINK,
@@ -57,9 +60,9 @@ val POSTS = listOf(POST_1, POST_2)
 
 val LOCATION_1 = LocationR("location_1", "location_name_1", null, "address_1", null, 315532800L)
 
-val REACTION_1 = ReactionR(1, "actor_1", Reaction.LIKE, 315532800L, "title_1")
+val REACTION_1 = ReactionR("uuid1", "actor_1", Reaction.LIKE, 315532800L, "title_1")
 
-val REACTION_2 = ReactionR(2, "actor_2", Reaction.LOVE, 347155200L, "title_2")
+val REACTION_2 = ReactionR("uuid2", "actor_2", Reaction.LOVE, 347155200L, "title_2")
 
 val REACTIONS = listOf(REACTION_1, REACTION_2)
 

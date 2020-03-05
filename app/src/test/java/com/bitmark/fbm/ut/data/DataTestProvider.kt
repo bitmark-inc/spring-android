@@ -266,11 +266,11 @@ val STATSR = StatsR(null, StatsType.POST, 0L, 1L, mapOf("123" to STATS))
 
 val JWT_DATA = JwtData("test_token", TimeUnit.MINUTES.toSeconds(30))
 
-val POST = PostR("content", 0L, "title", PostType.UPDATE, "location_id", null, null, null)
+val POST = PostR("uuid1", "content", 0L, "title", PostType.UPDATE, "location_id", null, null, null)
 
 val POSTS = listOf(POST)
 
-val REACTION = ReactionR(0, "actor", Reaction.LOVE, 0L, "title")
+val REACTION = ReactionR("uuid1", "actor", Reaction.LOVE, 0L, "title")
 
 val REACTIONS = listOf(REACTION)
 
