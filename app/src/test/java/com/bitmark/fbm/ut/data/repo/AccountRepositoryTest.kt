@@ -817,7 +817,7 @@ class AccountRepositoryTest : DataTest() {
         observer.assertNoValues()
         observer.assertNotComplete()
         observer.assertTerminated()
-        observer.assertErrorMessage("do not contains last_activity_timestamp")
+        observer.assertErrorMessage("do not contains latest_activity_timestamp")
     }
 
     @Test

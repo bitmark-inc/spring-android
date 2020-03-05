@@ -29,7 +29,7 @@ interface FbmApi {
     @POST("api/auth")
     fun registerJwt(@Body request: RegisterJwtRequest): Single<JwtData>
 
-    @POST("api/archives")
+    @POST("api/archives/url")
     fun sendArchiveDownloadRequest(@Body payload: ArchiveRequestPayload): Completable
 
     @GET("assets/fb_automation.json")
