@@ -80,10 +80,33 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/grotesk_light_font_family"
                     android:includeFontPadding="false"
-                    android:text="@string/security"
+                    android:text="@string/account"
                     android:textAllCaps="true"
                     android:textColor="@color/black"
                     android:textSize="@dimen/sp_24" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvExportData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_14"
+                    android:fontFamily="@font/grotesk_light_font_family"
+                    android:includeFontPadding="false"
+                    android:text="@string/export_data_arrow"
+                    android:textColor="@color/color_black_stateful"
+                    android:textSize="@dimen/sp_18" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvDeleteData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_14"
+                    android:enabled="false"
+                    android:fontFamily="@font/grotesk_light_font_family"
+                    android:includeFontPadding="false"
+                    android:text="@string/delete_data_arrow"
+                    android:textColor="@color/color_black_stateful"
+                    android:textSize="@dimen/sp_18" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvUnlink"
@@ -92,18 +115,7 @@
                     android:layout_marginTop="@dimen/dp_14"
                     android:fontFamily="@font/grotesk_light_font_family"
                     android:includeFontPadding="false"
-                    android:text="@string/unlink_from_device_arrow"
-                    android:textColor="@color/color_black_stateful"
-                    android:textSize="@dimen/sp_18" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvBiometricAuth"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_14"
-                    android:fontFamily="@font/grotesk_light_font_family"
-                    android:includeFontPadding="false"
-                    android:text="@string/biometric_auth_arrow"
+                    android:text="@string/sign_out_arrow"
                     android:textColor="@color/color_black_stateful"
                     android:textSize="@dimen/sp_18" />
 
@@ -134,42 +146,30 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/grotesk_light_font_family"
                     android:includeFontPadding="false"
-                    android:text="@string/account"
+                    android:text="@string/security"
                     android:textAllCaps="true"
                     android:textColor="@color/black"
                     android:textSize="@dimen/sp_24" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvPersonalApi"
+                    android:id="@+id/tvBiometricAuth"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_14"
                     android:fontFamily="@font/grotesk_light_font_family"
                     android:includeFontPadding="false"
-                    android:text="@string/personal_api_arrow"
+                    android:text="@string/biometric_auth_arrow"
                     android:textColor="@color/color_black_stateful"
                     android:textSize="@dimen/sp_18" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvExportData"
+                    android:id="@+id/tvIncPrivacy"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_14"
                     android:fontFamily="@font/grotesk_light_font_family"
                     android:includeFontPadding="false"
-                    android:text="@string/export_data_arrow"
-                    android:textColor="@color/color_black_stateful"
-                    android:textSize="@dimen/sp_18" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvDeleteData"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_14"
-                    android:fontFamily="@font/grotesk_light_font_family"
-                    android:includeFontPadding="false"
-                    android:text="@string/delete_data_arrow"
-                    android:enabled="false"
+                    android:text="@string/increase_privacy_arrow"
                     android:textColor="@color/color_black_stateful"
                     android:textSize="@dimen/sp_18" />
 
@@ -188,30 +188,31 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/grotesk_light_font_family"
                     android:includeFontPadding="false"
-                    android:text="@string/facebook"
+                    android:text="@string/development"
                     android:textAllCaps="true"
                     android:textColor="@color/black"
                     android:textSize="@dimen/sp_24" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvIncPrivacy"
+                    android:id="@+id/tvPersonalApi"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_14"
                     android:fontFamily="@font/grotesk_light_font_family"
                     android:includeFontPadding="false"
-                    android:text="@string/increase_privacy_arrow"
+                    android:text="@string/personal_api_arrow"
                     android:textColor="@color/color_black_stateful"
                     android:textSize="@dimen/sp_18" />
 
+
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvFbDeleteAccount"
+                    android:id="@+id/tvSourceCode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_14"
                     android:fontFamily="@font/grotesk_light_font_family"
                     android:includeFontPadding="false"
-                    android:text="@string/delete_account_arrow"
+                    android:text="@string/source_code_arrow"
                     android:textColor="@color/color_black_stateful"
                     android:textSize="@dimen/sp_18" />
 
@@ -236,13 +237,13 @@
                     android:textSize="@dimen/sp_24" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvAbout"
+                    android:id="@+id/tvWhatsNew"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_14"
                     android:fontFamily="@font/grotesk_light_font_family"
                     android:includeFontPadding="false"
-                    android:text="@string/about_arrow"
+                    android:text="@string/whats_new_arrow"
                     android:textColor="@color/color_black_stateful"
                     android:textSize="@dimen/sp_18" />
 
@@ -258,17 +259,6 @@
                     android:textSize="@dimen/sp_18" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvWhatsNew"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_14"
-                    android:fontFamily="@font/grotesk_light_font_family"
-                    android:includeFontPadding="false"
-                    android:text="@string/whats_new_arrow"
-                    android:textColor="@color/color_black_stateful"
-                    android:textSize="@dimen/sp_18" />
-
-                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvHelp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -277,18 +267,6 @@
                     android:fontFamily="@font/grotesk_light_font_family"
                     android:includeFontPadding="false"
                     android:text="@string/help_arrow"
-                    android:textColor="@color/color_black_stateful"
-                    android:textSize="@dimen/sp_18" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvTellUs"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_14"
-                    android:layout_marginBottom="@dimen/dp_8"
-                    android:fontFamily="@font/grotesk_light_font_family"
-                    android:includeFontPadding="false"
-                    android:text="@string/tell_us_your_thoughts_arrow"
                     android:textColor="@color/color_black_stateful"
                     android:textSize="@dimen/sp_18" />
 

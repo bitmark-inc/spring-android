@@ -47,13 +47,8 @@ class SettingsFragment : BaseSupportFragment() {
 
     companion object {
 
-        private const val SURVEY_URL =
-            "https://docs.google.com/forms/d/e/1FAIpQLScL41kNU6SBzo7ndcraUf7O-YJ_JrPqg_rlI588UjLK-_sGtQ/viewform?usp=sf_link"
-
         private const val FAQ_URL =
             "https://raw.githubusercontent.com/bitmark-inc/spring/master/faq.md"
-
-        private const val FB_DELETE_ACCOUNT_URL = "https://m.facebook.com/help/delete_account/"
 
         fun newInstance() = SettingsFragment()
     }
@@ -163,12 +158,7 @@ class SettingsFragment : BaseSupportFragment() {
             navigator.anim(RIGHT_LEFT).startActivity(IncreasePrivacyActivity::class.java)
         }
 
-        tvFbDeleteAccount.setSafetyOnclickListener {
-            val bundle = WebViewActivity.getBundle(FB_DELETE_ACCOUNT_URL, "", false)
-            navigator.anim(RIGHT_LEFT).startActivity(WebViewActivity::class.java, bundle)
-        }
-
-        tvAbout.setSafetyOnclickListener {
+        tvSourceCode.setSafetyOnclickListener {
             toastComingSoon()
         }
 
@@ -184,11 +174,6 @@ class SettingsFragment : BaseSupportFragment() {
             val bundle = WhatsNewActivity.getBundle(true)
             navigator.anim(RIGHT_LEFT).startActivity(WhatsNewActivity::class.java, bundle)
         }
-
-        tvTellUs.setSafetyOnclickListener {
-            navigator.anim(NONE).openBrowser(SURVEY_URL)
-        }
-
     }
 
     override fun observe() {

@@ -8,18 +8,21 @@ package com.bitmark.fbm.feature.support
 
 import android.graphics.Color
 import android.os.Bundle
+import android.text.Html
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.UnderlineSpan
 import android.view.View
+import androidx.annotation.ColorRes
 import com.bitmark.fbm.R
 import com.bitmark.fbm.feature.BaseAppCompatActivity
 import com.bitmark.fbm.feature.BaseViewModel
 import com.bitmark.fbm.feature.Navigator
 import com.bitmark.fbm.feature.Navigator.Companion.NONE
 import com.bitmark.fbm.feature.Navigator.Companion.RIGHT_LEFT
+import com.bitmark.fbm.feature.increaseprivacy.IncreasePrivacyActivity
 import com.bitmark.fbm.util.ext.openBrowser
 import kotlinx.android.synthetic.main.activity_support.*
 import javax.inject.Inject
@@ -36,17 +39,25 @@ class SupportActivity : BaseAppCompatActivity() {
 
         private const val LINK_TEXT = "link_text"
 
+        private const val TITLE_COLOR = "title_color"
+
+        private const val FROM_HTML = "from_html"
+
         fun getBundle(
             title: String,
             message: String,
             linkText: String? = null,
-            link: String? = null
+            link: String? = null,
+            @ColorRes titleColor: Int? = null,
+            fromHtml: Boolean = false
         ): Bundle {
             val bundle = Bundle()
             bundle.putString(TITLE, title)
             bundle.putString(MESSAGE, message)
             if (link != null) bundle.putString(LINK, link)
             if (linkText != null) bundle.putString(LINK_TEXT, linkText)
+            if (titleColor != null) bundle.putInt(TITLE_COLOR, titleColor)
+            bundle.putBoolean(FROM_HTML, fromHtml)
             return bundle
         }
     }
@@ -66,17 +77,27 @@ class SupportActivity : BaseAppCompatActivity() {
         val message = bundle.getString(MESSAGE) ?: error("missing message")
         val link = bundle.getString(LINK)
         val linkText = bundle.getString(LINK_TEXT)
+        val titleColor = bundle.getInt(TITLE_COLOR)
+        val fromHtml = bundle.getBoolean(FROM_HTML)
         tvTitle.text = title
-        val spannableMsg = SpannableString(message)
 
+        if (titleColor != 0) {
+            tvTitle.setTextColor(getColor(titleColor))
+        }
 
-        if (linkText != null && link != null && message.contains(linkText)) {
+        val spannableMsg = SpannableString(if (fromHtml) Html.fromHtml(message) else message)
+        if (linkText != null && message.contains(linkText)) {
             val startIndex = spannableMsg.indexOf(linkText)
             val endIndex = startIndex + linkText.length
             spannableMsg.setSpan(
                 object : ClickableSpan() {
                     override fun onClick(widget: View) {
-                        navigator.anim(NONE).openBrowser(link)
+                        if (link != null) {
+                            navigator.anim(NONE).openBrowser(link)
+                        } else if (title == getString(R.string.how_r_u_tracked)) {
+                            navigator.anim(RIGHT_LEFT)
+                                .startActivity(IncreasePrivacyActivity::class.java)
+                        }
                     }
 
                 }, startIndex,
@@ -90,9 +111,8 @@ class SupportActivity : BaseAppCompatActivity() {
                 Spannable.SPAN_INCLUSIVE_EXCLUSIVE
             )
         }
-
         tvMsg.movementMethod = LinkMovementMethod.getInstance()
-        tvMsg.setLinkTextColor(getColor(R.color.international_klein_blue))
+        tvMsg.setLinkTextColor(getColor(R.color.black))
         tvMsg.highlightColor = Color.TRANSPARENT
         tvMsg.text = spannableMsg
 

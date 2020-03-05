@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingStart="@dimen/dp_18"
-    android:paddingEnd="@dimen/dp_18"
-    >
+    android:paddingEnd="@dimen/dp_18">
 
     <com.bitmark.fbm.util.view.TouchableOpacityAppCompatImageView
         android:id="@+id/ivBack"
@@ -19,8 +17,7 @@
         android:paddingBottom="@dimen/dp_16"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_back_2"
-        />
+        app:srcCompat="@drawable/ic_back_2" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvTitle"
@@ -37,8 +34,7 @@
         app:autoSizeTextType="uniform"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivBack"
-        />
+        app:layout_constraintTop_toBottomOf="@id/ivBack" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvMsg"
@@ -49,11 +45,10 @@
         android:includeFontPadding="false"
         android:text="@string/here_is_6_steps"
         android:textColor="@color/black"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/sp_22"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle"
-        />
+        app:layout_constraintTop_toBottomOf="@id/tvTitle" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvNo1"
@@ -66,26 +61,21 @@
         android:textColor="@color/black"
         android:textSize="@dimen/sp_14"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvMsg"
-        />
+        app:layout_constraintTop_toBottomOf="@id/tvMsg" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvTurnOffFaceReg"
         android:layout_width="0dp"
-        android:layout_height="@dimen/dp_20"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_12"
         android:fontFamily="@font/grotesk_light_font_family"
         android:includeFontPadding="false"
         android:text="@string/turn_off_face_reg_arrow"
         android:textColor="@color/color_black_stateful"
-        android:textStyle="italic"
-        app:autoSizeMaxTextSize="@dimen/sp_16"
-        app:autoSizeMinTextSize="@dimen/sp_14"
-        app:autoSizeTextType="uniform"
+        android:textSize="@dimen/sp_18"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/tvNo1"
-        app:layout_constraintTop_toTopOf="@id/tvNo1"
-        />
+        app:layout_constraintTop_toTopOf="@id/tvNo1" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvTurnOffFaceRegMsg"
@@ -96,10 +86,9 @@
         android:includeFontPadding="false"
         android:text="@string/tap_the_option_and_select_no"
         android:textColor="@color/black"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/sp_16"
         app:layout_constraintStart_toStartOf="@id/tvTurnOffFaceReg"
-        app:layout_constraintTop_toBottomOf="@id/tvTurnOffFaceReg"
-        />
+        app:layout_constraintTop_toBottomOf="@id/tvTurnOffFaceReg" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvNo2"
@@ -112,26 +101,21 @@
         android:textColor="@color/black"
         android:textSize="@dimen/sp_14"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTurnOffFaceRegMsg"
-        />
+        app:layout_constraintTop_toBottomOf="@id/tvTurnOffFaceRegMsg" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvDeleteAllEmail"
         android:layout_width="0dp"
-        android:layout_height="@dimen/dp_20"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_12"
         android:fontFamily="@font/grotesk_light_font_family"
         android:includeFontPadding="false"
         android:text="@string/delete_all_your_email_arrow"
         android:textColor="@color/color_black_stateful"
-        android:textStyle="italic"
-        app:autoSizeMaxTextSize="@dimen/sp_16"
-        app:autoSizeMinTextSize="@dimen/sp_14"
-        app:autoSizeTextType="uniform"
+        android:textSize="@dimen/sp_18"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/tvNo2"
-        app:layout_constraintTop_toTopOf="@id/tvNo2"
-        />
+        app:layout_constraintTop_toTopOf="@id/tvNo2" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvDeleteAllEmailMsg"
@@ -142,10 +126,9 @@
         android:includeFontPadding="false"
         android:text="@string/tap_delete_all"
         android:textColor="@color/black"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/sp_16"
         app:layout_constraintStart_toStartOf="@id/tvDeleteAllEmail"
-        app:layout_constraintTop_toBottomOf="@id/tvDeleteAllEmail"
-        />
+        app:layout_constraintTop_toBottomOf="@id/tvDeleteAllEmail" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvNo3"
@@ -158,26 +141,21 @@
         android:textColor="@color/black"
         android:textSize="@dimen/sp_14"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvDeleteAllEmailMsg"
-        />
+        app:layout_constraintTop_toBottomOf="@id/tvDeleteAllEmailMsg" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvDeleteAllPhone"
         android:layout_width="0dp"
-        android:layout_height="@dimen/dp_20"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_12"
         android:fontFamily="@font/grotesk_light_font_family"
         android:includeFontPadding="false"
         android:text="@string/delete_all_your_phone_arrow"
         android:textColor="@color/color_black_stateful"
-        android:textStyle="italic"
-        app:autoSizeMaxTextSize="@dimen/sp_16"
-        app:autoSizeMinTextSize="@dimen/sp_14"
-        app:autoSizeTextType="uniform"
+        android:textSize="@dimen/sp_18"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/tvNo3"
-        app:layout_constraintTop_toTopOf="@id/tvNo3"
-        />
+        app:layout_constraintTop_toTopOf="@id/tvNo3" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvDeleteAllPhoneMsg"
@@ -188,10 +166,9 @@
         android:includeFontPadding="false"
         android:text="@string/tap_delete_all_contacts"
         android:textColor="@color/black"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/sp_16"
         app:layout_constraintStart_toStartOf="@id/tvDeleteAllPhone"
-        app:layout_constraintTop_toBottomOf="@id/tvDeleteAllPhone"
-        />
+        app:layout_constraintTop_toBottomOf="@id/tvDeleteAllPhone" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvNo4"
@@ -204,27 +181,21 @@
         android:textColor="@color/black"
         android:textSize="@dimen/sp_14"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvDeleteAllPhoneMsg"
-        />
+        app:layout_constraintTop_toBottomOf="@id/tvDeleteAllPhoneMsg" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvOptOutOfAdsData"
         android:layout_width="0dp"
-        android:layout_height="@dimen/dp_20"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_12"
         android:fontFamily="@font/grotesk_light_font_family"
         android:includeFontPadding="false"
         android:text="@string/opt_out_of_ads_data_arrow"
         android:textColor="@color/color_black_stateful"
-        android:textSize="@dimen/sp_16"
-        android:textStyle="italic"
-        app:autoSizeMaxTextSize="@dimen/sp_16"
-        app:autoSizeMinTextSize="@dimen/sp_14"
-        app:autoSizeTextType="uniform"
+        android:textSize="@dimen/sp_18"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/tvNo4"
-        app:layout_constraintTop_toTopOf="@id/tvNo4"
-        />
+        app:layout_constraintTop_toTopOf="@id/tvNo4" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvOptOutOfAdsDataMsg"
@@ -235,10 +206,9 @@
         android:includeFontPadding="false"
         android:text="@string/tap_continue_change_to"
         android:textColor="@color/black"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/sp_16"
         app:layout_constraintStart_toStartOf="@id/tvOptOutOfAdsData"
-        app:layout_constraintTop_toBottomOf="@id/tvOptOutOfAdsData"
-        />
+        app:layout_constraintTop_toBottomOf="@id/tvOptOutOfAdsData" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvNo5"
@@ -251,8 +221,7 @@
         android:textColor="@color/black"
         android:textSize="@dimen/sp_14"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvOptOutOfAdsDataMsg"
-        />
+        app:layout_constraintTop_toBottomOf="@id/tvOptOutOfAdsDataMsg" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvOptOutOfAdsActivity"
@@ -263,12 +232,10 @@
         android:includeFontPadding="false"
         android:text="@string/opt_out_of_ads_activity_arrow"
         android:textColor="@color/color_black_stateful"
-        android:textSize="@dimen/sp_16"
-        android:textStyle="italic"
+        android:textSize="@dimen/sp_18"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/tvNo5"
-        app:layout_constraintTop_toTopOf="@id/tvNo5"
-        />
+        app:layout_constraintTop_toTopOf="@id/tvNo5" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvOptOutOfAdsActivityMsg"
@@ -279,10 +246,9 @@
         android:includeFontPadding="false"
         android:text="@string/select_no"
         android:textColor="@color/black"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/sp_16"
         app:layout_constraintStart_toStartOf="@id/tvOptOutOfAdsActivity"
-        app:layout_constraintTop_toBottomOf="@id/tvOptOutOfAdsActivity"
-        />
+        app:layout_constraintTop_toBottomOf="@id/tvOptOutOfAdsActivity" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvNo6"
@@ -295,8 +261,7 @@
         android:textColor="@color/black"
         android:textSize="@dimen/sp_14"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvOptOutOfAdsActivityMsg"
-        />
+        app:layout_constraintTop_toBottomOf="@id/tvOptOutOfAdsActivityMsg" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvOptOutOfFriend"
@@ -307,12 +272,10 @@
         android:includeFontPadding="false"
         android:text="@string/opt_out_of_friend_arrow"
         android:textColor="@color/color_black_stateful"
-        android:textSize="@dimen/sp_16"
-        android:textStyle="italic"
+        android:textSize="@dimen/sp_18"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/tvNo6"
-        app:layout_constraintTop_toTopOf="@id/tvNo6"
-        />
+        app:layout_constraintTop_toTopOf="@id/tvNo6" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvOptOutOfFriendMsg"
@@ -323,10 +286,9 @@
         android:includeFontPadding="false"
         android:text="@string/select_no_one"
         android:textColor="@color/black"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/sp_16"
         app:layout_constraintStart_toStartOf="@id/tvOptOutOfFriend"
-        app:layout_constraintTop_toBottomOf="@id/tvOptOutOfFriend"
-        />
+        app:layout_constraintTop_toBottomOf="@id/tvOptOutOfFriend" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,9 +6,6 @@
  */
 package com.bitmark.fbm.feature.insights
 
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.UnderlineSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -192,16 +189,6 @@ class InsightsRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder
                 tvReadMore.setSafetyOnclickListener {
                     listener?.onReadMoreClicked()
                 }
-
-                val string = context.getString(R.string.read_more_arrow)
-                val spannableString = SpannableString(string)
-                spannableString.setSpan(
-                    UnderlineSpan(),
-                    0,
-                    string.length,
-                    Spannable.SPAN_INCLUSIVE_EXCLUSIVE
-                )
-                tvReadMore.text = spannableString
             }
         }
     }

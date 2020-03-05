@@ -33,7 +33,6 @@ import com.bitmark.fbm.util.Constants
 import com.bitmark.fbm.util.ext.logSharedPrefError
 import com.bitmark.fbm.util.ext.scrollToTop
 import com.bitmark.fbm.util.view.TopVerticalItemDecorator
-import com.bitmark.fbm.util.view.WebViewActivity
 import kotlinx.android.synthetic.main.fragment_insights.*
 import javax.inject.Inject
 
@@ -99,12 +98,14 @@ class InsightsFragment : BaseSupportFragment() {
             }
 
             override fun onReadMoreClicked() {
-                val bundle = WebViewActivity.getBundle(
-                    HOW_U_R_TRACKED_URL,
-                    "",
-                    false
+                val bundle = SupportActivity.getBundle(
+                    getString(R.string.how_r_u_tracked),
+                    getString(R.string.fb_constantly_tracks_you),
+                    getString(R.string.increase_your_privacy),
+                    titleColor = R.color.international_klein_blue,
+                    fromHtml = true
                 )
-                navigator.anim(RIGHT_LEFT).startActivity(WebViewActivity::class.java, bundle)
+                navigator.anim(RIGHT_LEFT).startActivity(SupportActivity::class.java, bundle)
             }
 
             override fun onIncomeInfoClicked() {
@@ -112,7 +113,8 @@ class InsightsFragment : BaseSupportFragment() {
                     getString(R.string.how_much_your_worth_to_fb),
                     getString(R.string.avg_revenue_per_user),
                     getString(R.string.quarterly_earning_reports),
-                    INCOME_QUATERLY_EARNING_URL
+                    INCOME_QUATERLY_EARNING_URL,
+                    R.color.international_klein_blue
                 )
                 navigator.anim(RIGHT_LEFT).startActivity(SupportActivity::class.java, bundle)
             }

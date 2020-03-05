@@ -54,6 +54,7 @@
     <dimen name="dp_neg_12">-12dp</dimen>
 
 
+    <dimen name="sp_2">2sp</dimen>
     <dimen name="sp_4">4sp</dimen>
     <dimen name="sp_7">7sp</dimen>
     <dimen name="sp_8">8sp</dimen>

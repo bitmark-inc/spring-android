@@ -44,15 +44,18 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvTitle"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/dp_77"
                     android:layout_marginTop="@dimen/dp_6"
                     android:fontFamily="@font/domaine_sans"
                     android:includeFontPadding="false"
+                    android:maxLines="2"
                     android:textAllCaps="true"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/sp_36"
+                    app:autoSizeMaxTextSize="@dimen/sp_36"
+                    app:autoSizeMinTextSize="@dimen/sp_24"
+                    app:autoSizeTextType="uniform"
                     app:layout_constraintTop_toBottomOf="@id/ivBack"
-                    tools:text="@string/settings" />
+                    tools:text="HOW ARE YOU TRACKED?" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -82,9 +85,10 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/grotesk_light_font_family"
                 android:includeFontPadding="false"
+                android:lineSpacingExtra="@dimen/sp_2"
                 android:scrollbars="vertical"
                 android:textColor="@color/black"
-                android:textSize="@dimen/sp_22"
+                android:textSize="@dimen/sp_16"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@id/tvTitle"
                 app:layout_constraintStart_toStartOf="@id/tvTitle"
