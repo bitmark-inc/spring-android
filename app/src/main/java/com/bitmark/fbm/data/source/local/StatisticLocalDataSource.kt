@@ -27,7 +27,7 @@ class StatisticLocalDataSource @Inject constructor(
     fun listUsageStatistic(period: Period, periodStartedAt: Long) =
         databaseApi.rxSingle { databaseGateway ->
             databaseGateway.sectionDao().listBy(
-                arrayOf(SectionName.SENTIMENT, SectionName.REACTION, SectionName.POST),
+                arrayOf(SectionName.REACTION, SectionName.POST),
                 period,
                 periodStartedAt
             )

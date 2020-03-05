@@ -127,7 +127,7 @@ class StatisticViewModel(
                         }
                     },
                     Function3<List<SectionModelView>, List<SectionModelView>, Boolean, Pair<List<SectionModelView>, Boolean>> { usageStatistics, systemStatistics, notificationEnabled ->
-                        val data = usageStatistics.toMutableList().append(systemStatistics)
+                        val data = systemStatistics.toMutableList().append(usageStatistics)
                         Pair(
                             data,
                             notificationEnabled
@@ -139,11 +139,6 @@ class StatisticViewModel(
 
     private fun newDefaultUsages(period: Period, periodStartedAtSec: Long) =
         listOf(
-            SectionModelView.newDefaultInstance(
-                SectionName.SENTIMENT,
-                period,
-                periodStartedAtSec
-            ),
             SectionModelView.newDefaultInstance(
                 SectionName.POST,
                 period,
