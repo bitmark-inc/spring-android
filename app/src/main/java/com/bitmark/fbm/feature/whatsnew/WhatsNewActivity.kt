@@ -13,6 +13,7 @@ import android.text.Spanned
 import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
+import android.text.style.UnderlineSpan
 import android.view.View
 import com.bitmark.fbm.BuildConfig
 import com.bitmark.fbm.R
@@ -92,9 +93,14 @@ class WhatsNewActivity : BaseAppCompatActivity() {
             startPos + linkLabel.length,
             Spanned.SPAN_INCLUSIVE_EXCLUSIVE
         )
+        spannable.setSpan(
+            UnderlineSpan(), startPos,
+            startPos + linkLabel.length,
+            Spanned.SPAN_INCLUSIVE_EXCLUSIVE
+        )
         tvNotes.text = spannable
         tvNotes.movementMethod = LinkMovementMethod.getInstance()
-        tvNotes.setLinkTextColor(getColor(R.color.international_klein_blue))
+        tvNotes.setLinkTextColor(getColor(R.color.tundora))
         tvNotes.highlightColor = Color.TRANSPARENT
 
         tvDate.text = getString(R.string.day_ago_format).format(
