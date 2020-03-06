@@ -50,6 +50,8 @@ class SettingsFragment : BaseSupportFragment() {
         private const val FAQ_URL =
             "https://raw.githubusercontent.com/bitmark-inc/spring/master/faq.md"
 
+        private const val SOURCE_CODE_URL = "https://github.com/bitmark-inc/spring-android"
+
         fun newInstance() = SettingsFragment()
     }
 
@@ -159,7 +161,7 @@ class SettingsFragment : BaseSupportFragment() {
         }
 
         tvSourceCode.setSafetyOnclickListener {
-            toastComingSoon()
+            navigator.openBrowser(SOURCE_CODE_URL)
         }
 
         tvFaq.setSafetyOnclickListener {

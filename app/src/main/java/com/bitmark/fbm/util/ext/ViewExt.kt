@@ -253,9 +253,10 @@ fun WebView.detectPage(
                         "could not detect the current page"
                     )
                     callback(Page.Name.UNKNOWN)
+                } else {
+                    Tracer.DEBUG.log(tag, "detected the current page: $detectedPage")
+                    callback(Page.Name.fromString(detectedPage))
                 }
-                Tracer.DEBUG.log(tag, "detected the current page: $detectedPage")
-                callback(Page.Name.fromString(detectedPage))
             }
         }
     })
