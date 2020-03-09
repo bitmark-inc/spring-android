@@ -56,12 +56,12 @@ val ArchiveData.assetId: String
 
 enum class ArchiveStatus {
     @Expose
-    @SerializedName("submitted")
-    SUBMITTED,
+    @SerializedName("created")
+    CREATED,
 
     @Expose
-    @SerializedName("stored")
-    STORED,
+    @SerializedName("submitted")
+    SUBMITTED,
 
     @Expose
     @SerializedName("processed")
