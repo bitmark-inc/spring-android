@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -20,8 +18,7 @@
         android:paddingEnd="@dimen/dp_18"
         android:visibility="invisible"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible"
-        >
+        tools:visibility="visible">
 
         <com.bitmark.fbm.util.view.TouchableOpacityAppCompatImageView
             android:id="@+id/ivBack"
@@ -35,8 +32,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_back_2"
-            />
+            app:srcCompat="@drawable/ic_back_2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -55,8 +51,7 @@
         app:autoSizeTextType="uniform"
         app:layout_constraintEnd_toEndOf="@id/btnContinue"
         app:layout_constraintStart_toStartOf="@id/btnContinue"
-        app:layout_constraintTop_toBottomOf="@id/layoutToolbar"
-        />
+        app:layout_constraintTop_toBottomOf="@id/layoutToolbar" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvVersion"
@@ -69,26 +64,27 @@
         android:textSize="@dimen/sp_22"
         app:layout_constraintStart_toStartOf="@id/tvTitle"
         app:layout_constraintTop_toBottomOf="@id/tvTitle"
-        tools:text="Version 1.1.1"
-        />
+        tools:text="Version 1.1.1" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <ScrollView
         android:id="@+id/tvNotes"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/dp_20"
         android:layout_marginBottom="@dimen/dp_20"
-        android:fontFamily="@font/grotesk_light_font_family"
-        android:includeFontPadding="false"
         android:scrollbars="vertical"
-        android:textColor="@color/tundora"
-        android:textSize="@dimen/sp_22"
         app:layout_constraintBottom_toTopOf="@id/btnContinue"
         app:layout_constraintEnd_toEndOf="@id/tvDate"
         app:layout_constraintStart_toStartOf="@id/tvVersion"
         app:layout_constraintTop_toBottomOf="@id/tvVersion"
-        tools:text="To protect your privacy, you are identified in the Bitmark system by a pseudonymous account number. \n\nThis number is public. You can safely share it with others without compromising your security. "
-        />
+        tools:text="To protect your privacy, you are identified in the Bitmark system by a pseudonymous account number. \n\nThis number is public. You can safely share it with others without compromising your security. ">
+
+        <LinearLayout
+            android:id="@+id/layout_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvDate"
@@ -101,8 +97,7 @@
         app:layout_constraintBottom_toBottomOf="@id/tvVersion"
         app:layout_constraintEnd_toEndOf="@id/tvTitle"
         app:layout_constraintTop_toTopOf="@id/tvVersion"
-        tools:text="12d ago"
-        />
+        tools:text="12d ago" />
 
 
     <androidx.appcompat.widget.AppCompatButton
@@ -123,8 +118,7 @@
         android:textSize="17sp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:visibility="visible"
-        />
+        tools:visibility="visible" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

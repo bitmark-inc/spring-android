@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="release_note_features"></string-array>
+
+    <string-array name="release_note_enhancements">
+        <item>Bug fixes and performance improvements</item>
+        <item>Updated Increase Privacy UI</item>
+    </string-array>
+    <string name="release_note_date">2020-03-10T00:00:00.000000Z</string>
+    <string name="m_dash">&#x2014;</string>
+</resources>
