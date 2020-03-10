@@ -52,6 +52,9 @@ class SettingsFragment : BaseSupportFragment() {
 
         private const val SOURCE_CODE_URL = "https://github.com/bitmark-inc/spring-android"
 
+        private const val PERSONAL_API_URL =
+            "https://documenter.getpostman.com/view/59304/SzRw2rJn?version=latest"
+
         fun newInstance() = SettingsFragment()
     }
 
@@ -145,7 +148,7 @@ class SettingsFragment : BaseSupportFragment() {
         }
 
         tvPersonalApi.setSafetyOnclickListener {
-            toastComingSoon()
+            navigator.openBrowser(PERSONAL_API_URL)
         }
 
         tvExportData.setSafetyOnclickListener {
