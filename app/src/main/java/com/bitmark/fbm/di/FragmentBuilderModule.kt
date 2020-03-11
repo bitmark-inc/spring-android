@@ -6,10 +6,10 @@
  */
 package com.bitmark.fbm.di
 
-import com.bitmark.fbm.feature.insights.InsightsContainerFragment
-import com.bitmark.fbm.feature.insights.InsightsContainerModule
-import com.bitmark.fbm.feature.insights.InsightsFragment
-import com.bitmark.fbm.feature.insights.InsightsModule
+import com.bitmark.fbm.feature.browse.BrowseContainerFragment
+import com.bitmark.fbm.feature.browse.BrowseContainerModule
+import com.bitmark.fbm.feature.browse.BrowseFragment
+import com.bitmark.fbm.feature.browse.BrowseModule
 import com.bitmark.fbm.feature.postdetail.PostDetailFragment
 import com.bitmark.fbm.feature.postdetail.PostDetailModule
 import com.bitmark.fbm.feature.reactiondetail.ReactionDetailFragment
@@ -26,35 +26,35 @@ import com.bitmark.fbm.feature.settings.SettingsFragment
 import com.bitmark.fbm.feature.settings.SettingsModule
 import com.bitmark.fbm.feature.statistic.StatisticFragment
 import com.bitmark.fbm.feature.statistic.StatisticModule
+import com.bitmark.fbm.feature.summary.SummaryContainerFragment
+import com.bitmark.fbm.feature.summary.SummaryContainerModule
+import com.bitmark.fbm.feature.summary.SummaryFragment
+import com.bitmark.fbm.feature.summary.SummaryModule
 import com.bitmark.fbm.feature.unlink.notice.UnlinkNoticeFragment
 import com.bitmark.fbm.feature.unlink.notice.UnlinkNoticeModule
 import com.bitmark.fbm.feature.unlink.unlink.UnlinkFragment
 import com.bitmark.fbm.feature.unlink.unlink.UnlinkModule
-import com.bitmark.fbm.feature.usage.UsageContainerFragment
-import com.bitmark.fbm.feature.usage.UsageContainerModule
-import com.bitmark.fbm.feature.usage.UsageFragment
-import com.bitmark.fbm.feature.usage.UsageModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module
 abstract class FragmentBuilderModule {
 
-    @ContributesAndroidInjector(modules = [UsageContainerModule::class])
+    @ContributesAndroidInjector(modules = [SummaryContainerModule::class])
     @FragmentScope
-    internal abstract fun bindUsageContainerFragment(): UsageContainerFragment
+    internal abstract fun bindSummaryContainerFragment(): SummaryContainerFragment
 
-    @ContributesAndroidInjector(modules = [UsageModule::class])
+    @ContributesAndroidInjector(modules = [SummaryModule::class])
     @FragmentScope
-    internal abstract fun bindUsageFragment(): UsageFragment
+    internal abstract fun bindSummaryFragment(): SummaryFragment
 
-    @ContributesAndroidInjector(modules = [InsightsContainerModule::class])
+    @ContributesAndroidInjector(modules = [BrowseContainerModule::class])
     @FragmentScope
-    internal abstract fun bindInsightsContainerFragment(): InsightsContainerFragment
+    internal abstract fun bindBrowseContainerFragment(): BrowseContainerFragment
 
-    @ContributesAndroidInjector(modules = [InsightsModule::class])
+    @ContributesAndroidInjector(modules = [BrowseModule::class])
     @FragmentScope
-    internal abstract fun bindInsightsFragment(): InsightsFragment
+    internal abstract fun bindBrowseFragment(): BrowseFragment
 
     @ContributesAndroidInjector(modules = [UnlinkNoticeModule::class])
     @FragmentScope

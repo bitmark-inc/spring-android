@@ -4,7 +4,7 @@
  * Use of this source code is governed by an ISC
  * license that can be found in the LICENSE file.
  */
-package com.bitmark.fbm.feature.insights
+package com.bitmark.fbm.feature.browse
 
 import android.view.LayoutInflater
 import android.view.View
@@ -25,7 +25,7 @@ import kotlinx.android.synthetic.main.item_how_u_r_tracked.view.*
 import kotlinx.android.synthetic.main.item_income.view.*
 
 
-class InsightsRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class BrowseRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
         private const val INCOME = 0x00

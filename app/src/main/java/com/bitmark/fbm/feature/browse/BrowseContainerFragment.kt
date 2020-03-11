@@ -4,7 +4,7 @@
  * Use of this source code is governed by an ISC
  * license that can be found in the LICENSE file.
  */
-package com.bitmark.fbm.feature.insights
+package com.bitmark.fbm.feature.browse
 
 import com.bitmark.fbm.R
 import com.bitmark.fbm.feature.BaseSupportFragment
@@ -14,16 +14,16 @@ import com.bitmark.fbm.feature.Navigator
 import javax.inject.Inject
 
 
-class InsightsContainerFragment : BaseSupportFragment() {
+class BrowseContainerFragment : BaseSupportFragment() {
 
     companion object {
-        fun newInstance() = InsightsContainerFragment()
+        fun newInstance() = BrowseContainerFragment()
     }
 
     @Inject
     internal lateinit var navigator: Navigator
 
-    override fun layoutRes(): Int = R.layout.fragment_insights_container
+    override fun layoutRes(): Int = R.layout.fragment_browse_container
 
     override fun viewModel(): BaseViewModel? = null
 
@@ -32,7 +32,7 @@ class InsightsContainerFragment : BaseSupportFragment() {
 
         navigator.replaceChildFragment(
             R.id.layoutContainer,
-            InsightsFragment.newInstance(), false
+            BrowseFragment.newInstance(), false
         )
     }
 
@@ -46,7 +46,7 @@ class InsightsContainerFragment : BaseSupportFragment() {
     override fun refresh() {
         super.refresh()
         val currentFragment = currentFragment()
-        if (currentFragment !is InsightsFragment) {
+        if (currentFragment !is BrowseFragment) {
             navigator.popChildFragmentToRoot()
         } else {
             (currentFragment as? BehaviorComponent)?.refresh()

@@ -4,7 +4,7 @@
  * Use of this source code is governed by an ISC
  * license that can be found in the LICENSE file.
  */
-package com.bitmark.fbm.feature.usage
+package com.bitmark.fbm.feature.summary
 
 import android.content.Context
 import android.view.View
@@ -16,14 +16,14 @@ import com.bitmark.fbm.feature.BehaviorComponent
 import com.bitmark.fbm.feature.Navigator
 import com.bitmark.fbm.feature.statistic.StatisticViewPagerAdapter
 import com.google.android.material.tabs.TabLayout
-import kotlinx.android.synthetic.main.fragment_usage.*
+import kotlinx.android.synthetic.main.fragment_summary.*
 import javax.inject.Inject
 
 
-class UsageFragment : BaseSupportFragment() {
+class SummaryFragment : BaseSupportFragment() {
 
     companion object {
-        fun newInstance() = UsageFragment()
+        fun newInstance() = SummaryFragment()
     }
 
     @Inject
@@ -48,7 +48,7 @@ class UsageFragment : BaseSupportFragment() {
 
     }
 
-    override fun layoutRes(): Int = R.layout.fragment_usage
+    override fun layoutRes(): Int = R.layout.fragment_summary
 
     override fun viewModel(): BaseViewModel? = null
 

@@ -205,6 +205,10 @@
     <string name="highlights_of_new_features">Highlights of the new features</string>
     <string name="enhancements">Enhancements</string>
     <string name="we_value_your_feedback">We value your feedback, if you have ideas or suggestions on how to make our app even better, please let us know.</string>
+    <string name="summary">SUMMARY</string>
+    <string name="browse">BROWSE</string>
+
+
 
     <string-array name="day_of_week">
         <item>S</item>

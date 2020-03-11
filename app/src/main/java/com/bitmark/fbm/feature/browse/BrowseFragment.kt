@@ -4,7 +4,7 @@
  * Use of this source code is governed by an ISC
  * license that can be found in the LICENSE file.
  */
-package com.bitmark.fbm.feature.insights
+package com.bitmark.fbm.feature.browse
 
 import android.app.AlarmManager
 import android.os.Bundle
@@ -33,15 +33,15 @@ import com.bitmark.fbm.util.Constants
 import com.bitmark.fbm.util.ext.logSharedPrefError
 import com.bitmark.fbm.util.ext.scrollToTop
 import com.bitmark.fbm.util.view.TopVerticalItemDecorator
-import kotlinx.android.synthetic.main.fragment_insights.*
+import kotlinx.android.synthetic.main.fragment_browse.*
 import javax.inject.Inject
 
 
-class InsightsFragment : BaseSupportFragment() {
+class BrowseFragment : BaseSupportFragment() {
 
     companion object {
 
-        private const val TAG = "InsightsFragment"
+        private const val TAG = "BrowseFragment"
 
         private const val INCOME_QUATERLY_EARNING_URL =
             "https://investor.fb.com/financials/?section=quarterlyearnings"
@@ -49,14 +49,14 @@ class InsightsFragment : BaseSupportFragment() {
         private const val HOW_U_R_TRACKED_URL =
             "https://raw.githubusercontent.com/bitmark-inc/spring/master/how-are-you-tracked.md"
 
-        fun newInstance() = InsightsFragment()
+        fun newInstance() = BrowseFragment()
     }
 
     @Inject
     internal lateinit var navigator: Navigator
 
     @Inject
-    internal lateinit var viewModel: InsightsViewModel
+    internal lateinit var viewModel: BrowseViewModel
 
     @Inject
     internal lateinit var logger: EventLogger
@@ -64,11 +64,11 @@ class InsightsFragment : BaseSupportFragment() {
     @Inject
     internal lateinit var dialogController: DialogController
 
-    private lateinit var adapter: InsightsRecyclerViewAdapter
+    private lateinit var adapter: BrowseRecyclerViewAdapter
 
     private val handler = Handler()
 
-    override fun layoutRes(): Int = R.layout.fragment_insights
+    override fun layoutRes(): Int = R.layout.fragment_browse
 
     override fun viewModel(): BaseViewModel? = viewModel
 
@@ -81,7 +81,7 @@ class InsightsFragment : BaseSupportFragment() {
     override fun initComponents() {
         super.initComponents()
 
-        adapter = InsightsRecyclerViewAdapter()
+        adapter = BrowseRecyclerViewAdapter()
         val layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         rvInsights.layoutManager = layoutManager
         val dividerDrawable = context!!.getDrawable(R.drawable.double_divider_white_black_stroke)
@@ -91,7 +91,7 @@ class InsightsFragment : BaseSupportFragment() {
         rvInsights.isNestedScrollingEnabled = false
         rvInsights.adapter = adapter
 
-        adapter.setItemClickListener(object : InsightsRecyclerViewAdapter.ItemClickListener {
+        adapter.setItemClickListener(object : BrowseRecyclerViewAdapter.ItemClickListener {
 
             override fun onNotifyMeClicked() {
                 viewModel.setNotificationEnable()

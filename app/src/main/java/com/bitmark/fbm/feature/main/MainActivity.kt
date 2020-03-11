@@ -15,14 +15,14 @@ import androidx.lifecycle.Observer
 import com.bitmark.fbm.R
 import com.bitmark.fbm.feature.*
 import com.bitmark.fbm.feature.connectivity.ConnectivityHandler
-import com.bitmark.fbm.feature.insights.InsightsContainerFragment
-import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_INSIGHT
+import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_BROWSE
 import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_SETTINGS
-import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_USAGE
+import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_SUMMARY
 import com.bitmark.fbm.feature.notification.buildSimpleNotificationBundle
 import com.bitmark.fbm.feature.notification.cancelNotification
 import com.bitmark.fbm.feature.notification.pushDailyRepeatingNotification
 import com.bitmark.fbm.feature.splash.SplashActivity
+import com.bitmark.fbm.feature.summary.SummaryContainerFragment
 import com.bitmark.fbm.logging.EventLogger
 import com.bitmark.fbm.util.Constants
 import com.bitmark.fbm.util.ext.*
@@ -116,17 +116,17 @@ class MainActivity : BaseAppCompatActivity() {
         vpAdapter = MainViewPagerAdapter(supportFragmentManager)
         viewPager.offscreenPageLimit = vpAdapter.count
         viewPager.adapter = vpAdapter
-        viewPager.setCurrentItem(TAB_INSIGHT, false)
+        viewPager.setCurrentItem(TAB_SUMMARY, false)
 
-        bottomNav.setActiveItem(TAB_INSIGHT)
+        bottomNav.setActiveItem(TAB_SUMMARY)
         bottomNav.setIndicatorWidth(screenWidth / vpAdapter.count.toFloat())
 
         bottomNav.onItemSelected = { pos ->
             viewPager.setCurrentItem(pos, true)
 
             val color = when (pos) {
-                TAB_USAGE -> R.color.cognac
-                TAB_INSIGHT -> R.color.international_klein_blue
+                TAB_SUMMARY -> R.color.cognac
+                TAB_BROWSE -> R.color.international_klein_blue
                 TAB_SETTINGS -> R.color.olive
                 else -> error("invalid tab pos")
             }
@@ -270,11 +270,11 @@ class MainActivity : BaseAppCompatActivity() {
 
     override fun onBackPressed() {
         val currentFragment = vpAdapter.currentFragment as? BehaviorComponent
-        if (currentFragment is InsightsContainerFragment && !currentFragment.onBackPressed())
+        if (currentFragment is SummaryContainerFragment && !currentFragment.onBackPressed())
             super.onBackPressed()
         else if (currentFragment?.onBackPressed() == false) {
-            bottomNav.setActiveItem(TAB_INSIGHT, R.color.international_klein_blue)
-            viewPager.setCurrentItem(TAB_INSIGHT, false)
+            bottomNav.setActiveItem(TAB_SUMMARY, R.color.cognac)
+            viewPager.setCurrentItem(TAB_SUMMARY, false)
         }
     }
 }

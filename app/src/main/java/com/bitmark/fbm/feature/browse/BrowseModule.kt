@@ -4,7 +4,7 @@
  * Use of this source code is governed by an ISC
  * license that can be found in the LICENSE file.
  */
-package com.bitmark.fbm.feature.insights
+package com.bitmark.fbm.feature.browse
 
 import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.data.source.AppRepository
@@ -18,22 +18,22 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class InsightsModule {
+class BrowseModule {
 
     @Provides
     @FragmentScope
-    fun provideNavigator(fragment: InsightsFragment) = Navigator(fragment.parentFragment!!)
+    fun provideNavigator(fragment: BrowseFragment) = Navigator(fragment.parentFragment!!)
 
     @Provides
     @FragmentScope
     fun provideViewModel(
-        fragment: InsightsFragment,
+        fragment: BrowseFragment,
         statisticRepo: StatisticRepository,
         accountRepo: AccountRepository,
         appRepo: AppRepository,
         rxLiveDataTransformer: RxLiveDataTransformer,
         realtimeBus: RealtimeBus
-    ) = InsightsViewModel(
+    ) = BrowseViewModel(
         fragment.lifecycle,
         statisticRepo,
         accountRepo,
@@ -44,5 +44,5 @@ class InsightsModule {
 
     @Provides
     @FragmentScope
-    fun provideDialogController(fragment: InsightsFragment) = DialogController(fragment.activity!!)
+    fun provideDialogController(fragment: BrowseFragment) = DialogController(fragment.activity!!)
 }

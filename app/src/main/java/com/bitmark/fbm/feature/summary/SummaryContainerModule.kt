@@ -4,7 +4,7 @@
  * Use of this source code is governed by an ISC
  * license that can be found in the LICENSE file.
  */
-package com.bitmark.fbm.feature.usage
+package com.bitmark.fbm.feature.summary
 
 import com.bitmark.fbm.di.FragmentScope
 import com.bitmark.fbm.feature.Navigator
@@ -12,8 +12,9 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class UsageModule {
+class SummaryContainerModule {
+
     @Provides
     @FragmentScope
-    fun provideNavigator(fragment: UsageFragment) = Navigator(fragment.parentFragment!!)
+    fun provideNavigator(fragment: SummaryContainerFragment) = Navigator(fragment)
 }

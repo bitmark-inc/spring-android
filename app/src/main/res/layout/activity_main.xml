@@ -53,16 +53,16 @@
         android:layout_alignParentBottom="true"
         app:activeItem="0"
         app:backgroundColor="@color/white"
-        app:badgeColor="@color/international_klein_blue"
+        app:badgeColor="@color/cognac"
         app:iconSize="@dimen/dp_20"
-        app:indicatorColor="@color/international_klein_blue"
+        app:indicatorColor="@color/cognac"
         app:indicatorEnabled="true"
         app:indicatorGravity="top"
         app:indicatorInterpolator="linear"
         app:itemFontFamily="@font/grotesk_regular"
         app:menu="@menu/navigation"
         app:textColor="@color/black"
-        app:textColorActive="@color/international_klein_blue"
+        app:textColorActive="@color/cognac"
         app:textSize="@dimen/sp_10" />
 
 </RelativeLayout>

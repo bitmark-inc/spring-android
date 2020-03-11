@@ -4,7 +4,7 @@
  * Use of this source code is governed by an ISC
  * license that can be found in the LICENSE file.
  */
-package com.bitmark.fbm.feature.insights
+package com.bitmark.fbm.feature.browse
 
 import android.content.res.Resources
 import androidx.lifecycle.Lifecycle
@@ -23,7 +23,7 @@ import io.reactivex.Single
 import io.reactivex.functions.Function3
 
 
-class InsightsViewModel(
+class BrowseViewModel(
     lifecycle: Lifecycle,
     private val statisticRepo: StatisticRepository,
     private val accountRepo: AccountRepository,
