@@ -6,10 +6,7 @@
  */
 package com.bitmark.fbm.feature.notification
 
-import android.app.AlarmManager
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -50,7 +47,22 @@ fun buildSimpleNotificationBundle(
     return bundle
 }
 
-fun pushNotification(context: Context, bundle: Bundle) {
+fun buildProgressNotificationBundle(
+    title: String,
+    message: String,
+    notificationId: Int,
+    receiver: Class<*> = SplashActivity::class.java,
+    maxProgress: Int = -1,
+    currentProgress: Int = -1
+): Bundle {
+    val bundle = buildSimpleNotificationBundle(title, message, notificationId, receiver)
+    bundle.putBoolean("progress", true)
+    bundle.putInt("max_progress", maxProgress)
+    bundle.putInt("current_progress", currentProgress)
+    return bundle
+}
+
+fun buildNotification(context: Context, bundle: Bundle): Notification {
     val receiver = try {
         val receiverName = bundle.getString("receiver") ?: SplashActivity::class.java.name
         Class.forName(receiverName)
@@ -68,7 +80,8 @@ fun pushNotification(context: Context, bundle: Bundle) {
         PendingIntent.FLAG_ONE_SHOT
     )
 
-    val channelName = context.getString(R.string.notification_channel_name)
+    val channelName =
+        bundle.getString("channel") ?: context.getString(R.string.notification_channel_name)
     val notificationBuilder = NotificationCompat.Builder(context, channelName)
         .setContentTitle(bundle.getString("title", ""))
         .setContentText(bundle.getString("message"))
@@ -79,6 +92,13 @@ fun pushNotification(context: Context, bundle: Bundle) {
             NotificationCompat.BigTextStyle()
                 .bigText(bundle.getString("message"))
         )
+
+    val progress = bundle.getBoolean("progress")
+    if (progress) {
+        val maxProgress = bundle.getInt("max_progress")
+        val currentProgress = bundle.getInt("current_progress")
+        notificationBuilder.setProgress(maxProgress, currentProgress, maxProgress == -1)
+    }
 
     val icon =
         context.getResIdentifier(bundle.getString("icon", ""), "drawable")
@@ -97,6 +117,16 @@ fun pushNotification(context: Context, bundle: Bundle) {
     }
     if (color != null) notificationBuilder.color = color
 
+    return notificationBuilder.build()
+}
+
+fun pushNotification(context: Context, bundle: Bundle) {
+
+    val notification = buildNotification(context, bundle)
+
+    val channelName =
+        bundle.getString("channel") ?: context.getString(R.string.notification_channel_name)
+
     val notificationManager =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -109,7 +139,7 @@ fun pushNotification(context: Context, bundle: Bundle) {
         notificationManager.createNotificationChannel(channel)
     }
 
-    notificationManager.notify(bundle.getInt("notification_id", 0), notificationBuilder.build())
+    notificationManager.notify(bundle.getInt("notification_id", 0), notification)
 }
 
 fun cancelNotification(context: Context, id: Int) {

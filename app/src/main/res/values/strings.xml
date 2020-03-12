@@ -207,7 +207,19 @@
     <string name="we_value_your_feedback">We value your feedback, if you have ideas or suggestions on how to make our app even better, please let us know.</string>
     <string name="summary">SUMMARY</string>
     <string name="browse">BROWSE</string>
-
+    <string name="request_your_fb_data"><![CDATA[<b>Step 1: Request your Facebook data</b><br><br> Go to https://fb.com/dyi and select “Download Your Information”. Make sure to select “JSON” for the format.<br><br><br><b>Step 2: Make your backup</b><br><br>Facebook will let you know when your data is ready for download. Typically, this takes 1–2 days.<br><br>When notified, store your zip file in the cloud or on this device. We recommend doing this on a fast Internet connection.<br><br>To continue:]]></string>
+    <string name="add_zip_file_arrow">Add zip file »</string>
+    <string name="add_cloud_storage">Add cloud storage URL</string>
+    <string name="or">or</string>
+    <string name="could_not_upload_archive_url">Could not upload archive using the url. Please try again later.</string>
+    <string name="invalid_file_format">Invalid file format</string>
+    <string name="the_file_you_uploaded_was_not_a_fb_archive">The file you uploaded was not a valid Facebook archive</string>
+    <string name="contact_us">Contact us</string>
+    <string name="this_file_is_too_large">This file is too large to upload. The largest file you can issue is 5GB.</string>
+    <string name="auto_backup">Auto backup »</string>
+    <string name="backup_manually">Backup manually »</string>
+    <string name="uploading">Archive Uploading…</string>
+    <string name="invalid_url">Invalid URL</string>
 
 
     <string-array name="day_of_week">

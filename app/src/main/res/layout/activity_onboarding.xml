@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.AppCompatImageView
@@ -57,8 +58,8 @@
         app:autoSizeMinTextSize="24sp"
         app:autoSizeTextType="uniform"
         app:layout_constraintBottom_toTopOf="@id/tvMsg1"
-        app:layout_constraintEnd_toEndOf="@id/btnContinue"
-        app:layout_constraintStart_toStartOf="@id/btnContinue" />
+        app:layout_constraintEnd_toEndOf="@id/btnAutoBackup"
+        app:layout_constraintStart_toStartOf="@id/btnAutoBackup" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvIndex1"
@@ -121,7 +122,7 @@
         android:text="3"
         android:textColor="@color/black"
         android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="@id/btnContinue"
+        app:layout_constraintStart_toStartOf="@id/btnAutoBackup"
         app:layout_constraintTop_toTopOf="@id/tvMsg3" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -135,27 +136,44 @@
         android:text="@string/we_will_give_you_a_way"
         android:textColor="@color/black"
         android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@id/btnContinue"
-        app:layout_constraintEnd_toEndOf="@id/btnContinue"
+        app:layout_constraintBottom_toTopOf="@id/btnAutoBackup"
+        app:layout_constraintEnd_toEndOf="@id/btnAutoBackup"
         app:layout_constraintStart_toEndOf="@id/tvIndex3" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnContinue"
+        android:id="@+id/btnAutoBackup"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="@dimen/dp_18"
+        android:layout_marginEnd="@dimen/dp_18"
+        android:layout_marginBottom="2dp"
+        android:background="@drawable/bg_cognac_stateful"
+        android:fontFamily="@font/grotesk_regular_font_family"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="@string/auto_backup"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="17sp"
+        app:layout_constraintBottom_toTopOf="@id/btnManualBackup" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnManualBackup"
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginStart="@dimen/dp_18"
         android:layout_marginEnd="@dimen/dp_18"
         android:layout_marginBottom="44dp"
-        android:background="@drawable/bg_cognac_stateful"
+        android:background="@color/white"
         android:fontFamily="@font/grotesk_regular_font_family"
         android:gravity="center"
         android:includeFontPadding="false"
-        android:text="@string/continue_arrow"
+        android:text="@string/backup_manually"
         android:textAllCaps="false"
-        android:textColor="@color/white"
+        android:textColor="@color/color_cognac_stateful"
         android:textSize="17sp"
         app:layout_constraintBottom_toBottomOf="parent" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,6 +11,7 @@ import com.bitmark.fbm.data.source.RepositoryModule
 import com.bitmark.fbm.data.source.remote.api.NetworkModule
 import com.bitmark.fbm.di.ActivityBuilderModule
 import com.bitmark.fbm.di.FragmentBuilderModule
+import com.bitmark.fbm.di.ServiceBuilderModule
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjector
@@ -20,7 +21,7 @@ import javax.inject.Singleton
 @Component(
     modules = [AndroidSupportInjectionModule::class, AppModule::class,
         ActivityBuilderModule::class, FragmentBuilderModule::class,
-        NetworkModule::class, RepositoryModule::class]
+        NetworkModule::class, RepositoryModule::class, ServiceBuilderModule::class]
 )
 @Singleton
 interface AppComponent : AndroidInjector<FbmApplication> {

@@ -11,6 +11,7 @@ import com.bitmark.fbm.feature.BaseAppCompatActivity
 import com.bitmark.fbm.feature.BaseViewModel
 import com.bitmark.fbm.feature.Navigator
 import com.bitmark.fbm.feature.Navigator.Companion.RIGHT_LEFT
+import com.bitmark.fbm.feature.archiveuploading.UploadArchiveActivity
 import com.bitmark.fbm.feature.register.archiverequest.ArchiveRequestContainerActivity
 import com.bitmark.fbm.util.ext.setSafetyOnclickListener
 import kotlinx.android.synthetic.main.activity_onboarding.*
@@ -28,9 +29,13 @@ class OnboardingActivity : BaseAppCompatActivity() {
     override fun initComponents() {
         super.initComponents()
 
-        btnContinue.setSafetyOnclickListener {
+        btnAutoBackup.setSafetyOnclickListener {
             navigator.anim(RIGHT_LEFT)
                 .startActivity(ArchiveRequestContainerActivity::class.java)
+        }
+
+        btnManualBackup.setSafetyOnclickListener {
+            navigator.anim(RIGHT_LEFT).startActivity(UploadArchiveActivity::class.java)
         }
 
         ivBack.setOnClickListener {

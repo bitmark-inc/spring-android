@@ -6,6 +6,8 @@
  */
 package com.bitmark.fbm.di
 
+import com.bitmark.fbm.feature.archiveuploading.UploadArchiveActivity
+import com.bitmark.fbm.feature.archiveuploading.UploadArchiveModule
 import com.bitmark.fbm.feature.biometricauth.BiometricAuthActivity
 import com.bitmark.fbm.feature.biometricauth.BiometricAuthModule
 import com.bitmark.fbm.feature.deleteaccount.DeleteAccountActivity
@@ -95,4 +97,8 @@ abstract class ActivityBuilderModule {
     @ContributesAndroidInjector(modules = [DeleteAccountModule::class])
     @ActivityScope
     internal abstract fun bindDeleteAccountActivity(): DeleteAccountActivity
+
+    @ContributesAndroidInjector(modules = [UploadArchiveModule::class])
+    @ActivityScope
+    internal abstract fun bindUploadArchiveActivity(): UploadArchiveActivity
 }

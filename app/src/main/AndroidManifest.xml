@@ -93,9 +93,12 @@
             android:name=".feature.deleteaccount.DeleteAccountActivity"
             android:screenOrientation="portrait" />
 
-        <receiver
-            android:name=".feature.notification.ScheduledNotificationReceiver"
-            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".feature.archiveuploading.UploadArchiveActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+        <receiver android:name=".feature.notification.ScheduledNotificationReceiver" />
 
         <meta-data
             android:name="com.onesignal.NotificationAccentColor.DEFAULT"
@@ -117,5 +120,8 @@
                 <action android:name="com.onesignal.NotificationExtender" />
             </intent-filter>
         </service>
+
+        <service android:name=".feature.archiveuploading.service.UploadArchiveService" />
+
     </application>
 </manifest>

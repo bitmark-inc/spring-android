@@ -38,6 +38,14 @@ enum class Event(val value: String) {
 
     ARCHIVE_ISSUE_SUCCESS("archive_issue_success"),
 
+    ARCHIVE_FILE_UPLOAD_ERROR("archive_file_upload_error"),
+
+    ARCHIVE_FILE_UPLOAD_SUCCESS("archive_file_upload_success"),
+
+    ARCHIVE_URL_UPLOAD_ERROR("arhive_url_upload_error"),
+
+    ARCHIVE_UPLOAD_REGISTER_ACCOUNT_ERROR("archive_upload_register_account_error"),
+
     SPLASH_PREPARE_DATA_ERROR("splash_prepare_data_error"),
 
     SPLASH_VERSION_CHECK_ERROR("splash_version_check_error"),

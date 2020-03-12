@@ -14,6 +14,7 @@ import com.bitmark.fbm.data.source.local.AccountLocalDataSource
 import com.bitmark.fbm.data.source.remote.AccountRemoteDataSource
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
+import java.io.InputStream
 
 
 class AccountRepository(
@@ -107,4 +108,13 @@ class AccountRepository(
     }
 
     fun deleteAccount() = remoteDataSource.deleteAccount()
+
+    fun uploadArchiveUrl(url: String) = remoteDataSource.uploadArchiveUrl(url)
+
+    fun uploadArchive(
+        fileInputStream: InputStream,
+        fileSize: Long,
+        progress: (Pair<Long, Long>) -> Unit
+    ) =
+        remoteDataSource.uploadArchive(fileInputStream, fileSize, progress)
 }

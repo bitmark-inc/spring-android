@@ -12,6 +12,7 @@ import com.bitmark.fbm.data.model.entity.ReactionR
 import com.bitmark.fbm.data.model.entity.SectionR
 import com.bitmark.fbm.data.model.entity.Stats
 import com.bitmark.fbm.data.source.remote.api.request.ArchiveRequestPayload
+import com.bitmark.fbm.data.source.remote.api.request.ArchiveUploadRequest
 import com.bitmark.fbm.data.source.remote.api.request.RegisterJwtRequest
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -79,4 +80,10 @@ interface FbmApi {
 
     @GET("api/stats/reactions")
     fun getReactionStats(@Query("started_at") startedAt: Long, @Query("ended_at") endedAt: Long): Single<Map<String, Map<String, Stats>>>
+
+    @POST("api/archives")
+    fun getArchivePresignUrl(@Query("type") type: String, @Query("size") size: Long): Single<Map<String, Map<String, Any>>>
+
+    @POST("api/archives/url")
+    fun uploadArchiveUrl(@Body request: ArchiveUploadRequest): Completable
 }

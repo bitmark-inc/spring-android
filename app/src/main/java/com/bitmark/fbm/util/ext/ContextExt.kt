@@ -10,6 +10,8 @@ import android.app.KeyguardManager
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.net.Uri
+import android.provider.OpenableColumns
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.core.content.ContextCompat
@@ -71,3 +73,10 @@ fun Context.isDeviceSecure(): Boolean {
     return keyguardManager.isDeviceSecure
 }
 
+fun Context.getFileSize(uri: Uri): Long {
+    return contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+        val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
+        cursor.moveToFirst()
+        cursor.getLong(sizeIndex)
+    } ?: -1
+}
