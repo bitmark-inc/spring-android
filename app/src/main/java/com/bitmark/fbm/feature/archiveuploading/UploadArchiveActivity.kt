@@ -125,7 +125,15 @@ class UploadArchiveActivity : BaseAppCompatActivity() {
                     } else {
                         if (!URLUtil.isValidUrl(url)) {
                             etUrl.text?.clear()
-                            dialogController.alert("", getString(R.string.invalid_url))
+                            dialogController.confirm(
+                                R.string.invalid_url,
+                                R.string.the_url_provided_was_invalid,
+                                true,
+                                "invalid_url",
+                                R.string.contact_us,
+                                { navigator.openIntercom() },
+                                R.string.try_again
+                            )
                         } else {
                             archiveUrl = url
                             registerAccount()
@@ -274,7 +282,10 @@ class UploadArchiveActivity : BaseAppCompatActivity() {
                     R.string.try_again,
                     {})
             } else if (size > MAX_FILE_SIZE) {
-                dialogController.alert("", getString(R.string.this_file_is_too_large))
+                dialogController.alert(
+                    R.string.file_size_exceeded,
+                    R.string.your_file_is_larger_than
+                )
             } else {
                 registerAccount()
             }

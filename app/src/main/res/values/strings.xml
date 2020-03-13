@@ -215,11 +215,13 @@
     <string name="invalid_file_format">Invalid file format</string>
     <string name="the_file_you_uploaded_was_not_a_fb_archive">The file you uploaded was not a valid Facebook archive</string>
     <string name="contact_us">Contact us</string>
-    <string name="this_file_is_too_large">This file is too large to upload. The largest file you can issue is 5GB.</string>
     <string name="auto_backup">Auto backup »</string>
     <string name="backup_manually">Backup manually »</string>
     <string name="uploading">Archive Uploading…</string>
-    <string name="invalid_url">Invalid URL</string>
+    <string name="invalid_url">Invalid URL format</string>
+    <string name="the_url_provided_was_invalid">The URL you provided was invalid</string>
+    <string name="file_size_exceeded">File size exceeded</string>
+    <string name="your_file_is_larger_than">Your file is larger than 5GB. Please provide a cloud storage URL.</string>
 
 
     <string-array name="day_of_week">
