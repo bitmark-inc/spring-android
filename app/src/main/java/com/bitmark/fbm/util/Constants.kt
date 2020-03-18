@@ -16,5 +16,9 @@ object Constants {
 
     const val UPLOAD_ARCHIVE_NOTIFICATION_ID = 0xAE
 
-    const val PRIVACY_URL = "https://raw.githubusercontent.com/bitmark-inc/spring/master/privacy-policy.md"
+    const val PRIVACY_URL =
+        "https://raw.githubusercontent.com/bitmark-inc/spring/master/privacy-policy.md"
+
+    const val FAQ_URL =
+        "https://raw.githubusercontent.com/bitmark-inc/spring/master/faq.md"
 }

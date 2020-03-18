@@ -6,6 +6,7 @@
  */
 package com.bitmark.fbm.feature.settings
 
+import android.content.Intent
 import com.bitmark.fbm.R
 import com.bitmark.fbm.feature.BaseSupportFragment
 import com.bitmark.fbm.feature.BaseViewModel
@@ -55,4 +56,9 @@ class SettingsContainerFragment : BaseSupportFragment() {
 
     private fun currentFragment() =
         childFragmentManager.findFragmentById(R.id.layoutContainer)
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        currentFragment()?.onActivityResult(requestCode, resultCode, data)
+    }
 }

@@ -6,7 +6,12 @@
  */
 package com.bitmark.fbm.feature.unlink.notice
 
-import android.text.method.ScrollingMovementMethod
+import android.graphics.Color
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
+import android.view.View
 import com.bitmark.fbm.R
 import com.bitmark.fbm.feature.BaseSupportFragment
 import com.bitmark.fbm.feature.BaseViewModel
@@ -34,7 +39,26 @@ class UnlinkNoticeFragment : BaseSupportFragment() {
     override fun initComponents() {
         super.initComponents()
 
-        tvMsg.movementMethod = ScrollingMovementMethod()
+        val msg = SpannableString(getString(R.string.if_you_unlink_your_account))
+        val linkText = getString(R.string.pls_do_so_now)
+        val startIndex = msg.indexOf(linkText)
+        val endIndex = startIndex + linkText.length
+
+        msg.setSpan(
+            object : ClickableSpan() {
+                override fun onClick(widget: View) {
+                    navigator.anim(RIGHT_LEFT).finishActivityForResult()
+                }
+
+            }, startIndex,
+            endIndex,
+            Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+        )
+
+        tvMsg.text = msg
+        tvMsg.movementMethod = LinkMovementMethod.getInstance()
+        tvMsg.setLinkTextColor(context!!.getColor(R.color.black))
+        tvMsg.highlightColor = Color.TRANSPARENT
 
         btnContinue.setSafetyOnclickListener {
             navigator.anim(RIGHT_LEFT)

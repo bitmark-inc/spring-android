@@ -48,7 +48,7 @@
         android:layout_marginEnd="@dimen/dp_18"
         android:fontFamily="@font/domaine_sans"
         android:includeFontPadding="false"
-        android:text="@string/unlink_account"
+        android:text="@string/sign_out"
         android:textAllCaps="true"
         android:textColor="@color/black"
         app:autoSizeMaxTextSize="@dimen/sp_36"

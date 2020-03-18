@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutToolbar"
@@ -18,8 +16,8 @@
         android:orientation="horizontal"
         android:paddingStart="@dimen/dp_18"
         android:paddingEnd="@dimen/dp_18"
-        app:layout_constraintTop_toTopOf="parent"
-        >
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <com.bitmark.fbm.util.view.TouchableOpacityAppCompatImageView
             android:id="@+id/ivBack"
@@ -33,72 +31,84 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_back_2"
-            />
+            app:srcCompat="@drawable/ic_back_2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <LinearLayout
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvTitle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/dp_18"
+        android:layout_height="@dimen/dp_44"
+        android:layout_marginStart="@dimen/dp_18"
+        android:layout_marginEnd="@dimen/dp_18"
+        android:fontFamily="@font/domaine_sans"
+        android:includeFontPadding="false"
+        android:scrollbars="vertical"
+        android:text="@string/trust_is_critical"
+        android:textAllCaps="true"
+        android:textColor="@color/black"
+        app:autoSizeMaxTextSize="@dimen/sp_36"
+        app:autoSizeMinTextSize="@dimen/sp_24"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutToolbar" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/dp_40"
+        android:layout_marginBottom="@dimen/dp_40"
         app:layout_constraintBottom_toTopOf="@id/btnContinue"
-        app:layout_constraintTop_toBottomOf="@id/layoutToolbar"
-        >
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:fontFamily="@font/domaine_sans"
-            android:includeFontPadding="false"
-            android:text="@string/trust_is_critical"
-            android:textAllCaps="true"
-            android:textColor="@color/black"
-            app:autoSizeMaxTextSize="36sp"
-            app:autoSizeMinTextSize="24sp"
-            app:autoSizeTextType="uniform"
-            />
-
-        <androidx.appcompat.widget.AppCompatTextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_24"
-            android:fontFamily="@font/grotesk_light_font_family"
-            android:text="@string/spring_is_from_bitmark"
-            android:textColor="@color/black"
-            android:textSize="18sp"
-            />
+            android:orientation="vertical"
+            android:paddingStart="@dimen/dp_18"
+            android:paddingEnd="@dimen/dp_18"
+            app:layout_constraintBottom_toTopOf="@id/btnContinue"
+            app:layout_constraintTop_toBottomOf="@id/layoutToolbar">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_24"
-            android:fontFamily="@font/grotesk_light_font_family"
-            android:text="@string/sincerely_colon"
-            android:textColor="@color/black"
-            android:textSize="18sp"
-            />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvMsg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/grotesk_light_font_family"
+                android:text="@string/spring_is_from_bitmark"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/dp_68"
-            android:adjustViewBounds="true"
-            android:src="@drawable/sean_sig"
-            />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_24"
+                android:fontFamily="@font/grotesk_light_font_family"
+                android:text="@string/sincerely_colon"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_4"
-            android:fontFamily="@font/grotesk_light_font_family"
-            android:text="@string/sean_name_and_title"
-            android:textColor="@color/black"
-            android:textSize="18sp"
-            />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dp_68"
+                android:adjustViewBounds="true"
+                android:src="@drawable/sean_sig" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_4"
+                android:fontFamily="@font/grotesk_light_font_family"
+                android:text="@string/sean_name_and_title"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
 
 
-    </LinearLayout>
+        </LinearLayout>
+
+    </ScrollView>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnContinue"
@@ -116,8 +126,7 @@
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="17sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        />
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

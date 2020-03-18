@@ -6,6 +6,8 @@
  */
 package com.bitmark.fbm.feature.settings
 
+import android.app.Activity.RESULT_OK
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -34,6 +36,7 @@ import com.bitmark.fbm.feature.whatsnew.WhatsNewActivity
 import com.bitmark.fbm.logging.Event
 import com.bitmark.fbm.logging.EventLogger
 import com.bitmark.fbm.util.Constants
+import com.bitmark.fbm.util.Constants.FAQ_URL
 import com.bitmark.fbm.util.ext.logSharedPrefError
 import com.bitmark.fbm.util.ext.openBrowser
 import com.bitmark.fbm.util.ext.openIntercom
@@ -47,13 +50,12 @@ class SettingsFragment : BaseSupportFragment() {
 
     companion object {
 
-        private const val FAQ_URL =
-            "https://raw.githubusercontent.com/bitmark-inc/spring/master/faq.md"
-
         private const val SOURCE_CODE_URL = "https://github.com/bitmark-inc/spring-android"
 
         private const val PERSONAL_API_URL =
             "https://documenter.getpostman.com/view/59304/SzRw2rJn?version=latest"
+
+        private const val SIGN_OUT_REQUEST_CODE = 0x1A
 
         fun newInstance() = SettingsFragment()
     }
@@ -136,7 +138,8 @@ class SettingsFragment : BaseSupportFragment() {
         tvToSandPP.highlightColor = Color.TRANSPARENT
 
         tvUnlink.setSafetyOnclickListener {
-            navigator.anim(RIGHT_LEFT).startActivity(UnlinkContainerActivity::class.java)
+            navigator.anim(RIGHT_LEFT)
+                .startActivityForResult(UnlinkContainerActivity::class.java, SIGN_OUT_REQUEST_CODE)
         }
 
         tvBiometricAuth.setSafetyOnclickListener {
@@ -144,7 +147,7 @@ class SettingsFragment : BaseSupportFragment() {
         }
 
         tvRecoveryKey.setSafetyOnclickListener {
-            navigator.anim(RIGHT_LEFT).startActivity(RecoveryContainerActivity::class.java)
+            goToRecoveryKey()
         }
 
         tvPersonalApi.setSafetyOnclickListener {
@@ -221,6 +224,17 @@ class SettingsFragment : BaseSupportFragment() {
     private fun goToFaq() {
         val bundle = WebViewActivity.getBundle(FAQ_URL, getString(R.string.faq))
         navigator.anim(RIGHT_LEFT).startActivity(WebViewActivity::class.java, bundle)
+    }
+
+    private fun goToRecoveryKey() {
+        navigator.anim(RIGHT_LEFT).startActivity(RecoveryContainerActivity::class.java)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK && requestCode == SIGN_OUT_REQUEST_CODE) {
+            goToRecoveryKey()
+        }
     }
 
 }
