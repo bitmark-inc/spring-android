@@ -22,6 +22,7 @@ import com.bitmark.fbm.feature.archiveuploading.UploadArchiveActivity
 import com.bitmark.fbm.feature.archiveuploading.UploadType
 import com.bitmark.fbm.feature.archiveuploading.service.UploadArchiveService
 import com.bitmark.fbm.feature.archiveuploading.service.UploadArchiveServiceHandler
+import com.bitmark.fbm.feature.realtime.ArchiveStateBus
 import com.bitmark.fbm.logging.EventLogger
 import com.bitmark.fbm.util.DateTimeUtil
 import com.bitmark.fbm.util.ext.*
@@ -57,6 +58,9 @@ class BrowseFragment : BaseSupportFragment() {
     @Inject
     internal lateinit var serviceHandler: UploadArchiveServiceHandler
 
+    @Inject
+    internal lateinit var archiveStateBus: ArchiveStateBus
+
     private val handler = Handler()
 
     private val uploadArchiveListener = object : UploadArchiveService.StateListener {
@@ -72,6 +76,13 @@ class BrowseFragment : BaseSupportFragment() {
         override fun onError(e: Throwable) {
             // do nothing
         }
+    }
+
+    private val actionClickListener = object : ArchiveStateBus.ActionClickListener {
+        override fun onTryAgainClicked() {
+            openUploadArchive()
+        }
+
     }
 
     override fun layoutRes(): Int = R.layout.fragment_browse
@@ -108,12 +119,7 @@ class BrowseFragment : BaseSupportFragment() {
         }
 
         tvGetStarted.setSafetyOnclickListener {
-            val bundle = UploadArchiveActivity.getBundle(false)
-            navigator.anim(RIGHT_LEFT).startActivityForResult(
-                UploadArchiveActivity::class.java,
-                UPLOAD_ARCHIVE_REQUEST_CODE,
-                bundle
-            )
+            openUploadArchive()
         }
 
         layoutPost.setSafetyOnclickListener { }
@@ -121,9 +127,12 @@ class BrowseFragment : BaseSupportFragment() {
         layoutMedia.setSafetyOnclickListener { }
 
         layoutReaction.setSafetyOnclickListener { }
+
+        archiveStateBus.addActionClickListener(actionClickListener)
     }
 
     override fun deinitComponents() {
+        archiveStateBus.removeActionClickListener(actionClickListener)
         handler.removeCallbacksAndMessages(null)
         super.deinitComponents()
     }
@@ -292,6 +301,15 @@ class BrowseFragment : BaseSupportFragment() {
 
     private fun unbindService() {
         serviceHandler.unbind()
+    }
+
+    private fun openUploadArchive() {
+        val bundle = UploadArchiveActivity.getBundle(false)
+        navigator.anim(RIGHT_LEFT).startActivityForResult(
+            UploadArchiveActivity::class.java,
+            UPLOAD_ARCHIVE_REQUEST_CODE,
+            bundle
+        )
     }
 
 }

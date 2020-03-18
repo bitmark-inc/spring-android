@@ -44,7 +44,18 @@ class ArchiveStateBus(
 
     private var running = false
 
+    private val actionClickListeners = mutableListOf<ActionClickListener>()
+
     val archiveInvalidPublisher = Publisher(PublishSubject.create<Any>())
+
+    fun addActionClickListener(listener: ActionClickListener) {
+        if (actionClickListeners.contains(listener)) return
+        actionClickListeners.add(listener)
+    }
+
+    fun removeActionClickListener(listener: ActionClickListener) {
+        actionClickListeners.remove(listener)
+    }
 
     fun start() {
         if (running) return
@@ -104,8 +115,15 @@ class ArchiveStateBus(
                 Navigator(activity).openIntercom()
             },
             R.string.try_again,
-            {}
+            {
+                actionClickListeners.forEach { l -> l.onTryAgainClicked() }
+            }
         )
+    }
+
+    interface ActionClickListener {
+
+        fun onTryAgainClicked()
     }
 
 }
