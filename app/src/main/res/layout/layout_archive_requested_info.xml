@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvFbArchiveRequest1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_18"
+        android:layout_marginEnd="@dimen/dp_18"
+        android:fontFamily="@font/grotesk_light"
+        android:text="@string/fb_will_let_you_know"
+        android:textColor="@color/black"
+        android:textSize="@dimen/sp_18"
+        tools:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvFbArchiveRequest2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_18"
+        android:layout_marginTop="@dimen/dp_8"
+        android:fontFamily="@font/grotesk_light"
+        android:textColor="@color/black"
+        android:textSize="@dimen/sp_12"
+        android:textStyle="italic"
+        tools:text="Facebook data requested: Dec 1 at 10:32 am."
+        tools:visibility="visible" />
+
+    <ProgressBar
+        android:id="@+id/progressBar3"
+        android:layout_width="@dimen/dp_28"
+        android:layout_height="@dimen/dp_28"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_30"
+        tools:visibility="visible" />
+
+</LinearLayout>

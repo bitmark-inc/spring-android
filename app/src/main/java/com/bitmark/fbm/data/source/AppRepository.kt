@@ -9,7 +9,7 @@ package com.bitmark.fbm.data.source
 import com.bitmark.fbm.BuildConfig
 import com.bitmark.fbm.data.source.local.AppLocalDataSource
 import com.bitmark.fbm.data.source.local.Jwt
-import com.bitmark.fbm.data.source.local.event.NotificationStateChangedListener
+import com.bitmark.fbm.data.source.local.event.DataReadyListener
 import com.bitmark.fbm.data.source.remote.AppRemoteDataSource
 import io.reactivex.Completable
 
@@ -19,8 +19,8 @@ class AppRepository(
     private val localDataSource: AppLocalDataSource
 ) {
 
-    fun setNotificationStateChangedListener(listener: NotificationStateChangedListener) {
-        localDataSource.setNotificationStateChangedListener(listener)
+    fun setDataReadyListener(listener: DataReadyListener) {
+        localDataSource.setDataReadyListener(listener)
     }
 
     fun registerNotificationService(accountId: String) =

@@ -217,12 +217,23 @@
     <string name="contact_us">Contact us</string>
     <string name="auto_backup">Auto backup »</string>
     <string name="backup_manually">Backup manually »</string>
-    <string name="uploading">Archive Uploading…</string>
+    <string name="archive_uploading">Archive Uploading…</string>
     <string name="invalid_url">Invalid URL format</string>
     <string name="the_url_provided_was_invalid">The URL you provided was invalid</string>
     <string name="file_size_exceeded">File size exceeded</string>
     <string name="your_file_is_larger_than">Your file is larger than 5GB. Please provide a cloud storage URL.</string>
-
+    <string name="see_how_u_compare">See how you compare?</string>
+    <string name="upload_your_fb_info_archive">Upload your Facebook Information Archive to receive your own private analytics. You will also be able to browse, search, and share your Facebook data.</string>
+    <string name="view_progress_arrow">View progress »</string>
+    <string name="notify_me_when_it_done_arrow">Notify me when it\'s done »</string>
+    <string name="uploading">Uploading…</string>
+    <string name="processing">Processing…</string>
+    <string name="fb_will_let_you_know">Facebook will let you know when your data is ready for download. Typically, this takes 1–2 days.\n\nWhen notified, come back here. We’ll handle the rest.</string>
+    <string name="option_1_automated"><![CDATA[<b>Option 1: Automated</b>]]></string>
+    <string name="option_2_manual"><![CDATA[<b>Option 2: Manual</b><br><br>Go to https://fb.com/dyi and select “Download Your Information” in “JSON” format. Facebook will let you know when your download is ready. Typically, it’s 1–2 days.<br><br>When notified, store your zip file in the cloud or on this device. To continue:]]></string>
+    <string name="automate_now_arrow">Automate now »</string>
+    <string name="get_your_fb_data">Get your Facebook data</string>
+    <string name="upload_your_fb_info">Upload your Facebook Information Archive to browse, search, and share your Facebook data.</string>
 
     <string-array name="day_of_week">
         <item>S</item>

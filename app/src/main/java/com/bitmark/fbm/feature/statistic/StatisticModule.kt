@@ -12,7 +12,6 @@ import com.bitmark.fbm.data.source.StatisticRepository
 import com.bitmark.fbm.di.FragmentScope
 import com.bitmark.fbm.feature.DialogController
 import com.bitmark.fbm.feature.Navigator
-import com.bitmark.fbm.feature.realtime.RealtimeBus
 import com.bitmark.fbm.util.livedata.RxLiveDataTransformer
 import dagger.Module
 import dagger.Provides
@@ -27,15 +26,13 @@ class StatisticModule {
         statisticRepo: StatisticRepository,
         accountRepo: AccountRepository,
         appRepo: AppRepository,
-        rxLiveDataTransformer: RxLiveDataTransformer,
-        realtimeBus: RealtimeBus
+        rxLiveDataTransformer: RxLiveDataTransformer
     ) = StatisticViewModel(
         fragment.lifecycle,
         statisticRepo,
         accountRepo,
         appRepo,
-        rxLiveDataTransformer,
-        realtimeBus
+        rxLiveDataTransformer
     )
 
     @Provides

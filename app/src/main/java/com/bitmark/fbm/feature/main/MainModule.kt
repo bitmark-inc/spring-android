@@ -14,6 +14,7 @@ import com.bitmark.fbm.feature.DialogController
 import com.bitmark.fbm.feature.Navigator
 import com.bitmark.fbm.feature.archiveissuing.ArchiveIssuanceProcessor
 import com.bitmark.fbm.feature.auth.FbmServerAuthentication
+import com.bitmark.fbm.feature.realtime.ArchiveStateBus
 import com.bitmark.fbm.util.livedata.RxLiveDataTransformer
 import dagger.Module
 import dagger.Provides
@@ -35,7 +36,8 @@ class MainModule {
         accountRepo: AccountRepository,
         rxLiveDataTransformer: RxLiveDataTransformer,
         remoteApiBus: RemoteApiBus,
-        archiveIssuanceProcessor: ArchiveIssuanceProcessor
+        archiveIssuanceProcessor: ArchiveIssuanceProcessor,
+        archiveStateBus: ArchiveStateBus
     ) =
         MainViewModel(
             activity.lifecycle,
@@ -44,7 +46,8 @@ class MainModule {
             appRepo,
             accountRepo,
             archiveIssuanceProcessor,
-            rxLiveDataTransformer
+            rxLiveDataTransformer,
+            archiveStateBus
         )
 
     @ActivityScope

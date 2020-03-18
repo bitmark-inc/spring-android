@@ -21,6 +21,7 @@ import com.bitmark.sdk.features.Account
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
+import io.reactivex.functions.Function3
 import io.reactivex.schedulers.Schedulers
 
 
@@ -39,7 +40,7 @@ class SplashViewModel(
 
     internal val prepareDataLiveData = CompositeLiveData<Pair<Boolean, Long>>()
 
-    internal val checkDataReadyLiveData = CompositeLiveData<Pair<Boolean, Boolean>>()
+    internal val checkDataReadyLiveData = CompositeLiveData<Triple<Boolean, Boolean, Boolean>>()
 
     internal val deleteAppDataLiveData = CompositeLiveData<Any>()
 
@@ -114,13 +115,16 @@ class SplashViewModel(
 
         val checkCategoryReadyStream = accountRepo.checkAdsPrefCategoryReady()
 
+        val checkArchiveUploaded = accountRepo.checkArchiveUploaded()
+
         checkDataReadyLiveData.add(
             rxLiveDataTransformer.single(
                 Single.zip(
                     checkDataReadyStream,
                     checkCategoryReadyStream,
-                    BiFunction<Boolean, Boolean, Pair<Boolean, Boolean>> { dataReady, categoryReady ->
-                        Pair(dataReady, categoryReady)
+                    checkArchiveUploaded,
+                    Function3<Boolean, Boolean, Boolean, Triple<Boolean, Boolean, Boolean>> { dataReady, categoryReady, archiveUploaded ->
+                        Triple(dataReady, categoryReady, archiveUploaded)
                     })
             )
         )

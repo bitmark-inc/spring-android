@@ -280,10 +280,11 @@ class SplashActivity : BaseAppCompatActivity() {
                 res.isSuccess() -> {
                     val dataReady = res.data()!!.first
                     val categoryReady = res.data()!!.second
+                    val archiveUploaded = res.data()!!.third
 
                     handler.postDelayed({
                         if (dataReady) {
-                            if (categoryReady) {
+                            if (categoryReady || archiveUploaded) {
                                 val bundle = MainActivity.getBundle(account.seed.encodedSeed)
                                 navigator.anim(FADE_IN)
                                     .startActivityAsRoot(MainActivity::class.java, bundle)

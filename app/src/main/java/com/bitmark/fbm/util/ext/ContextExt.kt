@@ -80,3 +80,11 @@ fun Context.getFileSize(uri: Uri): Long {
         cursor.getLong(sizeIndex)
     } ?: -1
 }
+
+fun Context.getFileName(uri: Uri): String {
+    return contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+        val sizeIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+        cursor.moveToFirst()
+        cursor.getString(sizeIndex)
+    } ?: ""
+}

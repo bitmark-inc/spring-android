@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingTop="@dimen/dp_20"
-    >
+    android:paddingTop="@dimen/dp_20">
 
     <com.bitmark.fbm.util.view.TouchableOpacityAppCompatImageView
         android:id="@+id/ivPrevPeriod"
@@ -17,8 +15,7 @@
         android:padding="@dimen/dp_6"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_prev_period_stateful"
-        />
+        app:srcCompat="@drawable/ic_prev_period_stateful" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvType"
@@ -33,8 +30,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/ivPrevPeriod"
-        tools:text="This Decade"
-        />
+        tools:text="This Decade" />
 
     <com.bitmark.fbm.util.view.TouchableOpacityAppCompatImageView
         android:id="@+id/ivNextPeriod"
@@ -44,8 +40,7 @@
         android:padding="@dimen/dp_6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_next_period_stateful"
-        />
+        app:srcCompat="@drawable/ic_next_period_stateful" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvTime"
@@ -59,8 +54,7 @@
         app:layout_constraintEnd_toEndOf="@id/tvType"
         app:layout_constraintStart_toStartOf="@id/tvType"
         app:layout_constraintTop_toBottomOf="@id/tvType"
-        tools:text="2019"
-        />
+        tools:text="2019" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvStatistic"
@@ -68,8 +62,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_24"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTime"
-        />
+        app:layout_constraintTop_toBottomOf="@id/tvTime" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

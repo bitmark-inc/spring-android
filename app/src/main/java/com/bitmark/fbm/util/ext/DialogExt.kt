@@ -15,7 +15,7 @@ fun DialogController.unexpectedAlert(action: () -> Unit = {}) =
     alert(
         R.string.error,
         R.string.unexpected_error,
-        android.R.string.ok,
+        R.string.contact_us,
         false,
         clickEvent = action
     )

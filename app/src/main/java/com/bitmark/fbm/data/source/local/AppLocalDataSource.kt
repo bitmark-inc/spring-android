@@ -6,7 +6,6 @@
  */
 package com.bitmark.fbm.data.source.local
 
-import android.content.res.Resources
 import com.bitmark.fbm.data.ext.fromJson
 import com.bitmark.fbm.data.ext.newGsonInstance
 import com.bitmark.fbm.data.model.AccountData
@@ -15,7 +14,7 @@ import com.bitmark.fbm.data.model.keyFileName
 import com.bitmark.fbm.data.source.local.api.DatabaseApi
 import com.bitmark.fbm.data.source.local.api.FileStorageApi
 import com.bitmark.fbm.data.source.local.api.SharedPrefApi
-import com.bitmark.fbm.data.source.local.event.NotificationStateChangedListener
+import com.bitmark.fbm.data.source.local.event.DataReadyListener
 import io.reactivex.Completable
 import javax.inject.Inject
 
@@ -26,26 +25,19 @@ class AppLocalDataSource @Inject constructor(
     fileStorageApi: FileStorageApi
 ) : LocalDataSource(databaseApi, sharedPrefApi, fileStorageApi) {
 
-    private var notificationStateChangedListener: NotificationStateChangedListener? = null
+    private var dataReadyListener: DataReadyListener? = null
 
-    internal fun setNotificationStateChangedListener(listener: NotificationStateChangedListener) {
-        this.notificationStateChangedListener = listener
+    internal fun setDataReadyListener(listener: DataReadyListener) {
+        this.dataReadyListener = listener
     }
 
     fun setNotificationEnabled(enabled: Boolean) =
         sharedPrefApi.rxCompletable { sharedPrefGateway ->
             sharedPrefGateway.put(SharedPrefApi.NOTIFICATION_ENABLED, enabled)
-        }.doOnComplete {
-            notificationStateChangedListener?.onNotificationStateChanged(enabled)
         }
 
     fun checkNotificationEnabled() = sharedPrefApi.rxSingle { sharedPrefGateway ->
-        if (sharedPrefGateway.has(SharedPrefApi.NOTIFICATION_ENABLED)) {
-            sharedPrefGateway.get(SharedPrefApi.NOTIFICATION_ENABLED, Boolean::class)
-        } else {
-            throw Resources.NotFoundException("missing ${SharedPrefApi.NOTIFICATION_ENABLED}")
-        }
-
+        sharedPrefGateway.get(SharedPrefApi.NOTIFICATION_ENABLED, Boolean::class)
     }
 
     fun checkDataReady() = sharedPrefApi.rxSingle { sharedPrefGateway ->
@@ -54,7 +46,7 @@ class AppLocalDataSource @Inject constructor(
 
     fun setDataReady() = sharedPrefApi.rxCompletable { sharedPrefGateway ->
         sharedPrefGateway.put(SharedPrefApi.DATA_READY, true)
-    }
+    }.doOnComplete { dataReadyListener?.onDataReady() }
 
     fun deleteDb() = databaseApi.rxCompletable { databaseGateway ->
         databaseGateway.locationDao().delete()

@@ -8,6 +8,6 @@ package com.bitmark.fbm.data.source.local.event
 
 interface AppDataChangedListener
 
-interface NotificationStateChangedListener : AppDataChangedListener {
-    fun onNotificationStateChanged(enable: Boolean)
+interface DataReadyListener : AppDataChangedListener {
+    fun onDataReady()
 }

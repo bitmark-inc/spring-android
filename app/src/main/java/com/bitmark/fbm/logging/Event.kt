@@ -46,6 +46,8 @@ enum class Event(val value: String) {
 
     ARCHIVE_UPLOAD_REGISTER_ACCOUNT_ERROR("archive_upload_register_account_error"),
 
+    ARCHIVE_STATUS_CHECK_ERROR("archive_status_check_error"),
+
     SPLASH_PREPARE_DATA_ERROR("splash_prepare_data_error"),
 
     SPLASH_VERSION_CHECK_ERROR("splash_version_check_error"),

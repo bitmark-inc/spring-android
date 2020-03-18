@@ -17,10 +17,7 @@ import com.bitmark.fbm.util.ext.decimalFormat
 import com.bitmark.fbm.util.ext.getDimensionPixelSize
 import com.bitmark.fbm.util.ext.gone
 import com.bitmark.fbm.util.ext.visible
-import com.bitmark.fbm.util.modelview.GroupModelView
-import com.bitmark.fbm.util.modelview.SectionModelView
-import com.bitmark.fbm.util.modelview.hasAnyGroupWithData
-import com.bitmark.fbm.util.modelview.hasAnyGroupWithFullData
+import com.bitmark.fbm.util.modelview.*
 import kotlinx.android.synthetic.main.layout_legend.view.*
 import kotlinx.android.synthetic.main.layout_section.view.*
 import kotlinx.android.synthetic.main.layout_section_header.view.*
@@ -72,8 +69,8 @@ class SectionView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             }
         }
 
-        val groups = section.groups
-        val isNoData = section.isNoData()
+        val groups = section.groups!!
+        val isNoData = section.isEmptyGroups()
         val isStatsSection = section.name == SectionName.STATS
         val defaultChildCount = if (isStatsSection && !isNoData) 2 else 1
 
@@ -90,8 +87,8 @@ class SectionView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 
             ivIcon1.visible()
             tvName1.visible()
-            if (section.hasAnyGroupWithData()) {
-                if (section.hasAnyGroupWithFullData()) {
+            if (section.hasAnyGroupWithData()!!) {
+                if (section.hasAnyGroupWithFullData()!!) {
                     ivIcon2.visible()
                     tvName2.visible()
                 } else {

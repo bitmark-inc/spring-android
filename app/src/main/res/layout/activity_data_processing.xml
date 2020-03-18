@@ -74,7 +74,7 @@
         android:layout_height="50dp"
         android:layout_marginStart="@dimen/dp_18"
         android:layout_marginEnd="@dimen/dp_18"
-        android:layout_marginBottom="@dimen/dp_2"
+        android:layout_marginBottom="34dp"
         android:background="@drawable/bg_cognac_stateful"
         android:fontFamily="@font/grotesk_regular_font_family"
         android:gravity="center"
@@ -83,24 +83,6 @@
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="@dimen/sp_18"
-        app:layout_constraintBottom_toTopOf="@id/btnViewInsights" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnViewInsights"
-        style="?android:attr/borderlessButtonStyle"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginStart="@dimen/dp_18"
-        android:layout_marginEnd="@dimen/dp_18"
-        android:layout_marginBottom="34dp"
-        android:background="@color/white"
-        android:fontFamily="@font/grotesk_regular_font_family"
-        android:gravity="center"
-        android:includeFontPadding="false"
-        android:text="@string/view_insights"
-        android:textAllCaps="false"
-        android:textColor="@color/color_cognac_stateful"
-        android:textSize="@dimen/sp_14"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 

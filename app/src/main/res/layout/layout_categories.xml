@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/concord" />
+
+    <RelativeLayout
+        android:id="@+id/layoutPost"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_68"
+        android:background="@color/white"
+        android:clickable="true"
+        android:focusable="true">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/dp_18"
+            android:fontFamily="@font/domaine_sans"
+            android:text="@string/posts"
+            android:textAllCaps="true"
+            android:textColor="@color/color_black_stateful"
+            android:textSize="@dimen/sp_22" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="@dimen/dp_12"
+            android:layout_height="@dimen/dp_12"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/dp_18"
+            app:srcCompat="@drawable/ic_next_period" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/concord" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layoutMedia"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_68"
+        android:background="@color/white"
+        android:clickable="true"
+        android:focusable="true">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/dp_18"
+            android:fontFamily="@font/domaine_sans"
+            android:text="@string/photos_videos"
+            android:textAllCaps="true"
+            android:textColor="@color/color_black_stateful"
+            android:textSize="@dimen/sp_22" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="@dimen/dp_12"
+            android:layout_height="@dimen/dp_12"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/dp_18"
+            app:srcCompat="@drawable/ic_next_period" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/concord" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layoutReaction"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_68"
+        android:background="@color/white"
+        android:clickable="true"
+        android:focusable="true">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/dp_18"
+            android:fontFamily="@font/domaine_sans"
+            android:text="@string/reactions"
+            android:textAllCaps="true"
+            android:textColor="@color/color_black_stateful"
+            android:textSize="@dimen/sp_22" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="@dimen/dp_12"
+            android:layout_height="@dimen/dp_12"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/dp_18"
+            app:srcCompat="@drawable/ic_next_period" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/concord" />
+
+    </RelativeLayout>
+
+</LinearLayout>

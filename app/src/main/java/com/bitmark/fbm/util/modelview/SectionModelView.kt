@@ -11,38 +11,40 @@ import kotlin.math.roundToInt
 
 
 data class SectionModelView(
-    val name: SectionName?,
-    val period: Period?,
-    val periodStartedAtSec: Long?,
-    val quantity: Int?,
-    val diffFromPrev: Int?,
-    val average: Int?,
-    val groups: List<GroupModelView>,
-    val value: Float?
+    val name: SectionName? = null,
+    val period: Period? = null,
+    val periodStartedAtSec: Long? = null,
+    val quantity: Int = 0,
+    val diffFromPrev: Int = 0,
+    val groups: List<GroupModelView>? = listOf(),
+    val value: Float? = null,
+    val income: Float? = null,
+    val incomeFrom: Long? = null,
+    val categories: List<String>? = null
 ) : ModelView {
     companion object {
 
-        private const val THRESHOLD_VALS_COUNT = 4
+        private const val MAX_GROUP_VALUE_COUNT = 4
 
-        fun newEmptyInstance() = SectionModelView(null, null, null, 0, null, 0, listOf(), null)
+        fun newEmptyInstance() = SectionModelView()
 
-        fun newDefaultInstance(
-            name: SectionName?,
-            period: Period?,
-            periodStartedAtSec: Long?
+        fun newInstance(
+            name: SectionName,
+            period: Period,
+            periodStartedAtSec: Long
         ) =
             SectionModelView(
-                name,
-                period,
-                periodStartedAtSec,
-                0,
-                null,
-                0,
-                listOf(),
-                null
+                name = name,
+                period = period,
+                periodStartedAtSec = periodStartedAtSec
             )
 
-        fun newInstance(sectionR: SectionR, avg: Int): SectionModelView {
+        fun newInstance(income: Float, incomeFrom: Long) =
+            SectionModelView(income = income, incomeFrom = incomeFrom)
+
+        fun newInstance(categories: List<String>) = SectionModelView(categories = categories)
+
+        fun newInstance(sectionR: SectionR): SectionModelView {
             val sectionName = sectionR.name
             val period = sectionR.period
             val quantity = sectionR.quantity
@@ -116,9 +118,9 @@ data class SectionModelView(
                     }
 
                     val needAggregate =
-                        groupName != GroupName.SUB_PERIOD && groupEntities.size > THRESHOLD_VALS_COUNT
+                        groupName != GroupName.SUB_PERIOD && groupEntities.size > MAX_GROUP_VALUE_COUNT
                     val topGroupEntities =
-                        if (needAggregate) groupEntities.take(THRESHOLD_VALS_COUNT) else groupEntities
+                        if (needAggregate) groupEntities.take(MAX_GROUP_VALUE_COUNT) else groupEntities
                     val topGroupEntries = topGroupEntities.map { g ->
                         val xVals = g.name
                         val yVals = FloatArray(typesCount) { 0f }
@@ -175,7 +177,6 @@ data class SectionModelView(
                 sectionR.periodStartedAtSec,
                 quantity,
                 (diffFromPrev * 100).roundToInt(),
-                avg,
                 groupModelViews,
                 sectionR.value
             )
@@ -214,29 +215,18 @@ data class SectionModelView(
             }
 
             return SectionModelView(
-                sectionName,
-                period,
-                periodStartedAtSec,
-                null,
-                null,
-                null,
-                groupModelViews,
-                null
+                name = sectionName,
+                period = period,
+                periodStartedAtSec = periodStartedAtSec,
+                groups = groupModelViews
             )
 
         }
     }
-
-    fun isNoData() = groups.isEmpty()
 }
 
-fun SectionModelView.order() = when (name) {
-    SectionName.SENTIMENT -> 0
-    SectionName.POST -> -1
-    SectionName.REACTION -> -2
-    else -> error("unsupported section name")
-}
+fun SectionModelView.isEmptyGroups() = groups!!.isEmpty()
 
-fun SectionModelView.hasAnyGroupWithFullData() = groups.any { g -> g.hasAnyWithFullData() }
+fun SectionModelView.hasAnyGroupWithFullData() = groups?.any { g -> g.hasAnyWithFullData() }
 
-fun SectionModelView.hasAnyGroupWithData() = groups.any { g -> g.hasAnyWithData() }
+fun SectionModelView.hasAnyGroupWithData() = groups?.any { g -> g.hasAnyWithData() }

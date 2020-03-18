@@ -48,9 +48,9 @@ class AppLifecycleHandler : Application.ActivityLifecycleCallbacks {
     override fun onActivityStarted(activity: Activity?) {
         if (++runningActivityCount == 1 && !isConfigChanged) {
             Tracer.INFO.log(TAG, "on foreground")
-            runningActivity = activity
             appStateChangedListeners.forEach { l -> l.onForeground() }
         }
+        runningActivity = activity
     }
 
     override fun onActivityDestroyed(activity: Activity?) {
@@ -65,8 +65,8 @@ class AppLifecycleHandler : Application.ActivityLifecycleCallbacks {
     override fun onActivityStopped(activity: Activity?) {
         isConfigChanged = activity?.isChangingConfigurations ?: false
         if (--runningActivityCount == 0 && !isConfigChanged) {
-            Tracer.INFO.log(TAG, "on background")
             runningActivity = null
+            Tracer.INFO.log(TAG, "on background")
             appStateChangedListeners.forEach { l -> l.onBackground() }
         }
     }

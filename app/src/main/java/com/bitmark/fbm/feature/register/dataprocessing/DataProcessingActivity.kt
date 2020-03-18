@@ -12,7 +12,6 @@ import com.bitmark.fbm.feature.BaseAppCompatActivity
 import com.bitmark.fbm.feature.BaseViewModel
 import com.bitmark.fbm.feature.Navigator
 import com.bitmark.fbm.feature.Navigator.Companion.RIGHT_LEFT
-import com.bitmark.fbm.feature.main.MainActivity
 import com.bitmark.fbm.feature.register.archiverequest.ArchiveRequestContainerActivity
 import com.bitmark.fbm.util.DateTimeUtil
 import com.bitmark.fbm.util.ext.setSafetyOnclickListener
@@ -70,11 +69,6 @@ class DataProcessingActivity : BaseAppCompatActivity() {
             val bundle = ArchiveRequestContainerActivity.getBundle(false, accountSeed)
             navigator.anim(RIGHT_LEFT)
                 .startActivityAsRoot(ArchiveRequestContainerActivity::class.java, bundle)
-        }
-
-        btnViewInsights.setSafetyOnclickListener {
-            val bundle = MainActivity.getBundle(accountSeed!!, true)
-            navigator.anim(RIGHT_LEFT).startActivityAsRoot(MainActivity::class.java, bundle)
         }
     }
 

@@ -91,10 +91,6 @@ enum class SectionName {
     REACTION,
 
     @Expose
-    @SerializedName("sentiment")
-    SENTIMENT,
-
-    @Expose
     @SerializedName("stats")
     STATS;
 
@@ -104,7 +100,6 @@ enum class SectionName {
 fun SectionName.Companion.fromString(name: String) = when (name) {
     "post" -> SectionName.POST
     "reaction" -> SectionName.REACTION
-    "sentiment" -> SectionName.SENTIMENT
     "stats" -> SectionName.STATS
     else -> error("invalid name")
 }
@@ -113,7 +108,6 @@ val SectionName.value: String
     get() = when (this) {
         SectionName.POST -> "post"
         SectionName.REACTION -> "reaction"
-        SectionName.SENTIMENT -> "sentiment"
         SectionName.STATS -> "stats"
     }
 

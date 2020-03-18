@@ -6,7 +6,6 @@
  */
 package com.bitmark.fbm.feature.main
 
-import android.app.AlarmManager
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
@@ -18,10 +17,6 @@ import com.bitmark.fbm.feature.connectivity.ConnectivityHandler
 import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_BROWSE
 import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_SETTINGS
 import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_SUMMARY
-import com.bitmark.fbm.feature.notification.buildSimpleNotificationBundle
-import com.bitmark.fbm.feature.notification.cancelNotification
-import com.bitmark.fbm.feature.notification.pushDailyRepeatingNotification
-import com.bitmark.fbm.feature.splash.SplashActivity
 import com.bitmark.fbm.feature.summary.SummaryContainerFragment
 import com.bitmark.fbm.logging.EventLogger
 import com.bitmark.fbm.util.Constants
@@ -100,7 +95,6 @@ class MainActivity : BaseAppCompatActivity() {
         account = Account.fromSeed(seed)
 
         viewModel.checkWaitingForArchive()
-        viewModel.checkNotificationPermissionRequested()
         viewModel.startArchiveIssuanceProcessor(account)
 
     }
@@ -116,10 +110,8 @@ class MainActivity : BaseAppCompatActivity() {
         vpAdapter = MainViewPagerAdapter(supportFragmentManager)
         viewPager.offscreenPageLimit = vpAdapter.count
         viewPager.adapter = vpAdapter
-        viewPager.setCurrentItem(TAB_SUMMARY, false)
-
-        bottomNav.setActiveItem(TAB_SUMMARY)
         bottomNav.setIndicatorWidth(screenWidth / vpAdapter.count.toFloat())
+        switchTab(TAB_SUMMARY)
 
         bottomNav.onItemSelected = { pos ->
             viewPager.setCurrentItem(pos, true)
@@ -176,37 +168,6 @@ class MainActivity : BaseAppCompatActivity() {
                     }
                 }
             })
-
-        viewModel.setNotificationEnabledLiveData.asLiveData().observe(this, Observer { res ->
-            when {
-
-                res.isSuccess() -> {
-                    scheduleNotification()
-                }
-
-                res.isError() -> {
-                    logger.logSharedPrefError(res.throwable(), "set notification enable error")
-                }
-            }
-        })
-
-        viewModel.checkNotificationPermissionRequestedLiveData.asLiveData()
-            .observe(this, Observer { res ->
-                when {
-                    res.isSuccess() -> {
-                        val requested = res.data()!!
-                        if (!requested) requestNotificationPermission()
-                    }
-
-                    res.isError() -> {
-                        logger.logSharedPrefError(
-                            res.throwable(),
-                            "check notification permission requested error"
-                        )
-                        requestNotificationPermission()
-                    }
-                }
-            })
     }
 
     private fun showNotification() {
@@ -222,36 +183,6 @@ class MainActivity : BaseAppCompatActivity() {
             Constants.UI_READY_DELAY
         )
 
-    }
-
-    private fun scheduleNotification() {
-        cancelNotification(this, Constants.REMINDER_NOTIFICATION_ID)
-        val bundle = buildSimpleNotificationBundle(
-            this,
-            R.string.spring,
-            R.string.just_remind_you,
-            Constants.REMINDER_NOTIFICATION_ID,
-            SplashActivity::class.java
-        )
-        pushDailyRepeatingNotification(
-            this,
-            bundle,
-            System.currentTimeMillis() + 3 * AlarmManager.INTERVAL_DAY,
-            Constants.REMINDER_NOTIFICATION_ID
-        )
-    }
-
-    private fun requestNotificationPermission() {
-        dialogController.confirm(
-            R.string.enable_push_notification,
-            R.string.allow_spring_send_you,
-            false,
-            "notification_request",
-            R.string.enable,
-            { viewModel.setNotificationEnabled(true) },
-            R.string.cancel,
-            { viewModel.setNotificationEnabled(false) }
-        )
     }
 
     override fun onResume() {
@@ -276,5 +207,17 @@ class MainActivity : BaseAppCompatActivity() {
             bottomNav.setActiveItem(TAB_SUMMARY, R.color.cognac)
             viewPager.setCurrentItem(TAB_SUMMARY, false)
         }
+    }
+
+    fun switchTab(pos: Int) {
+        val color = when (pos) {
+            TAB_SUMMARY -> R.color.cognac
+            TAB_BROWSE -> R.color.international_klein_blue
+            TAB_SETTINGS -> R.color.olive
+            else -> error("invalid tab pos")
+        }
+        viewPager.setCurrentItem(pos, false)
+        bottomNav.setActiveItem(pos)
+        bottomNav.setActiveColor(color)
     }
 }

@@ -8,10 +8,10 @@ package com.bitmark.fbm.feature.browse
 
 import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.data.source.AppRepository
-import com.bitmark.fbm.data.source.StatisticRepository
 import com.bitmark.fbm.di.FragmentScope
 import com.bitmark.fbm.feature.DialogController
 import com.bitmark.fbm.feature.Navigator
+import com.bitmark.fbm.feature.realtime.ArchiveStateBus
 import com.bitmark.fbm.feature.realtime.RealtimeBus
 import com.bitmark.fbm.util.livedata.RxLiveDataTransformer
 import dagger.Module
@@ -28,18 +28,18 @@ class BrowseModule {
     @FragmentScope
     fun provideViewModel(
         fragment: BrowseFragment,
-        statisticRepo: StatisticRepository,
         accountRepo: AccountRepository,
         appRepo: AppRepository,
         rxLiveDataTransformer: RxLiveDataTransformer,
-        realtimeBus: RealtimeBus
+        realtimeBus: RealtimeBus,
+        archiveStateBus: ArchiveStateBus
     ) = BrowseViewModel(
         fragment.lifecycle,
-        statisticRepo,
         accountRepo,
         appRepo,
         rxLiveDataTransformer,
-        realtimeBus
+        realtimeBus,
+        archiveStateBus
     )
 
     @Provides

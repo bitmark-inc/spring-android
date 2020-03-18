@@ -6,6 +6,7 @@
 
     <color name="cognac">#932C19</color>
     <color name="cognac_66">#66932C19</color>
+    <color name="cognac_80">#80932C19</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="black_66">#66000000</color>
@@ -16,6 +17,7 @@
     <color name="tundora">#444444</color>
     <color name="international_klein_blue">#0011AF</color>
     <color name="international_klein_blue_66">#660011AF</color>
+    <color name="international_klein_blue_80">#800011AF</color>
     <color name="olive">#6E8000</color>
     <color name="athens_gray">#EDF0F4</color>
     <color name="mercury">#E7E7E7</color>

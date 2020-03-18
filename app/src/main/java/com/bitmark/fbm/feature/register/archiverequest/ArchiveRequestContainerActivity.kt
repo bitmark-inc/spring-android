@@ -24,9 +24,16 @@ class ArchiveRequestContainerActivity : BaseAppCompatActivity() {
 
         private const val ACCOUNT_SEED = "account_seed"
 
-        fun getBundle(accountRegistered: Boolean = false, accountSeed: String? = null): Bundle {
+        private const val FIRST_LAUNCH = "first_launch"
+
+        fun getBundle(
+            accountRegistered: Boolean = false,
+            accountSeed: String? = null,
+            firstLaunch: Boolean = true
+        ): Bundle {
             val bundle = Bundle()
             bundle.putBoolean(ACCOUNT_REGISTERED, accountRegistered)
+            bundle.putBoolean(FIRST_LAUNCH, firstLaunch)
             if (accountSeed != null) bundle.putString(ACCOUNT_SEED, accountSeed)
             return bundle
         }
@@ -48,6 +55,8 @@ class ArchiveRequestContainerActivity : BaseAppCompatActivity() {
 
     private var accountSeed: String? = null
 
+    private var firstLaunch = true
+
     override fun layoutRes(): Int = R.layout.activity_archive_request_container
 
     override fun viewModel(): BaseViewModel? = viewModel
@@ -57,6 +66,7 @@ class ArchiveRequestContainerActivity : BaseAppCompatActivity() {
 
         accountRegistered = intent?.extras?.getBoolean(ACCOUNT_REGISTERED) ?: false
         accountSeed = intent?.extras?.getString(ACCOUNT_SEED)
+        firstLaunch = intent?.extras?.getBoolean(FIRST_LAUNCH) ?: true
 
         viewModel.getArchiveRequestedAt()
     }
@@ -83,7 +93,8 @@ class ArchiveRequestContainerActivity : BaseAppCompatActivity() {
                             ArchiveRequestFragment.newInstance(
                                 requestedAt = requestedAt,
                                 accountRegistered = accountRegistered,
-                                accountSeed = accountSeed
+                                accountSeed = accountSeed,
+                                firstLaunch = firstLaunch
                             ),
                             false
                         )
@@ -117,6 +128,12 @@ class ArchiveRequestContainerActivity : BaseAppCompatActivity() {
         } else {
             super.onBackPressed()
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.layoutRoot)
+        currentFragment?.onActivityResult(requestCode, resultCode, data)
     }
 
 }

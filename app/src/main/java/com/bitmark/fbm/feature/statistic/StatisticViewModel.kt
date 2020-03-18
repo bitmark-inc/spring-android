@@ -6,27 +6,22 @@
  */
 package com.bitmark.fbm.feature.statistic
 
-import android.content.res.Resources
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.MutableLiveData
 import com.bitmark.fbm.data.ext.onNetworkErrorReturn
+import com.bitmark.fbm.data.model.AccountData
 import com.bitmark.fbm.data.model.entity.*
 import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.data.source.AppRepository
 import com.bitmark.fbm.data.source.StatisticRepository
 import com.bitmark.fbm.feature.BaseViewModel
-import com.bitmark.fbm.feature.realtime.RealtimeBus
-import com.bitmark.fbm.util.ext.append
 import com.bitmark.fbm.util.ext.replace
 import com.bitmark.fbm.util.livedata.CompositeLiveData
 import com.bitmark.fbm.util.livedata.RxLiveDataTransformer
 import com.bitmark.fbm.util.modelview.SectionModelView
-import com.bitmark.fbm.util.modelview.order
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
 import io.reactivex.schedulers.Schedulers
-import java.util.*
 
 
 class StatisticViewModel(
@@ -34,21 +29,19 @@ class StatisticViewModel(
     private val statisticRepo: StatisticRepository,
     private val accountRepo: AccountRepository,
     private val appRepo: AppRepository,
-    private val rxLiveDataTransformer: RxLiveDataTransformer,
-    private val realtimeBus: RealtimeBus
+    private val rxLiveDataTransformer: RxLiveDataTransformer
 ) :
     BaseViewModel(lifecycle) {
 
-    internal val getDataLiveData =
-        CompositeLiveData<Pair<List<SectionModelView>, Boolean>>()
+    internal val getDataLiveData = CompositeLiveData<List<SectionModelView>>()
 
     internal val getLastActivityTimestamp = CompositeLiveData<Long>()
 
-    internal val setNotificationEnableLiveData = CompositeLiveData<Any>()
-
-    internal val notificationStateChangedLiveData = MutableLiveData<Boolean>()
+    internal val getAccountDataLiveData = CompositeLiveData<AccountData>()
 
     fun getData(period: Period, periodStartedAtSec: Long) {
+
+        // list usage stream
         val listUsageStream = appRepo.checkDataReady().flatMap { ready ->
             if (ready) {
                 statisticRepo.listUsageStatistic(period, periodStartedAtSec)
@@ -59,30 +52,20 @@ class StatisticViewModel(
                             usageStatistics.isEmpty() -> defaultVMs
                             usageStatistics.size == defaultVMs.size -> {
                                 usageStatistics.map { s ->
-                                    SectionModelView.newInstance(
-                                        s,
-                                        Random().nextInt(100)
-                                    )
+                                    SectionModelView.newInstance(s)
                                 }
                             }
                             else -> {
                                 val vms =
-                                    usageStatistics.map { s ->
-                                        SectionModelView.newInstance(
-                                            s,
-                                            Random().nextInt(100)
-                                        )
-                                    }
+                                    usageStatistics.map { s -> SectionModelView.newInstance(s) }
                                 for (i in 0 until defaultVMs.size) {
-                                    val vm =
-                                        vms.firstOrNull { v -> v.name == defaultVMs[i].name }
-                                            ?: continue
+                                    val vm = vms.firstOrNull { v -> v.name == defaultVMs[i].name }
+                                        ?: continue
                                     defaultVMs.replace(vm, i)
                                 }
                                 defaultVMs
                             }
                         }.toMutableList()
-                        vms.sortWith(Comparator { o1, o2 -> o2.order().compareTo(o1.order()) })
                         vms.toList()
                     }
             } else {
@@ -91,6 +74,7 @@ class StatisticViewModel(
 
         }
 
+        // system statistic stream
         val range = period.toPeriodRangeSec(periodStartedAtSec)
         val startedAt = range.first
         val endedAt = range.last
@@ -114,24 +98,47 @@ class StatisticViewModel(
             )
         }
 
+        // insight stream
+        val listAdsCategoryStream = accountRepo.listAdsPrefCategory()
+            .map { categories -> SectionModelView.newInstance(categories) }
+
+/*        val insightDataStream = appRepo.checkDataReady().flatMap { ready ->
+            if (ready) {
+                statisticRepo.getInsightData()
+            } else {
+                Single.just(InsightData.newDefaultInstance())
+            }
+        }.map { insightData ->
+            SectionModelView.newInstance(
+                insightData.fbIncome,
+                insightData.fbIncomeFrom
+            )
+        }*/
+
         getDataLiveData.add(
             rxLiveDataTransformer.single(
                 Single.zip(
                     listUsageStream,
                     systemStatisticStream,
-                    appRepo.checkNotificationEnabled().onErrorResumeNext { e ->
-                        if (e is Resources.NotFoundException) {
-                            Single.just(false)
-                        } else {
-                            Single.error(e)
+                    listAdsCategoryStream,
+                    /*insightDataStream,*/
+                    Function3<List<SectionModelView>, List<SectionModelView>, /*SectionModelView,*/ SectionModelView, List<SectionModelView>>
+                    { usageStatistics, systemStatistics, category/*, insights*/ ->
+                        val data = mutableListOf<SectionModelView>()
+
+                        data.addAll(systemStatistics)
+
+                        if (category.categories!!.isNotEmpty()) {
+                            data.add(category)
                         }
-                    },
-                    Function3<List<SectionModelView>, List<SectionModelView>, Boolean, Pair<List<SectionModelView>, Boolean>> { usageStatistics, systemStatistics, notificationEnabled ->
-                        val data = systemStatistics.toMutableList().append(usageStatistics)
-                        Pair(
-                            data,
-                            notificationEnabled
-                        )
+
+                        /*data.add(insights)*/
+
+                        data.addAll(usageStatistics)
+
+                        data.toList()
+
+                        data
                     })
             )
         )
@@ -139,12 +146,12 @@ class StatisticViewModel(
 
     private fun newDefaultUsages(period: Period, periodStartedAtSec: Long) =
         listOf(
-            SectionModelView.newDefaultInstance(
+            SectionModelView.newInstance(
                 SectionName.POST,
                 period,
                 periodStartedAtSec
             ),
-            SectionModelView.newDefaultInstance(
+            SectionModelView.newInstance(
                 SectionName.REACTION,
                 period,
                 periodStartedAtSec
@@ -160,25 +167,7 @@ class StatisticViewModel(
         )
     }
 
-    fun setNotificationEnable() {
-        setNotificationEnableLiveData.add(
-            rxLiveDataTransformer.completable(
-                appRepo.setNotificationEnabled(
-                    true
-                )
-            )
-        )
-    }
-
-    override fun onStart() {
-        super.onStart()
-        realtimeBus.notificationStateChangedPublisher.subscribe(this) { enable ->
-            notificationStateChangedLiveData.value = enable
-        }
-    }
-
-    override fun onDestroy() {
-        realtimeBus.unsubscribe(this)
-        super.onDestroy()
+    fun getAccountData() {
+        getAccountDataLiveData.add(rxLiveDataTransformer.single(accountRepo.getAccountData()))
     }
 }

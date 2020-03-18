@@ -6,7 +6,6 @@
  */
 package com.bitmark.fbm.feature.statistic
 
-import android.app.AlarmManager
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
@@ -19,28 +18,33 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bitmark.fbm.R
 import com.bitmark.fbm.data.ext.isServiceUnsupportedError
+import com.bitmark.fbm.data.model.AccountData
 import com.bitmark.fbm.data.model.entity.*
 import com.bitmark.fbm.feature.BaseSupportFragment
 import com.bitmark.fbm.feature.BaseViewModel
 import com.bitmark.fbm.feature.DialogController
 import com.bitmark.fbm.feature.Navigator
 import com.bitmark.fbm.feature.Navigator.Companion.RIGHT_LEFT
-import com.bitmark.fbm.feature.notification.buildSimpleNotificationBundle
-import com.bitmark.fbm.feature.notification.cancelNotification
-import com.bitmark.fbm.feature.notification.pushDailyRepeatingNotification
+import com.bitmark.fbm.feature.archiveuploading.service.UploadArchiveService
+import com.bitmark.fbm.feature.archiveuploading.service.UploadArchiveServiceHandler
+import com.bitmark.fbm.feature.main.MainActivity
+import com.bitmark.fbm.feature.main.MainViewPagerAdapter
 import com.bitmark.fbm.feature.postdetail.PostDetailFragment
 import com.bitmark.fbm.feature.reactiondetail.ReactionDetailFragment
-import com.bitmark.fbm.feature.splash.SplashActivity
+import com.bitmark.fbm.feature.register.archiverequest.ArchiveRequestContainerActivity
+import com.bitmark.fbm.feature.support.SupportActivity
 import com.bitmark.fbm.logging.Event
 import com.bitmark.fbm.logging.EventLogger
 import com.bitmark.fbm.logging.Tracer
 import com.bitmark.fbm.util.Constants
 import com.bitmark.fbm.util.DateTimeUtil
-import com.bitmark.fbm.util.ext.logSharedPrefError
+import com.bitmark.fbm.util.ext.*
 import com.bitmark.fbm.util.formatPeriod
 import com.bitmark.fbm.util.formatSubPeriod
 import com.bitmark.fbm.util.view.TopVerticalItemDecorator
 import com.bitmark.fbm.util.view.statistic.GroupView
+import com.bitmark.sdk.authentication.KeyAuthenticationSpec
+import com.bitmark.sdk.features.Account
 import kotlinx.android.synthetic.main.fragment_statistic.*
 import javax.inject.Inject
 import kotlin.math.abs
@@ -53,6 +57,9 @@ class StatisticFragment : BaseSupportFragment() {
         private const val TAG = "StatisticFragment"
 
         private const val PERIOD = "period"
+
+        private const val INCOME_QUATERLY_EARNING_URL =
+            "https://investor.fb.com/financials/?section=quarterlyearnings"
 
         fun newInstance(period: Period): StatisticFragment {
             val fragment = StatisticFragment()
@@ -75,6 +82,9 @@ class StatisticFragment : BaseSupportFragment() {
     @Inject
     internal lateinit var logger: EventLogger
 
+    @Inject
+    internal lateinit var serviceHandler: UploadArchiveServiceHandler
+
     private lateinit var period: Period
 
     private var currentStartedAtSec = -1L
@@ -83,9 +93,26 @@ class StatisticFragment : BaseSupportFragment() {
 
     private val handler = Handler()
 
-    private var dataPrepared = false
+    private var latestActivityTimestampReady = false
+
+    private var uploading = false
 
     private lateinit var adapter: StatisticRecyclerViewAdapter
+
+    private val uploadArchiveListener = object : UploadArchiveService.StateListener {
+        override fun onProgressChanged(fileName: String, byteRead: Long, byteTotal: Long) {
+            uploading = true
+        }
+
+        override fun onFinished() {
+            uploading = false
+            adapter.removeArchiveUploadSection()
+        }
+
+        override fun onError(e: Throwable) {
+            uploading = true
+        }
+    }
 
     override fun layoutRes(): Int = R.layout.fragment_statistic
 
@@ -104,14 +131,25 @@ class StatisticFragment : BaseSupportFragment() {
     override fun onResume() {
         super.onResume()
         handler.postDelayed({
-            viewModel.getData(period, currentStartedAtSec)
+            if (latestActivityTimestampReady) {
+                viewModel.getData(period, currentStartedAtSec)
+            } else {
+                viewModel.getLastActivityTimestamp()
+
+            }
         }, Constants.UI_READY_DELAY)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (!dataPrepared) viewModel.getLastActivityTimestamp()
+        serviceHandler.bind()
+        serviceHandler.setListener(uploadArchiveListener)
+    }
+
+    override fun onDestroyView() {
+        serviceHandler.unbind()
+        super.onDestroyView()
     }
 
     override fun initComponents() {
@@ -138,9 +176,22 @@ class StatisticFragment : BaseSupportFragment() {
         })
 
         adapter.setItemClickListener(object : StatisticRecyclerViewAdapter.ItemClickListener {
-            override fun onNotifyMeClicked() {
-                viewModel.setNotificationEnable()
+
+            override fun onIncomeInfoClicked() {
+                val bundle = SupportActivity.getBundle(
+                    getString(R.string.how_much_your_worth_to_fb),
+                    getString(R.string.avg_revenue_per_user),
+                    getString(R.string.quarterly_earning_reports),
+                    INCOME_QUATERLY_EARNING_URL,
+                    R.color.international_klein_blue
+                )
+                navigator.anim(RIGHT_LEFT).startActivity(SupportActivity::class.java, bundle)
             }
+
+            override fun onViewProgressClicked() {
+                (activity as? MainActivity)?.switchTab(MainViewPagerAdapter.TAB_BROWSE)
+            }
+
         })
 
         ivNextPeriod.setOnClickListener {
@@ -207,11 +258,15 @@ class StatisticFragment : BaseSupportFragment() {
         viewModel.getDataLiveData.asLiveData().observe(this, Observer { res ->
             when {
                 res.isSuccess() -> {
-                    val data = res.data() ?: return@Observer
-                    val stats = data.first
-                    val notificationEnabled = data.second
-                    if (stats.any { s -> s.periodStartedAtSec != null && s.periodStartedAtSec != currentStartedAtSec }) return@Observer
-                    adapter.set(stats, notificationEnabled)
+                    val summaryData = res.data()!!
+                    if (summaryData.any { s -> s.periodStartedAtSec != null && s.periodStartedAtSec != currentStartedAtSec }) return@Observer
+                    adapter.set(summaryData)
+
+                    if (uploading) {
+                        adapter.addArchiveUploadSection()
+                    } else {
+                        adapter.removeArchiveUploadSection()
+                    }
                 }
 
                 res.isError() -> {
@@ -234,7 +289,6 @@ class StatisticFragment : BaseSupportFragment() {
         viewModel.getLastActivityTimestamp.asLiveData().observe(this, Observer { res ->
             when {
                 res.isSuccess() -> {
-                    dataPrepared = true
                     val lastActivityMillis = res.data()!! * 1000
                     if (lastActivityMillis > 0) {
                         if (periodGap == 0) {
@@ -245,33 +299,60 @@ class StatisticFragment : BaseSupportFragment() {
                                 getStartOfPeriodSec(period, currentStartedAtSec, periodGap)
                             showPeriod(period, currentStartedAtSec, periodGap)
                         }
+                        latestActivityTimestampReady = true
                     }
-
                     viewModel.getData(period, currentStartedAtSec)
                 }
 
                 res.isError() -> {
                     logger.logSharedPrefError(res.throwable(), "check data ready error")
+                    dialogController.unexpectedAlert { navigator.openIntercom() }
                 }
             }
         })
 
-        viewModel.setNotificationEnableLiveData.asLiveData().observe(this, Observer { res ->
+        viewModel.getAccountDataLiveData.asLiveData().observe(this, Observer { res ->
             when {
                 res.isSuccess() -> {
-                    adapter.setNotificationEnable(true)
-                    scheduleNotification()
+                    val accountData = res.data()!!
+                    loadAccount(accountData) { account ->
+                        val bundle = ArchiveRequestContainerActivity.getBundle(
+                            true,
+                            account.seed.encodedSeed,
+                            false
+                        )
+                        navigator.startActivity(ArchiveRequestContainerActivity::class.java, bundle)
+                    }
                 }
 
                 res.isError() -> {
-                    logger.logSharedPrefError(res.throwable(), "set notification enable error")
+                    logger.logSharedPrefError(res.throwable())
+                    dialogController.unexpectedAlert { navigator.openIntercom() }
                 }
             }
         })
+    }
 
-        viewModel.notificationStateChangedLiveData.observe(this, Observer { enable ->
-            adapter.setNotificationEnable(enable)
-        })
+    private fun loadAccount(accountData: AccountData, action: (Account) -> Unit) {
+        val spec =
+            KeyAuthenticationSpec.Builder(context).setKeyAlias(accountData.keyAlias)
+                .setAuthenticationDescription(getString(R.string.your_authorization_is_required))
+                .setAuthenticationRequired(accountData.authRequired).build()
+        activity?.loadAccount(
+            accountData.id,
+            spec,
+            dialogController,
+            successAction = action,
+            setupRequiredAction = { navigator.gotoSecuritySetting() },
+            canceledAction = {
+                dialogController.showAuthRequired {
+                    loadAccount(accountData, action)
+                }
+            },
+            invalidErrorAction = { e ->
+                logger.logError(Event.ACCOUNT_LOAD_KEY_STORE_ERROR, e)
+                dialogController.alert(e) { navigator.exitApp() }
+            })
     }
 
     private fun calculateGap(
@@ -387,24 +468,6 @@ class StatisticFragment : BaseSupportFragment() {
             }
 
         }
-    }
-
-    private fun scheduleNotification() {
-        if (context == null) return
-        cancelNotification(context!!, Constants.REMINDER_NOTIFICATION_ID)
-        val bundle = buildSimpleNotificationBundle(
-            context!!,
-            R.string.spring,
-            R.string.just_remind_you,
-            Constants.REMINDER_NOTIFICATION_ID,
-            SplashActivity::class.java
-        )
-        pushDailyRepeatingNotification(
-            context!!,
-            bundle,
-            System.currentTimeMillis() + 3 * AlarmManager.INTERVAL_DAY,
-            Constants.REMINDER_NOTIFICATION_ID
-        )
     }
 
     private fun getStartOfPeriodSec(period: Period) = when (period) {

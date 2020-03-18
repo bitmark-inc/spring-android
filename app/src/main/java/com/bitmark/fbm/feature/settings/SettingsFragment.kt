@@ -208,6 +208,10 @@ class SettingsFragment : BaseSupportFragment() {
                 }
             }
         })
+
+        viewModel.dataReadyLiveData.observe(this, Observer {
+            tvDeleteData.isEnabled = true
+        })
     }
 
     private fun toastComingSoon() {

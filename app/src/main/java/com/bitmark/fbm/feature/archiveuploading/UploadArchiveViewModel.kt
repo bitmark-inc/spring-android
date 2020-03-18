@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import com.bitmark.cryptography.crypto.Sha3256
 import com.bitmark.cryptography.crypto.encoder.Hex
 import com.bitmark.cryptography.crypto.encoder.Raw
+import com.bitmark.fbm.data.model.AccountData
 import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.data.source.AppRepository
 import com.bitmark.fbm.feature.BaseViewModel
@@ -32,12 +33,12 @@ class UploadArchiveViewModel(
 
     internal val registerAccountLiveData = CompositeLiveData<Any>()
 
+    internal val getAccountDataLiveData = CompositeLiveData<AccountData>()
+
     fun uploadArchiveUrl(url: String) {
         uploadArchiveUrlLiveData.add(
             rxLiveDataTransformer.completable(
-                accountRepo.uploadArchiveUrl(
-                    url
-                )
+                accountRepo.uploadArchiveUrl(url).andThen(accountRepo.setArchiveUploaded())
             )
         )
     }
@@ -93,5 +94,9 @@ class UploadArchiveViewModel(
                     appRepo.registerNotificationService(accountData.id)
                 )
             }
+    }
+
+    fun getAccountData() {
+        getAccountDataLiveData.add(rxLiveDataTransformer.single(accountRepo.getAccountData()))
     }
 }

@@ -60,6 +60,9 @@ class ArchiveRequestFragment : BaseSupportFragment() {
 
         private const val ACCOUNT_SEED = "ACCOUNT_SEED"
 
+        // flag determine the screen is launched from the onboarding
+        private const val FIRST_LAUNCH = "first_launch"
+
         private val EXPECTED_PAGES = mapOf(
             Page.Name.LOGIN to listOf(
                 Page.Name.SAVE_DEVICE,
@@ -76,12 +79,14 @@ class ArchiveRequestFragment : BaseSupportFragment() {
         fun newInstance(
             requestedAt: Long = -1L,
             accountRegistered: Boolean = false,
-            accountSeed: String? = null
+            accountSeed: String? = null,
+            firstLaunch: Boolean = true
         ): ArchiveRequestFragment {
             val fragment = ArchiveRequestFragment()
             val bundle = Bundle()
             bundle.putLong(ARCHIVE_REQUESTED_AT, requestedAt)
             bundle.putBoolean(ACCOUNT_REGISTERED, accountRegistered)
+            bundle.putBoolean(FIRST_LAUNCH, firstLaunch)
             if (accountSeed != null) bundle.putString(ACCOUNT_SEED, accountSeed)
             fragment.arguments = bundle
             return fragment
@@ -127,6 +132,8 @@ class ArchiveRequestFragment : BaseSupportFragment() {
 
     private lateinit var automationScript: AutomationScriptData
 
+    private var firstLaunch = true
+
     override fun layoutRes(): Int = R.layout.fragment_archive_request
 
     override fun viewModel(): BaseViewModel? = null
@@ -135,6 +142,7 @@ class ArchiveRequestFragment : BaseSupportFragment() {
         super.onViewCreated(view, savedInstanceState)
         archiveRequestedAt = arguments?.getLong(ARCHIVE_REQUESTED_AT) ?: -1L
         registered = arguments?.getBoolean(ACCOUNT_REGISTERED) ?: false
+        firstLaunch = arguments?.getBoolean(FIRST_LAUNCH) ?: true
         val accountSeed = arguments?.getString(ACCOUNT_SEED)
         if (accountSeed != null) {
             account = Account.fromSeed(accountSeed)
@@ -171,7 +179,7 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                 if (newProgress >= 100) {
                     if (lastUrl == wv.url) return
                     lastUrl = wv.url
-                    handlePageLoaded(wv, script, registered, categoriesFetched)
+                    handlePageLoaded(wv, script, categoriesFetched)
                 }
             }
 
@@ -221,7 +229,6 @@ class ArchiveRequestFragment : BaseSupportFragment() {
     private fun handlePageLoaded(
         wv: WebView,
         script: AutomationScriptData,
-        registered: Boolean,
         categoriesFetched: Boolean
     ) {
         wv.detectPage(script.pages, tag = TAG, logger = logger) { name ->
@@ -238,7 +245,7 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                 reloadCount = 0 // reset after detect expected page
                 expectedPage = EXPECTED_PAGES[name]
 
-                if (registered || (isArchiveRequested() && !categoriesFetched)) {
+                if (isArchiveRequested() && !categoriesFetched) {
                     automateCategoriesFetching(wv, name, script)
                 } else {
                     automateAccountRegister(wv, name, script)
@@ -341,7 +348,11 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                             callback = { processing ->
                                 if (processing) {
                                     if (context == null) return@evaluateVerificationJs
-                                    goToMain(account!!.seed.encodedSeed)
+                                    if (firstLaunch) {
+                                        goToMain(account!!.seed.encodedSeed)
+                                    } else {
+                                        finish(true)
+                                    }
                                 } else {
                                     if (context != null) {
                                         cancelDailyRepeatingNotification(
@@ -492,7 +503,11 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                     registered = true
                     progressBar.gone()
                     blocked = false
-                    goToMain(account!!.seed.encodedSeed, true)
+                    if (firstLaunch) {
+                        goToMain(account!!.seed.encodedSeed, true)
+                    } else {
+                        finish(true)
+                    }
                 }
 
                 res.isError() -> {
@@ -533,8 +548,10 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                     } else {
                         // has bitmark account before
                         // maybe already had Spring account, maybe not
-                        if (registered) {
+                        if (registered && !firstLaunch) {
                             viewModel.registerJwt(account!!)
+                        } else if (firstLaunch) {
+                            finish(true)
                         } else {
                             saveAccount(account!!) { keyAlias ->
                                 viewModel.registerAccount(account!!, keyAlias)
@@ -609,7 +626,11 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                 res.isSuccess() -> {
                     progressBar.gone()
                     blocked = false
-                    goToMain(account!!.seed.encodedSeed)
+                    if (firstLaunch) {
+                        goToMain(account!!.seed.encodedSeed)
+                    } else {
+                        finish(true)
+                    }
                 }
 
                 res.isError() -> {
@@ -626,7 +647,7 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                         dialogController.alert(
                             R.string.error,
                             R.string.could_not_register_account
-                        ) { finish() }
+                        ) { navigator.openIntercom(true) }
                     }
                     blocked = false
                 }
@@ -644,9 +665,15 @@ class ArchiveRequestFragment : BaseSupportFragment() {
         navigator.anim(RIGHT_LEFT).startActivityAsRoot(MainActivity::class.java, bundle)
     }
 
-    private fun finish() = navigator.anim(RIGHT_LEFT).popFragment()
+    private fun finish(withResult: Boolean = false) =
+        if (withResult) {
+            navigator.anim(RIGHT_LEFT).finishActivityForResult()
+        } else {
+            navigator.anim(RIGHT_LEFT).finishActivity()
+        }
 
     override fun onBackPressed(): Boolean {
-        return finish()
+        finish()
+        return true
     }
 }

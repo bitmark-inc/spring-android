@@ -7,20 +7,21 @@
 package com.bitmark.fbm.feature.realtime
 
 import com.bitmark.fbm.data.source.AppRepository
-import com.bitmark.fbm.data.source.local.event.NotificationStateChangedListener
+import com.bitmark.fbm.data.source.local.event.DataReadyListener
 import com.bitmark.fbm.util.Bus
 import io.reactivex.subjects.PublishSubject
 
 
-class RealtimeBus(appRepo: AppRepository) : Bus(), NotificationStateChangedListener {
+class RealtimeBus(appRepo: AppRepository) : Bus(), DataReadyListener {
 
-    val notificationStateChangedPublisher = Publisher(PublishSubject.create<Boolean>())
+    val dataReadyPublisher = Publisher(PublishSubject.create<Any>())
 
     init {
-        appRepo.setNotificationStateChangedListener(this)
+        appRepo.setDataReadyListener(this)
     }
 
-    override fun onNotificationStateChanged(enable: Boolean) {
-        notificationStateChangedPublisher.publisher.onNext(enable)
+    override fun onDataReady() {
+        dataReadyPublisher.publisher.onNext(Any())
     }
+
 }

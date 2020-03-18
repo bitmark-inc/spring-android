@@ -24,6 +24,7 @@ class SharedPrefApi @Inject constructor(context: Context) {
         const val INSIGHT_DATA = "insight_data"
         const val LAST_VERSION_CODE = "last_version_code"
         const val LINK_CLICKED = "linked_clicked"
+        const val ARCHIVE_UPLOADED = "archive_uploaded"
     }
 
     private val sharePrefGateway = SharedPrefGateway(context)

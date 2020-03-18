@@ -83,6 +83,9 @@ class AccountRepository(
     fun listProcessedArchive() =
         remoteDataSource.getArchives().map { archives -> archives.filter { a -> a.isProcessed() } }
 
+    fun checkArchivesEmptyOrInvalid() =
+        remoteDataSource.getArchives().map { archives -> archives.isEmpty() || archives.none { a -> a.isValid() } }
+
     fun saveAccountKeyData(alias: String, authRequired: Boolean) =
         localDataSource.saveAccountKeyAlias(alias, authRequired)
 
@@ -117,4 +120,8 @@ class AccountRepository(
         progress: (Pair<Long, Long>) -> Unit
     ) =
         remoteDataSource.uploadArchive(fileInputStream, fileSize, progress)
+
+    fun setArchiveUploaded() = localDataSource.setArchiveUploaded()
+
+    fun checkArchiveUploaded() = localDataSource.checkArchiveUploaded()
 }

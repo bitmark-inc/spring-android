@@ -74,12 +74,15 @@ class AccountLocalDataSource @Inject constructor(
         }
 
     fun listAdsPrefCategory() = sharedPrefApi.rxSingle { sharedPrefGateway ->
-        newGsonInstance().fromJson<List<String>>(
-            sharedPrefGateway.get(
-                SharedPrefApi.FB_ADS_PREF_CATEGORIES,
-                String::class
-            )
+        val categories = sharedPrefGateway.get(
+            SharedPrefApi.FB_ADS_PREF_CATEGORIES,
+            String::class
         )
+        if (categories.isEmpty()) {
+            listOf()
+        } else {
+            newGsonInstance().fromJson<List<String>>(categories)
+        }
     }
 
     fun checkAdsPrefCategoryReady() = sharedPrefApi.rxSingle { sharedPrefGateway ->
@@ -87,6 +90,14 @@ class AccountLocalDataSource @Inject constructor(
             SharedPrefApi.FB_ADS_PREF_CATEGORIES,
             String::class
         ) != ""
+    }
+
+    fun setArchiveUploaded() = sharedPrefApi.rxCompletable { sharedPrefGateway ->
+        sharedPrefGateway.put(SharedPrefApi.ARCHIVE_UPLOADED, true)
+    }
+
+    fun checkArchiveUploaded() = sharedPrefApi.rxSingle { sharedPrefGateway ->
+        sharedPrefGateway.get(SharedPrefApi.ARCHIVE_UPLOADED, Boolean::class)
     }
 
 }
