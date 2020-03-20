@@ -23,6 +23,8 @@ import com.bitmark.fbm.feature.archiveuploading.UploadType
 import com.bitmark.fbm.feature.archiveuploading.service.UploadArchiveService
 import com.bitmark.fbm.feature.archiveuploading.service.UploadArchiveServiceHandler
 import com.bitmark.fbm.feature.realtime.ArchiveStateBus
+import com.bitmark.fbm.feature.usagetimeline.UsageTimelineContainerFragment
+import com.bitmark.fbm.feature.usagetimeline.UsageType
 import com.bitmark.fbm.logging.EventLogger
 import com.bitmark.fbm.util.DateTimeUtil
 import com.bitmark.fbm.util.ext.*
@@ -122,11 +124,26 @@ class BrowseFragment : BaseSupportFragment() {
             openUploadArchive()
         }
 
-        layoutPost.setSafetyOnclickListener { }
+        layoutPost.setSafetyOnclickListener {
+            navigator.anim(RIGHT_LEFT).replaceChildFragment(
+                R.id.layoutContainer,
+                UsageTimelineContainerFragment.newInstance(UsageType.POST)
+            )
+        }
 
-        layoutMedia.setSafetyOnclickListener { }
+        layoutMedia.setSafetyOnclickListener {
+            navigator.anim(RIGHT_LEFT).replaceChildFragment(
+                R.id.layoutContainer,
+                UsageTimelineContainerFragment.newInstance(UsageType.MEDIA)
+            )
+        }
 
-        layoutReaction.setSafetyOnclickListener { }
+        layoutReaction.setSafetyOnclickListener {
+            navigator.anim(RIGHT_LEFT).replaceChildFragment(
+                R.id.layoutContainer,
+                UsageTimelineContainerFragment.newInstance(UsageType.REACTION)
+            )
+        }
 
         archiveStateBus.addActionClickListener(actionClickListener)
     }

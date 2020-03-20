@@ -232,6 +232,7 @@ class StatisticFragment : BaseSupportFragment() {
                     Period.WEEK -> R.string.this_week
                     Period.YEAR -> R.string.this_year
                     Period.DECADE -> R.string.this_decade
+                    else -> error("unsupported period")
                 }
             )
         } else {
@@ -241,6 +242,7 @@ class StatisticFragment : BaseSupportFragment() {
                     Period.WEEK -> if (plural) R.string.last_week_format_plural else R.string.last_week
                     Period.YEAR -> if (plural) R.string.last_year_format_plural else R.string.last_year
                     Period.DECADE -> if (plural) R.string.last_decade_format_plural else R.string.last_decade
+                    else -> error("unsupported period")
                 }
             ).format(abs(periodGap))
         }
@@ -364,6 +366,7 @@ class StatisticFragment : BaseSupportFragment() {
             Period.WEEK -> DateTimeUtil.getDateRangeOfWeek(startOfPeriodMillis)
             Period.YEAR -> DateTimeUtil.getDateRangeOfYear(startOfPeriodMillis)
             Period.DECADE -> DateTimeUtil.getDateRangeOfDecade(startOfPeriodMillis)
+            else -> error("unsupported period")
         }
         val periodMillisRange = Range(periodDateRange.first.time, periodDateRange.second.time)
         return if (lastActivityMillis in periodMillisRange) {
@@ -374,6 +377,7 @@ class StatisticFragment : BaseSupportFragment() {
                 Period.WEEK -> (gapMillis / DateTimeUtil.WEEK_MILLIS + 1).toInt()
                 Period.YEAR -> (gapMillis / DateTimeUtil.YEAR_MILLIS + 1).toInt()
                 Period.DECADE -> (gapMillis / DateTimeUtil.DECADE_MILLIS + 1).toInt()
+                else -> error("unsupported period")
             }
             if (lastActivityMillis < periodMillisRange.lower) -gap else gap
         }
@@ -386,6 +390,7 @@ class StatisticFragment : BaseSupportFragment() {
             Period.WEEK -> DateTimeUtil.getEndOfWeekMillis(periodStartedAtMillis)
             Period.YEAR -> DateTimeUtil.getEndOfYearMillis(periodStartedAtMillis)
             Period.DECADE -> DateTimeUtil.getEndOfDecadeMillis(periodStartedAtMillis)
+            else -> error("unsupported period")
         } / 1000
         val startedAtSec = currentStartedAtSec
 
@@ -474,6 +479,7 @@ class StatisticFragment : BaseSupportFragment() {
         Period.WEEK -> DateTimeUtil.getStartOfThisWeekMillis()
         Period.YEAR -> DateTimeUtil.getStartOfThisYearMillis()
         Period.DECADE -> DateTimeUtil.getStartOfThisDecadeMillis()
+        else -> error("unsupported period")
     } / 1000
 
     private fun getStartOfPeriodSec(period: Period, sec: Long, gap: Int): Long {
@@ -482,6 +488,7 @@ class StatisticFragment : BaseSupportFragment() {
             Period.WEEK -> DateTimeUtil.getStartOfWeekMillis(millis, gap)
             Period.YEAR -> DateTimeUtil.getStartOfYearMillis(millis, gap)
             Period.DECADE -> DateTimeUtil.getStartOfDecadeMillis(millis, gap)
+            else -> error("unsupported period")
         } / 1000
     }
 

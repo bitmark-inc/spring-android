@@ -362,7 +362,16 @@ class UsageRepository(
         var loopEndedSec = endedAtSec
         val streamFun =
             fun(startedAtSec: Long, endedAtSec: Long, thresholdEndedAt: Long) =
-                remoteDataSource.listReaction(startedAtSec, endedAtSec).flatMap { remoteReactions ->
+                remoteDataSource.listReaction(
+                    startedAtSec,
+                    endedAtSec
+                ).onNetworkErrorResumeNext {
+                    localDataSource.listReaction(
+                        startedAtSec,
+                        endedAtSec,
+                        limit
+                    )
+                }.flatMap { remoteReactions ->
                     if (remoteReactions.isEmpty()) {
                         Single.just(Pair(listOf(), listOf()))
                     } else {
@@ -514,5 +523,21 @@ class UsageRepository(
             })
         }
     }
+
+    fun listMedia(startedAtSec: Long, endedAtSec: Long, limit: Int = 100) =
+        localDataSource.checkMediaStored(startedAtSec, endedAtSec).flatMap { stored ->
+            if (stored) {
+                localDataSource.listMedia(startedAtSec, endedAtSec, limit)
+            } else {
+                remoteDataSource.listMedia(startedAtSec, endedAtSec).flatMap { media ->
+                    localDataSource.saveMedia(media)
+                        .andThen(localDataSource.saveMediaCriteria(startedAtSec, endedAtSec))
+                        .andThen(Single.just(media))
+                }
+            }
+        }.onNetworkErrorResumeNext { localDataSource.listMedia(startedAtSec, endedAtSec, limit) }
+
+    fun updateThumbnailUri(mediaId: String, thumbnailUri: String) =
+        localDataSource.updateThumbnailUri(mediaId, thumbnailUri)
 
 }

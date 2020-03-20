@@ -18,6 +18,7 @@ import com.bitmark.fbm.data.model.entity.StatsType
 import com.bitmark.fbm.data.model.entity.value
 import com.bitmark.fbm.data.source.local.api.Migration.Companion.MIGRATION_1_2
 import com.bitmark.fbm.data.source.local.api.Migration.Companion.MIGRATION_2_3
+import com.bitmark.fbm.data.source.local.api.Migration.Companion.MIGRATION_3_4
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -211,5 +212,89 @@ class MigrationTest : BaseTest() {
 
         database.close()
 
+    }
+
+    @Test
+    fun testMigrate3_4() {
+        val database = migrationTestHelper.createDatabase(DB_TEST, 3)
+        val values = ContentValues()
+
+        // insert post
+        values.put("id", "test_id_1")
+        values.put("content", "content")
+        values.put("timestamp", 315532800L)
+        values.put("title", "title")
+        values.put("type", PostType.UPDATE.value)
+        database.insert("Post", SQLiteDatabase.CONFLICT_IGNORE, values)
+        values.clear()
+
+        // insert reaction
+        values.put("id", "test_id_1")
+        values.put("actor", "actor")
+        values.put("reaction", Reaction.LOVE.value)
+        values.put("timestamp", 315532800L)
+        values.put("title", "title")
+        database.insert("Reaction", SQLiteDatabase.CONFLICT_IGNORE, values)
+        values.clear()
+
+        // migrate to ver 4
+        migrationTestHelper.runMigrationsAndValidate(
+            DB_TEST,
+            4,
+            true,
+            MIGRATION_3_4
+        )
+
+        // insert media
+        values.put("id", "test_id_1")
+        values.put("uri", "content://test.uri")
+        values.put("source_uri", "https://source.com")
+        values.put("thumbnail_uri", "https://thumbnail.com")
+        values.put("extension", "jpg")
+        values.put("timestamp", 315532800L)
+        database.insert("Media", SQLiteDatabase.CONFLICT_IGNORE, values)
+        values.clear()
+
+        // verify media is saved
+        var cursor = database.query(
+            "SELECT * FROM Media WHERE timestamp BETWEEN ? AND ? LIMIT 1",
+            arrayOf(0L, System.currentTimeMillis() / 1000)
+        )
+
+        assertTrue(cursor != null)
+        assertTrue(cursor.moveToFirst())
+
+        val id = cursor.getString(cursor.getColumnIndexOrThrow("id"))
+        assertEquals("test_id_1", id)
+        cursor.close()
+
+        // verify post is saved
+        cursor = database.query(
+            "SELECT * FROM Post WHERE timestamp BETWEEN ? AND ? ORDER BY timestamp DESC LIMIT 1",
+            arrayOf(315532800L, System.currentTimeMillis() / 1000)
+        )
+
+        assertTrue(cursor != null)
+        assertTrue(cursor.moveToFirst())
+
+        var timestamp = cursor.getLong(cursor.getColumnIndexOrThrow("timestamp"))
+        assertEquals(315532800L, timestamp)
+        cursor.close()
+
+        // verify reaction is saved
+
+        cursor = database.query(
+            "SELECT * FROM Reaction WHERE timestamp BETWEEN ? AND ? ORDER BY timestamp DESC LIMIT 1",
+            arrayOf(315532800L, System.currentTimeMillis() / 1000)
+        )
+
+        assertTrue(cursor != null)
+        assertTrue(cursor.moveToFirst())
+
+        timestamp = cursor.getLong(cursor.getColumnIndexOrThrow("timestamp"))
+        assertEquals(315532800L, timestamp)
+        cursor.close()
+
+        database.close()
     }
 }

@@ -236,6 +236,7 @@
     <string name="upload_your_fb_info">Upload your Facebook Information Archive to browse, search, and share your Facebook data.</string>
     <string name="sign_out">Sign out</string>
     <string name="pls_do_so_now">please do so now</string>
+    <string name="month">Month</string>
 
     <string-array name="day_of_week">
         <item>S</item>

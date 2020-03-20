@@ -160,6 +160,10 @@ enum class Period {
     WEEK,
 
     @Expose
+    @SerializedName("month")
+    MONTH,
+
+    @Expose
     @SerializedName("year")
     YEAR,
 
@@ -172,6 +176,7 @@ enum class Period {
 
 fun Period.Companion.fromString(period: String) = when (period) {
     "week" -> Period.WEEK
+    "month" -> Period.MONTH
     "year" -> Period.YEAR
     "decade" -> Period.DECADE
     else -> throw IllegalArgumentException("invalid period")
@@ -180,6 +185,7 @@ fun Period.Companion.fromString(period: String) = when (period) {
 val Period.value: String
     get() = when (this) {
         Period.WEEK -> "week"
+        Period.MONTH -> "month"
         Period.YEAR -> "year"
         Period.DECADE -> "decade"
     }
@@ -189,6 +195,7 @@ fun Period.toSubPeriodRangeSec(startedAtSec: Long) = LongRange(
         Period.WEEK -> DateTimeUtil.getEndOfDateMillis(startedAtSec * 1000)
         Period.YEAR -> DateTimeUtil.getEndOfMonthMillis(startedAtSec * 1000)
         Period.DECADE -> DateTimeUtil.getEndOfYearMillis(startedAtSec * 1000)
+        else -> error("unsupported now")
     } / 1000
 )
 
@@ -197,6 +204,7 @@ fun Period.toPeriodRangeSec(startedAtSec: Long) = LongRange(
         Period.WEEK -> DateTimeUtil.getEndOfWeekMillis(startedAtSec * 1000)
         Period.YEAR -> DateTimeUtil.getEndOfYearMillis(startedAtSec * 1000)
         Period.DECADE -> DateTimeUtil.getEndOfDecadeMillis(startedAtSec * 1000)
+        else -> error("unsupported now")
     } / 1000
 )
 
@@ -204,4 +212,5 @@ fun Period.toSubPeriodCollectionSec(startedAtSec: Long) = when (this) {
     Period.WEEK -> DateTimeUtil.getStartOfDatesMillisInWeek(startedAtSec * 1000)
     Period.YEAR -> DateTimeUtil.getStartOfDatesMillisInYear(startedAtSec * 1000)
     Period.DECADE -> DateTimeUtil.getStartOfDatesMillisInDecade(startedAtSec * 1000)
+    else -> error("unsupported now")
 }.map { it / 1000 }

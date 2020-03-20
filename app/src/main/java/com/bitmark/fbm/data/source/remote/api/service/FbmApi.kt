@@ -7,10 +7,7 @@
 package com.bitmark.fbm.data.source.remote.api.service
 
 import com.bitmark.fbm.data.model.*
-import com.bitmark.fbm.data.model.entity.PostR
-import com.bitmark.fbm.data.model.entity.ReactionR
-import com.bitmark.fbm.data.model.entity.SectionR
-import com.bitmark.fbm.data.model.entity.Stats
+import com.bitmark.fbm.data.model.entity.*
 import com.bitmark.fbm.data.source.remote.api.request.ArchiveRequestPayload
 import com.bitmark.fbm.data.source.remote.api.request.ArchiveUploadRequest
 import com.bitmark.fbm.data.source.remote.api.request.RegisterJwtRequest
@@ -86,4 +83,7 @@ interface FbmApi {
 
     @POST("api/archives/url")
     fun uploadArchiveUrl(@Body request: ArchiveUploadRequest): Completable
+
+    @GET("api/photos_and_videos")
+    fun listMedia(@Query("started_at") startedAt: Long?, @Query("ended_at") endedAt: Long?, @Query("limit") limit: Int): Single<Map<String, List<MediaR>>>
 }

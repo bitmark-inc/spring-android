@@ -40,6 +40,8 @@ class DateTimeUtil {
 
         val DATE_FORMAT_11 = "MMM dd, yyyy"
 
+        val DATE_FORMAT_12 = "MMMM"
+
         val DATE_TIME_FORMAT_1 = "MMM dd hh:mm a"
 
         val TIME_FORMAT_1 = "hh:mm a"
@@ -320,6 +322,7 @@ fun DateTimeUtil.Companion.formatPeriod(
                 dateToString(range.second, DATE_FORMAT_8, timezone)
             )
         }
+        else -> error("unsupported period")
     }
 }
 
@@ -334,5 +337,6 @@ fun DateTimeUtil.Companion.formatSubPeriod(
         Period.WEEK -> millisToString(startedTimeMillis, DATE_FORMAT_10, timezone)
         Period.YEAR -> millisToString(startedTimeMillis, DATE_FORMAT_9, timezone)
         Period.DECADE -> millisToString(startedTimeMillis, DATE_FORMAT_8, timezone)
+        else -> error("unsupported period")
     }
 }

@@ -45,23 +45,26 @@ data class CriteriaR(
 enum class CriteriaType {
     STATISTIC,
     POST,
-    REACTION;
+    REACTION,
+    MEDIA;
 
     companion object
 }
 
 fun CriteriaType.Companion.fromString(type: String) = when (type) {
     "statistic" -> CriteriaType.STATISTIC
-    "post"      -> CriteriaType.POST
-    "reaction"  -> CriteriaType.REACTION
-    else        -> error("unsupported type: $type")
+    "post" -> CriteriaType.POST
+    "reaction" -> CriteriaType.REACTION
+    "media" -> CriteriaType.MEDIA
+    else -> error("unsupported type: $type")
 }
 
 val CriteriaType.value: String
     get() = when (this) {
-        CriteriaType.POST      -> "post"
-        CriteriaType.REACTION  -> "reaction"
+        CriteriaType.POST -> "post"
+        CriteriaType.REACTION -> "reaction"
         CriteriaType.STATISTIC -> "statistic"
+        CriteriaType.MEDIA -> "media"
     }
 
 fun CriteriaR.Companion.fromStatisticWType(type: String, startedAt: Long, endedAt: Long) =
@@ -122,4 +125,12 @@ fun CriteriaR.Companion.fromReactionWType(type: Reaction, startedAt: Long, ended
         startedAt = startedAt,
         endedAt = endedAt,
         query = "${CriteriaType.REACTION.value}?started_at=$startedAt&ended_at=$endedAt&type=${type.value}"
+    )
+
+fun CriteriaR.Companion.fromMediaWRange(startedAt: Long, endedAt: Long) =
+    CriteriaR(
+        type = CriteriaType.MEDIA,
+        startedAt = startedAt,
+        endedAt = endedAt,
+        query = "${CriteriaType.MEDIA.value}?started_at=$startedAt&ended_at=$endedAt"
     )

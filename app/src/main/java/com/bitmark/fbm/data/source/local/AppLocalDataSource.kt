@@ -56,6 +56,7 @@ class AppLocalDataSource @Inject constructor(
         databaseGateway.reactionDao().delete()
         databaseGateway.criteriaDao().delete()
         databaseGateway.statsDao().delete()
+        databaseGateway.mediaDao().delete()
     }
 
     fun deleteSharePref(keepAccountData: Boolean = false) =

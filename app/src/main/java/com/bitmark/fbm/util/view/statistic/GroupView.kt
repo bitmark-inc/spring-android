@@ -93,6 +93,7 @@ class GroupView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                             Period.WEEK -> R.string.by_day
                             Period.YEAR -> R.string.by_month
                             Period.DECADE -> R.string.by_year
+                            else -> error("unsupported period")
                         }
                         GroupName.FRIEND -> R.string.by_friends_tagged
                         GroupName.PLACE -> R.string.by_place_tagged
@@ -106,6 +107,7 @@ class GroupView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                             Period.WEEK -> R.string.by_day
                             Period.YEAR -> R.string.by_month
                             Period.DECADE -> R.string.by_year
+                            else -> error("unsupported period")
                         }
                         GroupName.FRIEND -> R.string.by_friend
                         else -> error("invalid group name")
@@ -352,6 +354,7 @@ class GroupView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                         Period.DECADE -> {
                             DateTimeUtil.getYear(periodStartedAt).toString().takeLast(2)
                         }
+                        else -> error("unsupported period")
                     }
                 }
             }

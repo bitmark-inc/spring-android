@@ -34,6 +34,10 @@ import com.bitmark.fbm.feature.unlink.notice.UnlinkNoticeFragment
 import com.bitmark.fbm.feature.unlink.notice.UnlinkNoticeModule
 import com.bitmark.fbm.feature.unlink.unlink.UnlinkFragment
 import com.bitmark.fbm.feature.unlink.unlink.UnlinkModule
+import com.bitmark.fbm.feature.usagetimeline.UsageTimelineContainerFragment
+import com.bitmark.fbm.feature.usagetimeline.UsageTimelineContainerModule
+import com.bitmark.fbm.feature.usagetimeline.UsageTimelineFragment
+import com.bitmark.fbm.feature.usagetimeline.UsageTimelineModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -95,5 +99,13 @@ abstract class FragmentBuilderModule {
     @ContributesAndroidInjector(modules = [SettingsContainerModule::class])
     @FragmentScope
     internal abstract fun bindSettingsContainerFragment(): SettingsContainerFragment
+
+    @ContributesAndroidInjector(modules = [UsageTimelineContainerModule::class])
+    @FragmentScope
+    internal abstract fun bindUsageTimelineContainerFragment(): UsageTimelineContainerFragment
+
+    @ContributesAndroidInjector(modules = [UsageTimelineModule::class])
+    @FragmentScope
+    internal abstract fun bindUsageTimelineFragment(): UsageTimelineFragment
 
 }

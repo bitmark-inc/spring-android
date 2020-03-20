@@ -26,18 +26,12 @@ abstract class EndlessScrollListener private constructor() :
 
     private lateinit var layoutManager: RecyclerView.LayoutManager
 
-    constructor(layoutManager: LinearLayoutManager) : this() {
+    constructor(layoutManager: RecyclerView.LayoutManager) : this() {
         this.layoutManager = layoutManager
-    }
-
-    constructor(layoutManager: GridLayoutManager) : this() {
-        this.layoutManager = layoutManager
-        visibleThreshold *= layoutManager.spanCount
-    }
-
-    constructor(layoutManager: StaggeredGridLayoutManager) : this() {
-        this.layoutManager = layoutManager
-        visibleThreshold *= layoutManager.spanCount
+        if (layoutManager is GridLayoutManager || layoutManager is StaggeredGridLayoutManager) {
+            visibleThreshold *= (layoutManager as? GridLayoutManager)?.spanCount
+                ?: (layoutManager as? StaggeredGridLayoutManager)?.spanCount ?: return
+        }
     }
 
     fun getLastVisibleItem(lastVisibleItemPositions: IntArray): Int {

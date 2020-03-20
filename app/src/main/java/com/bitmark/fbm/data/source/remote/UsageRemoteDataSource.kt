@@ -20,15 +20,26 @@ class UsageRemoteDataSource @Inject constructor(
 ) : RemoteDataSource(fbmApi, converter, rxErrorHandlingComposer) {
 
     fun listPost(startedAtSec: Long, endedAtSec: Long) =
-        fbmApi.listPost(startedAtSec, endedAtSec).map { res -> res["result"] }.subscribeOn(Schedulers.io())
+        fbmApi.listPost(startedAtSec, endedAtSec).map { res ->
+            res["result"] ?: error("invalid response")
+        }.subscribeOn(
+            Schedulers.io()
+        )
 
     fun listReaction(startedAtSec: Long, endedAtSec: Long) =
-        fbmApi.listReaction(startedAtSec, endedAtSec).map { res -> res["result"] }.subscribeOn(
+        fbmApi.listReaction(startedAtSec, endedAtSec).map { res ->
+            res["result"] ?: error("invalid response")
+        }.subscribeOn(
             Schedulers.io()
         )
 
     fun getPresignedUrl(uri: String) =
         fbmApi.getPresignedUrl(uri).map { res ->
             res.headers()["Location"] ?: error("Could not get presigned URL")
+        }.subscribeOn(Schedulers.io())
+
+    fun listMedia(startedAtSec: Long?, endedAtSec: Long?, limit: Int = 100) =
+        fbmApi.listMedia(startedAtSec, endedAtSec, limit).map { res ->
+            res["result"] ?: error("invalid response")
         }.subscribeOn(Schedulers.io())
 }

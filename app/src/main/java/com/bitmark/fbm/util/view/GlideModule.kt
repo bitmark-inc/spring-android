@@ -28,13 +28,17 @@ class GlideModule : AppGlideModule() {
             .addInterceptor(object : Interceptor {
                 override fun intercept(chain: Interceptor.Chain): Response {
                     val req = chain.request()
-                    val builder = req.newBuilder()
-                        .addHeader("Authorization", "Bearer " + Jwt.getInstance().token)
-                        .addHeader("Client-Type", "android")
-                        .addHeader("Client-Version", "${BuildConfig.VERSION_CODE}")
-                    return chain.proceed(builder.build())
+                    val host = req.url.host
+                    return if (BuildConfig.FBM_ASSET_ENDPOINT.contains(host)) {
+                        val builder = req.newBuilder()
+                            .addHeader("Authorization", "Bearer " + Jwt.getInstance().token)
+                            .addHeader("Client-Type", "android")
+                            .addHeader("Client-Version", "${BuildConfig.VERSION_CODE}")
+                        chain.proceed(builder.build())
+                    } else {
+                        chain.proceed(req)
+                    }
                 }
-
             })
             .build()
         registry.replace(

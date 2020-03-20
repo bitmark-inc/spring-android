@@ -68,5 +68,15 @@ class Migration {
             }
 
         }
+
+        // add new table Media
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("CREATE TABLE IF NOT EXISTS `Media` (`id` TEXT NOT NULL, `uri` TEXT NOT NULL, `source_uri` TEXT NOT NULL, `thumbnail_uri` TEXT NOT NULL, `extension` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`id`))")
+                database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_Media_id` ON `Media` (`id`)")
+                database.execSQL("CREATE INDEX IF NOT EXISTS `index_Media_timestamp` ON `Media` (`timestamp`)")
+            }
+
+        }
     }
 }

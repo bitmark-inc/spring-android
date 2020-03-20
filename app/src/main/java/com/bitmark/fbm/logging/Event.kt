@@ -64,5 +64,7 @@ enum class Event(val value: String) {
 
     DELETE_FB_CREDENTIAL_ERROR("delete_fb_credential_error"),
 
-    GET_APP_INFO_ERROR("get_app_info_error")
+    GET_APP_INFO_ERROR("get_app_info_error"),
+
+    BROWSE_CATEGORIES_ERROR("browse_categories_error")
 }

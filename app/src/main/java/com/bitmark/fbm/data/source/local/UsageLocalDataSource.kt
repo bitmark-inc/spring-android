@@ -208,4 +208,29 @@ class UsageLocalDataSource @Inject constructor(
             databaseGateway.locationDao().listIdByNames(names)
         }
 
+    fun saveMedia(mediaRs: List<MediaR>) = databaseApi.rxCompletable { databaseGateway ->
+        databaseGateway.mediaDao().save(mediaRs)
+    }
+
+    fun listMedia(startedAtSec: Long, endedAtSec: Long, limit: Int = 100) =
+        databaseApi.rxSingle { databaseGateway ->
+            databaseGateway.mediaDao().listOrdered(startedAtSec, endedAtSec, limit)
+        }
+
+    fun saveMediaCriteria(startedAtSec: Long, endedAtSec: Long) =
+        databaseApi.rxCompletable { databaseGateway ->
+            val criteria = CriteriaR.fromMediaWRange(startedAtSec, endedAtSec)
+            databaseGateway.criteriaDao().save(criteria)
+        }
+
+    fun checkMediaStored(startedAtSec: Long, endedAtSec: Long) =
+        databaseApi.rxSingle { databaseGateway ->
+            val criteria = CriteriaR.fromMediaWRange(startedAtSec, endedAtSec)
+            databaseGateway.criteriaDao().getCriteria(criteria.query).mapToCheckDbRecordResult()
+        }
+
+    fun updateThumbnailUri(mediaId: String, thumbnailUri: String) =
+        databaseApi.rxCompletable { databaseGateway ->
+            databaseGateway.mediaDao().updateThumbnailUri(mediaId, thumbnailUri)
+        }
 }
