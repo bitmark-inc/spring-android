@@ -1,6 +1,6 @@
-package com.bitmark.fbm.feature.archiveuploading
+package com.bitmark.fbm.data.model
 
-object UploadType {
+object ArchiveType {
     const val FILE = "file"
     const val URL = "url"
     const val SESSION = "session"

@@ -24,6 +24,7 @@ import androidx.lifecycle.Observer
 import com.bitmark.fbm.R
 import com.bitmark.fbm.data.ext.isServiceUnsupportedError
 import com.bitmark.fbm.data.model.AccountData
+import com.bitmark.fbm.data.model.ArchiveType
 import com.bitmark.fbm.data.model.isRegistered
 import com.bitmark.fbm.data.source.remote.api.error.UnknownException
 import com.bitmark.fbm.feature.BaseAppCompatActivity
@@ -62,9 +63,12 @@ class UploadArchiveActivity : BaseAppCompatActivity() {
 
         private const val UPLOAD_TYPE = "upload_type"
 
-        fun getBundle(firstLaunch: Boolean = true): Bundle {
+        private const val ACCOUNT_SEED = "account_seed"
+
+        fun getBundle(firstLaunch: Boolean = true, accountSeed: String? = null): Bundle {
             val bundle = Bundle()
             bundle.putBoolean(FIRST_LAUNCH, firstLaunch)
+            if (accountSeed != null) bundle.putString(ACCOUNT_SEED, accountSeed)
             return bundle
         }
 
@@ -90,7 +94,7 @@ class UploadArchiveActivity : BaseAppCompatActivity() {
 
     private var blocked = false
 
-    private lateinit var account: Account
+    private var account: Account? = null
 
     private var archiveUrl: String? = null
 
@@ -106,6 +110,8 @@ class UploadArchiveActivity : BaseAppCompatActivity() {
         super.initComponents()
 
         firstLaunch = intent?.extras?.getBoolean(FIRST_LAUNCH) ?: true
+        val seed = intent?.extras?.getString(ACCOUNT_SEED)
+        if(seed != null) account = Account.fromSeed(seed)
 
         val spannableMsg = SpannableString(Html.fromHtml(getString(R.string.option_2_manual)))
         val startIndex = spannableMsg.indexOf(FB_URL)
@@ -143,6 +149,7 @@ class UploadArchiveActivity : BaseAppCompatActivity() {
         }
 
         btnAutomate.setSafetyOnclickListener {
+            if (blocked) return@setSafetyOnclickListener
             viewModel.getAccountData()
         }
 
@@ -297,7 +304,7 @@ class UploadArchiveActivity : BaseAppCompatActivity() {
         if (firstLaunch) {
             goToMain()
         } else {
-            val type = if (archiveUrl != null) UploadType.URL else UploadType.FILE
+            val type = if (archiveUrl != null) ArchiveType.URL else ArchiveType.FILE
             exit(true, type)
         }
     }
@@ -321,7 +328,7 @@ class UploadArchiveActivity : BaseAppCompatActivity() {
     }
 
     private fun goToMain() {
-        val bundle = MainActivity.getBundle(account.seed.encodedSeed, true)
+        val bundle = MainActivity.getBundle(account!!.seed.encodedSeed)
         navigator.anim(FADE_IN).startActivityAsRoot(MainActivity::class.java, bundle)
     }
 
@@ -406,15 +413,15 @@ class UploadArchiveActivity : BaseAppCompatActivity() {
                     navigate(false)
                 }
             } else if (requestCode == AUTOMATE_REQUEST_CODE) {
-                exit(true, UploadType.SESSION)
+                exit(true, ArchiveType.SESSION)
             }
         }
     }
 
     private fun registerAccount() {
-        account = Account()
-        saveAccount(account) { alias ->
-            viewModel.registerAccount(account, alias)
+        if(account == null) account = Account()
+        saveAccount(account!!) { alias ->
+            viewModel.registerAccount(account!!, alias)
         }
     }
 }

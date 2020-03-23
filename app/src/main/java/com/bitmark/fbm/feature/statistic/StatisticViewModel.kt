@@ -9,6 +9,7 @@ package com.bitmark.fbm.feature.statistic
 import androidx.lifecycle.Lifecycle
 import com.bitmark.fbm.data.ext.onNetworkErrorReturn
 import com.bitmark.fbm.data.model.AccountData
+import com.bitmark.fbm.data.model.ArchiveType
 import com.bitmark.fbm.data.model.entity.*
 import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.data.source.AppRepository
@@ -20,7 +21,7 @@ import com.bitmark.fbm.util.livedata.RxLiveDataTransformer
 import com.bitmark.fbm.util.modelview.SectionModelView
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
-import io.reactivex.functions.Function3
+import io.reactivex.functions.Function4
 import io.reactivex.schedulers.Schedulers
 
 
@@ -115,6 +116,17 @@ class StatisticViewModel(
             )
         }*/
 
+        val determineArchiveTypeStream = Single.zip(
+            accountRepo.getLatestArchiveType(),
+            accountRepo.getArchiveRequestedAt(),
+            BiFunction<String, Long, String> { latestArchiveType, archiveRequestedAt ->
+                if (archiveRequestedAt != -1L) {
+                    ArchiveType.SESSION
+                } else {
+                    latestArchiveType
+                }
+            })
+
         getDataLiveData.add(
             rxLiveDataTransformer.single(
                 Single.zip(
@@ -122,13 +134,14 @@ class StatisticViewModel(
                     systemStatisticStream,
                     listAdsCategoryStream,
                     /*insightDataStream,*/
-                    Function3<List<SectionModelView>, List<SectionModelView>, /*SectionModelView,*/ SectionModelView, List<SectionModelView>>
-                    { usageStatistics, systemStatistics, category/*, insights*/ ->
+                    determineArchiveTypeStream,
+                    Function4<List<SectionModelView>, List<SectionModelView>, /*SectionModelView,*/ SectionModelView, String, List<SectionModelView>>
+                    { usageStatistics, systemStatistics, category/*, insights*/, archiveType ->
                         val data = mutableListOf<SectionModelView>()
 
                         data.addAll(systemStatistics)
 
-                        if (category.categories!!.isNotEmpty()) {
+                        if (archiveType == ArchiveType.SESSION) {
                             data.add(category)
                         }
 

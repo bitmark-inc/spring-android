@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import com.bitmark.cryptography.crypto.Sha3256
 import com.bitmark.cryptography.crypto.encoder.Hex.HEX
 import com.bitmark.cryptography.crypto.encoder.Raw.RAW
+import com.bitmark.fbm.data.model.ArchiveType
 import com.bitmark.fbm.data.model.AutomationScriptData
 import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.data.source.AppRepository
@@ -121,7 +122,12 @@ class ArchiveRequestViewModel(
                         0L,
                         archiveRequestedAt / 1000
                     )
-                }.andThen(accountRepo.clearArchiveRequestedAt())
+                }.andThen(
+                    Completable.mergeArray(
+                        accountRepo.clearArchiveRequestedAt(),
+                        accountRepo.saveLatestArchiveType(ArchiveType.SESSION).ignoreElement()
+                    )
+                )
             )
         )
     }

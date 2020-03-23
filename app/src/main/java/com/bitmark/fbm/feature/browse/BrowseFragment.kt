@@ -19,7 +19,7 @@ import com.bitmark.fbm.feature.DialogController
 import com.bitmark.fbm.feature.Navigator
 import com.bitmark.fbm.feature.Navigator.Companion.RIGHT_LEFT
 import com.bitmark.fbm.feature.archiveuploading.UploadArchiveActivity
-import com.bitmark.fbm.feature.archiveuploading.UploadType
+import com.bitmark.fbm.data.model.ArchiveType
 import com.bitmark.fbm.feature.archiveuploading.service.UploadArchiveService
 import com.bitmark.fbm.feature.archiveuploading.service.UploadArchiveServiceHandler
 import com.bitmark.fbm.feature.realtime.ArchiveStateBus
@@ -300,12 +300,12 @@ class BrowseFragment : BaseSupportFragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && requestCode == UPLOAD_ARCHIVE_REQUEST_CODE) {
             when (UploadArchiveActivity.extractUploadType(data)) {
-                UploadType.URL -> {
+                ArchiveType.URL -> {
                     showProcessingState()
                     viewModel.startArchiveStateBus()
                 }
-                UploadType.FILE -> bindService()
-                UploadType.SESSION -> viewModel.getArchiveRequestedAt()
+                ArchiveType.FILE -> bindService()
+                ArchiveType.SESSION -> viewModel.getArchiveRequestedAt()
             }
         }
 

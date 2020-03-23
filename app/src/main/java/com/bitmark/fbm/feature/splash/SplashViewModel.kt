@@ -115,7 +115,7 @@ class SplashViewModel(
 
         val checkCategoryReadyStream = accountRepo.checkAdsPrefCategoryReady()
 
-        val checkArchiveUploaded = accountRepo.checkArchiveUploaded()
+        val checkArchiveUploaded = appRepo.checkArchiveUploaded()
 
         checkDataReadyLiveData.add(
             rxLiveDataTransformer.single(

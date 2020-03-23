@@ -13,7 +13,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import com.bitmark.fbm.R
+import com.bitmark.fbm.data.model.ArchiveType
 import com.bitmark.fbm.data.source.AccountRepository
+import com.bitmark.fbm.data.source.AppRepository
 import com.bitmark.fbm.di.DaggerService
 import com.bitmark.fbm.feature.connectivity.ConnectivityHandler
 import com.bitmark.fbm.feature.notification.buildNotification
@@ -25,6 +27,7 @@ import com.bitmark.fbm.logging.Tracer
 import com.bitmark.fbm.util.Constants
 import com.bitmark.fbm.util.ext.getFileName
 import com.bitmark.fbm.util.ext.getFileSize
+import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
@@ -48,6 +51,9 @@ class UploadArchiveService : DaggerService(), ConnectivityHandler.NetworkStateCh
 
     @Inject
     internal lateinit var accountRepo: AccountRepository
+
+    @Inject
+    internal lateinit var appRepo: AppRepository
 
     @Inject
     internal lateinit var logger: EventLogger
@@ -95,9 +101,6 @@ class UploadArchiveService : DaggerService(), ConnectivityHandler.NetworkStateCh
     }
 
     private fun execute(uri: Uri) {
-        val fileSize = getFileSize(uri)
-        val fileName = getFileName(uri)
-        val fileInputStream = contentResolver.openInputStream(uri) ?: error("cannot open stream")
 
         // push foreground notification
         var notificationBundle = buildNotificationBundle(-1, -1)
@@ -105,6 +108,10 @@ class UploadArchiveService : DaggerService(), ConnectivityHandler.NetworkStateCh
             Constants.UPLOAD_ARCHIVE_NOTIFICATION_ID,
             buildNotification(applicationContext, notificationBundle)
         )
+
+        val fileSize = getFileSize(uri)
+        val fileName = getFileName(uri)
+        val fileInputStream = contentResolver.openInputStream(uri) ?: error("cannot open stream")
 
         // using delay publisher to avoid backpressure for notification updating
         val publisher = PublishSubject.create<Int>()
@@ -115,28 +122,35 @@ class UploadArchiveService : DaggerService(), ConnectivityHandler.NetworkStateCh
         })
 
         // start executing
-        disposeBag.add(accountRepo.uploadArchive(fileInputStream, fileSize) { progress ->
-            val byteRead = progress.first
-            val byteTotal = progress.second
-            val percent = (byteRead * 100 / byteTotal).toInt()
-            publisher.onNext(percent)
-            notifyProgressChanged(fileName, byteRead, byteTotal)
-        }.andThen(accountRepo.setArchiveUploaded()).subscribe({
-            errorDuringUploading = false
-            logger.logEvent(Event.ARCHIVE_FILE_UPLOAD_SUCCESS)
-            notificationBundle = buildNotificationBundle(0, 0)
-            notifyFinished()
-            stopSelf()
-        }, { e ->
-            errorDuringUploading = true
-            logger.logError(Event.ARCHIVE_FILE_UPLOAD_ERROR, e)
-            Tracer.ERROR.log(
-                TAG,
-                "error in upload archive: ${e.javaClass.canonicalName
-                    ?: "UnknownError"}: ${e.message ?: "unknown"}"
-            )
-            notifyError(e)
-        }))
+        disposeBag.add(
+            accountRepo.uploadArchive(fileInputStream, fileSize) { progress ->
+                val byteRead = progress.first
+                val byteTotal = progress.second
+                val percent = (byteRead * 100 / byteTotal).toInt()
+                publisher.onNext(percent)
+                notifyProgressChanged(fileName, byteRead, byteTotal)
+            }.andThen(
+                Completable.mergeArray(
+                    appRepo.setArchiveUploaded(),
+                    accountRepo.saveLatestArchiveType(ArchiveType.FILE).ignoreElement()
+                )
+            ).subscribe({
+                errorDuringUploading = false
+                logger.logEvent(Event.ARCHIVE_FILE_UPLOAD_SUCCESS)
+                notificationBundle = buildNotificationBundle(0, 0)
+                notifyFinished()
+                stopSelf()
+            }, { e ->
+                errorDuringUploading = true
+                logger.logError(Event.ARCHIVE_FILE_UPLOAD_ERROR, e)
+                Tracer.ERROR.log(
+                    TAG,
+                    "error in upload archive: ${e.javaClass.canonicalName
+                        ?: "UnknownError"}: ${e.message ?: "unknown"}"
+                )
+                notifyError(e)
+            })
+        )
     }
 
     private fun buildNotificationBundle(maxProgress: Int, currentProgress: Int) =

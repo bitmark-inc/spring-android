@@ -6,7 +6,6 @@
  */
 package com.bitmark.fbm.feature.main
 
-import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.data.source.AppRepository
 import com.bitmark.fbm.data.source.remote.api.event.RemoteApiBus
 import com.bitmark.fbm.di.ActivityScope
@@ -15,7 +14,6 @@ import com.bitmark.fbm.feature.Navigator
 import com.bitmark.fbm.feature.archiveissuing.ArchiveIssuanceProcessor
 import com.bitmark.fbm.feature.auth.FbmServerAuthentication
 import com.bitmark.fbm.feature.realtime.ArchiveStateBus
-import com.bitmark.fbm.util.livedata.RxLiveDataTransformer
 import dagger.Module
 import dagger.Provides
 
@@ -33,8 +31,6 @@ class MainModule {
         activity: MainActivity,
         fbmServerAuth: FbmServerAuthentication,
         appRepo: AppRepository,
-        accountRepo: AccountRepository,
-        rxLiveDataTransformer: RxLiveDataTransformer,
         remoteApiBus: RemoteApiBus,
         archiveIssuanceProcessor: ArchiveIssuanceProcessor,
         archiveStateBus: ArchiveStateBus
@@ -44,9 +40,7 @@ class MainModule {
             fbmServerAuth,
             remoteApiBus,
             appRepo,
-            accountRepo,
             archiveIssuanceProcessor,
-            rxLiveDataTransformer,
             archiveStateBus
         )
 

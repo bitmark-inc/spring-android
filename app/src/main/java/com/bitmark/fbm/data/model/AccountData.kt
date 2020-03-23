@@ -51,3 +51,5 @@ fun AccountData.mergeWith(accountData: AccountData): AccountData {
     keyAlias = accountData.keyAlias
     return this
 }
+
+fun AccountData.isAutomated() = metadata?.get("latest_archive_type") == ArchiveType.SESSION

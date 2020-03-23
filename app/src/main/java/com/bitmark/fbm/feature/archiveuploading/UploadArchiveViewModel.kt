@@ -11,6 +11,7 @@ import com.bitmark.cryptography.crypto.Sha3256
 import com.bitmark.cryptography.crypto.encoder.Hex
 import com.bitmark.cryptography.crypto.encoder.Raw
 import com.bitmark.fbm.data.model.AccountData
+import com.bitmark.fbm.data.model.ArchiveType
 import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.data.source.AppRepository
 import com.bitmark.fbm.feature.BaseViewModel
@@ -38,7 +39,12 @@ class UploadArchiveViewModel(
     fun uploadArchiveUrl(url: String) {
         uploadArchiveUrlLiveData.add(
             rxLiveDataTransformer.completable(
-                accountRepo.uploadArchiveUrl(url).andThen(accountRepo.setArchiveUploaded())
+                accountRepo.uploadArchiveUrl(url).andThen(
+                    Completable.mergeArray(
+                        appRepo.setArchiveUploaded(),
+                        accountRepo.saveLatestArchiveType(ArchiveType.URL).ignoreElement()
+                    )
+                )
             )
         )
     }

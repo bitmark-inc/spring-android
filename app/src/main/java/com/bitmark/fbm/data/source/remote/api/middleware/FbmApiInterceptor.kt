@@ -10,7 +10,9 @@ import android.text.TextUtils
 import com.bitmark.fbm.BuildConfig
 import com.bitmark.fbm.data.source.local.Jwt
 import com.bitmark.fbm.logging.Tracer
+import okhttp3.CacheControl
 import okhttp3.Response
+import java.util.concurrent.TimeUnit
 
 
 class FbmApiInterceptor :
@@ -30,6 +32,7 @@ class FbmApiInterceptor :
             .addHeader("Accept", "application/json")
             .addHeader("Client-Type", "android")
             .addHeader("Client-Version", "${BuildConfig.VERSION_CODE}")
+            .cacheControl(CacheControl.Builder().maxAge(0, TimeUnit.SECONDS).build())
         if (!TextUtils.isEmpty(Jwt.getInstance().token))
             builder.addHeader(
                 "Authorization",

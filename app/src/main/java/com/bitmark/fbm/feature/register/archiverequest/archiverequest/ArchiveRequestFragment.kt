@@ -24,6 +24,7 @@ import com.bitmark.fbm.feature.BaseSupportFragment
 import com.bitmark.fbm.feature.BaseViewModel
 import com.bitmark.fbm.feature.DialogController
 import com.bitmark.fbm.feature.Navigator
+import com.bitmark.fbm.feature.Navigator.Companion.FADE_IN
 import com.bitmark.fbm.feature.Navigator.Companion.RIGHT_LEFT
 import com.bitmark.fbm.feature.connectivity.ConnectivityHandler
 import com.bitmark.fbm.feature.main.MainActivity
@@ -179,7 +180,14 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                 if (newProgress >= 100) {
                     if (lastUrl == wv.url) return
                     lastUrl = wv.url
-                    handlePageLoaded(wv, script, categoriesFetched)
+                    handlePageLoaded(
+                        wv,
+                        script,
+                        registered,
+                        firstLaunch,
+                        archiveRequestedAt,
+                        categoriesFetched
+                    )
                 }
             }
 
@@ -229,6 +237,9 @@ class ArchiveRequestFragment : BaseSupportFragment() {
     private fun handlePageLoaded(
         wv: WebView,
         script: AutomationScriptData,
+        registered: Boolean,
+        firstLaunch: Boolean,
+        archiveRequestedAt: Long,
         categoriesFetched: Boolean
     ) {
         wv.detectPage(script.pages, tag = TAG, logger = logger) { name ->
@@ -245,10 +256,10 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                 reloadCount = 0 // reset after detect expected page
                 expectedPage = EXPECTED_PAGES[name]
 
-                if (isArchiveRequested() && !categoriesFetched) {
-                    automateCategoriesFetching(wv, name, script)
-                } else {
+                if (!registered || (!firstLaunch && registered && archiveRequestedAt == -1L)) {
                     automateAccountRegister(wv, name, script)
+                } else if (!categoriesFetched) {
+                    automateCategoriesFetching(wv, name, script)
                 }
             }
         }
@@ -504,7 +515,7 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                     progressBar.gone()
                     blocked = false
                     if (firstLaunch) {
-                        goToMain(account!!.seed.encodedSeed, true)
+                        goToMain(account!!.seed.encodedSeed)
                     } else {
                         finish(true)
                     }
@@ -551,7 +562,7 @@ class ArchiveRequestFragment : BaseSupportFragment() {
                         if (registered && !firstLaunch) {
                             viewModel.registerJwt(account!!)
                         } else if (firstLaunch) {
-                            finish(true)
+                            goToMain(account!!.seed.encodedSeed)
                         } else {
                             saveAccount(account!!) { keyAlias ->
                                 viewModel.registerAccount(account!!, keyAlias)
@@ -660,9 +671,9 @@ class ArchiveRequestFragment : BaseSupportFragment() {
         })
     }
 
-    private fun goToMain(accountSeed: String, firstTimeLaunch: Boolean = false) {
-        val bundle = MainActivity.getBundle(accountSeed, firstTimeLaunch)
-        navigator.anim(RIGHT_LEFT).startActivityAsRoot(MainActivity::class.java, bundle)
+    private fun goToMain(accountSeed: String) {
+        val bundle = MainActivity.getBundle(accountSeed)
+        navigator.anim(FADE_IN).startActivityAsRoot(MainActivity::class.java, bundle)
     }
 
     private fun finish(withResult: Boolean = false) =

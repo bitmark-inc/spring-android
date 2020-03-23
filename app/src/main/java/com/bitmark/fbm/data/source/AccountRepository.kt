@@ -121,7 +121,9 @@ class AccountRepository(
     ) =
         remoteDataSource.uploadArchive(fileInputStream, fileSize, progress)
 
-    fun setArchiveUploaded() = localDataSource.setArchiveUploaded()
+    fun saveLatestArchiveType(type: String) = updateMetadata(mapOf("latest_archive_type" to type))
 
-    fun checkArchiveUploaded() = localDataSource.checkArchiveUploaded()
+    fun getLatestArchiveType() = getAccountData().map { accountData ->
+        accountData.metadata?.get("latest_archive_type") ?: ""
+    }
 }

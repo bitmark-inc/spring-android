@@ -62,4 +62,8 @@ class AppRepository(
     fun listLinkClicked() = localDataSource.listLinkClicked()
 
     fun saveLinkClicked(link: String) = localDataSource.saveLinkClicked(link)
+
+    fun setArchiveUploaded() = localDataSource.setArchiveUploaded()
+
+    fun checkArchiveUploaded() = localDataSource.checkArchiveUploaded()
 }

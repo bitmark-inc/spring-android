@@ -14,12 +14,17 @@ import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import com.bitmark.fbm.R
 import com.bitmark.fbm.data.ext.isServiceUnsupportedError
+import com.bitmark.fbm.data.model.AccountData
+import com.bitmark.fbm.data.model.isAutomated
 import com.bitmark.fbm.feature.BaseAppCompatActivity
 import com.bitmark.fbm.feature.BaseViewModel
 import com.bitmark.fbm.feature.DialogController
 import com.bitmark.fbm.feature.Navigator
+import com.bitmark.fbm.feature.Navigator.Companion.FADE_IN
 import com.bitmark.fbm.feature.Navigator.Companion.RIGHT_LEFT
+import com.bitmark.fbm.feature.archiveuploading.UploadArchiveActivity
 import com.bitmark.fbm.feature.connectivity.ConnectivityHandler
+import com.bitmark.fbm.feature.main.MainActivity
 import com.bitmark.fbm.feature.register.archiverequest.ArchiveRequestContainerActivity
 import com.bitmark.fbm.logging.Event
 import com.bitmark.fbm.logging.EventLogger
@@ -145,6 +150,7 @@ class SignInActivity : BaseAppCompatActivity() {
                     val data = res.data()!!
                     val registered = data.first
                     val deletingAccount = data.second
+                    val accountData = data.third
                     if (deletingAccount) {
                         dialogController.alert(
                             R.string.error,
@@ -154,15 +160,32 @@ class SignInActivity : BaseAppCompatActivity() {
                         if (registered) {
                             OneSignal.setSubscription(true)
                         }
-                        val bundle = ArchiveRequestContainerActivity.getBundle(
-                            registered,
-                            account.seed.encodedSeed
-                        )
-                        navigator.anim(RIGHT_LEFT)
-                            .startActivityAsRoot(
-                                ArchiveRequestContainerActivity::class.java,
-                                bundle
-                            )
+
+                        when {
+                            accountData == null -> {
+                                val bundle =
+                                    UploadArchiveActivity.getBundle(accountSeed = account.seed.encodedSeed)
+                                navigator.anim(RIGHT_LEFT)
+                                    .startActivity(UploadArchiveActivity::class.java, bundle)
+                            }
+                            accountData.isAutomated() -> {
+                                val bundle = ArchiveRequestContainerActivity.getBundle(
+                                    registered,
+                                    account.seed.encodedSeed
+                                )
+                                navigator.anim(RIGHT_LEFT)
+                                    .startActivityAsRoot(
+                                        ArchiveRequestContainerActivity::class.java,
+                                        bundle
+                                    )
+                            }
+                            else -> loadAccount(accountData) { account ->
+                                val bundle = MainActivity.getBundle(account.seed.encodedSeed)
+                                navigator.anim(FADE_IN)
+                                    .startActivityAsRoot(MainActivity::class.java, bundle)
+                            }
+                        }
+
                     }
                     progressBar.gone()
                     blocked = false
@@ -219,6 +242,28 @@ class SignInActivity : BaseAppCompatActivity() {
             invalidErrorAction = { e ->
                 errorAction(e ?: IllegalAccessException("unknown error"))
                 logger.logError(Event.ACCOUNT_SAVE_TO_KEY_STORE_ERROR, e)
+            })
+    }
+
+    private fun loadAccount(accountData: AccountData, action: (Account) -> Unit) {
+        val spec =
+            KeyAuthenticationSpec.Builder(this).setKeyAlias(accountData.keyAlias)
+                .setAuthenticationDescription(getString(R.string.your_authorization_is_required))
+                .setAuthenticationRequired(accountData.authRequired).build()
+        loadAccount(
+            accountData.id,
+            spec,
+            dialogController,
+            successAction = action,
+            setupRequiredAction = { navigator.gotoSecuritySetting() },
+            canceledAction = {
+                dialogController.showAuthRequired {
+                    loadAccount(accountData, action)
+                }
+            },
+            invalidErrorAction = { e ->
+                logger.logError(Event.ACCOUNT_LOAD_KEY_STORE_ERROR, e)
+                dialogController.alert(e) { navigator.exitApp() }
             })
     }
 

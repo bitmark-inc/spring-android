@@ -117,4 +117,13 @@ class AppLocalDataSource @Inject constructor(
             }
         }
     }
+
+    fun setArchiveUploaded() = sharedPrefApi.rxCompletable { sharedPrefGateway ->
+        sharedPrefGateway.put(SharedPrefApi.ARCHIVE_UPLOADED, true)
+    }
+
+    fun checkArchiveUploaded() = sharedPrefApi.rxSingle { sharedPrefGateway ->
+        sharedPrefGateway.get(SharedPrefApi.ARCHIVE_UPLOADED, Boolean::class)
+    }
+
 }

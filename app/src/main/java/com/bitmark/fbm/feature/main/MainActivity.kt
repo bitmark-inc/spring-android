@@ -19,7 +19,6 @@ import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_SETTINGS
 import com.bitmark.fbm.feature.main.MainViewPagerAdapter.Companion.TAB_SUMMARY
 import com.bitmark.fbm.feature.summary.SummaryContainerFragment
 import com.bitmark.fbm.logging.EventLogger
-import com.bitmark.fbm.util.Constants
 import com.bitmark.fbm.util.ext.*
 import com.bitmark.sdk.features.Account
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -52,8 +51,6 @@ class MainActivity : BaseAppCompatActivity() {
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
 
-    private var firstTimeLaunch = false
-
     override fun layoutRes(): Int = R.layout.activity_main
 
     override fun viewModel(): BaseViewModel? = viewModel
@@ -61,12 +58,9 @@ class MainActivity : BaseAppCompatActivity() {
     companion object {
         private const val ACCOUNT_SEED = "account_seed"
 
-        private const val FIRST_TIME_LAUNCH = "first_time_launch"
-
-        fun getBundle(encodedSeed: String, firstTimeLaunch: Boolean = false): Bundle {
+        fun getBundle(encodedSeed: String): Bundle {
             val bundle = Bundle()
             bundle.putString(ACCOUNT_SEED, encodedSeed)
-            bundle.putBoolean(FIRST_TIME_LAUNCH, firstTimeLaunch)
             return bundle
         }
     }
@@ -90,11 +84,8 @@ class MainActivity : BaseAppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val seed = intent?.extras?.getString(ACCOUNT_SEED) ?: error("missing ACCOUNT_SEED")
-        firstTimeLaunch =
-            intent?.extras?.getBoolean(FIRST_TIME_LAUNCH) ?: false
         account = Account.fromSeed(seed)
 
-        viewModel.checkWaitingForArchive()
         viewModel.startArchiveIssuanceProcessor(account)
 
     }
@@ -156,33 +147,6 @@ class MainActivity : BaseAppCompatActivity() {
                 navigator.exitApp()
             }
         })
-
-        viewModel.checkWaitingForArchiveLiveData.asLiveData()
-            .observe(this, Observer { res ->
-                when {
-                    res.isSuccess() -> {
-                        val waiting = res.data()!!
-                        if (!firstTimeLaunch && waiting) {
-                            showNotification()
-                        }
-                    }
-                }
-            })
-    }
-
-    private fun showNotification() {
-        val title =
-            getString(R.string.still_waiting)
-        val message =
-            getString(R.string.your_fb_data_archive_is_not_ready)
-        tvNotifTitle.text = title
-        tvNotifMsg.text = message
-
-        handler.postDelayed(
-            { bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED },
-            Constants.UI_READY_DELAY
-        )
-
     }
 
     override fun onResume() {

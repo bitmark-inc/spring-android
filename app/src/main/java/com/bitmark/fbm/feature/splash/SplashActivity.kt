@@ -379,7 +379,7 @@ class SplashActivity : BaseAppCompatActivity() {
 
     private fun goToMain(accountSeed: String) {
         val bundle = MainActivity.getBundle(accountSeed)
-        navigator.anim(RIGHT_LEFT).startActivityAsRoot(MainActivity::class.java, bundle)
+        navigator.anim(FADE_IN).startActivityAsRoot(MainActivity::class.java, bundle)
     }
 
     private fun showOnboarding() {

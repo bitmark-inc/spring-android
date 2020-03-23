@@ -12,6 +12,7 @@ import com.bitmark.cryptography.crypto.Sha3256
 import com.bitmark.cryptography.crypto.encoder.Hex.HEX
 import com.bitmark.cryptography.crypto.encoder.Raw.RAW
 import com.bitmark.fbm.data.ext.isHttpError
+import com.bitmark.fbm.data.model.AccountData
 import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.data.source.AppRepository
 import com.bitmark.fbm.data.source.remote.api.error.HttpException
@@ -35,7 +36,7 @@ class SignInViewModel(
     private val remoteApiBus: RemoteApiBus
 ) : BaseViewModel(lifecycle) {
 
-    internal val prepareDataLiveData = CompositeLiveData<Pair<Boolean, Boolean>>()
+    internal val prepareDataLiveData = CompositeLiveData<Triple<Boolean, Boolean, AccountData?>>()
 
     internal val serviceUnsupportedLiveData = MutableLiveData<String>()
 
@@ -72,22 +73,32 @@ class SignInViewModel(
                 appRepo.registerNotificationService(accountData.id),
                 appRepo.setDataReady(),
                 accountRepo.registerIntercomUser(intercomId)
-            ).andThen(Single.just(Pair(first = true, second = false)))
+            ).andThen(
+                Single.just(
+                    Triple<Boolean, Boolean, AccountData?>(
+                        first = true,
+                        second = false,
+                        third = accountData
+                    )
+                )
+            )
         }).onErrorResumeNext { e ->
             if (e.isHttpError()) {
                 when {
                     // did not has spring account
                     (e as HttpException).code == 401 -> Single.just(
-                        Pair(
+                        Triple(
                             first = false,
-                            second = false
+                            second = false,
+                            third = null
                         )
                     )
                     // deleting account
                     e.errorCode == 1008 -> Single.just(
-                        Pair(
+                        Triple(
                             first = false,
-                            second = true
+                            second = true,
+                            third = null
                         )
                     )
                     else -> Single.error(e)
