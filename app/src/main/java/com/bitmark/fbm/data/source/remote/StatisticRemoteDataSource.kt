@@ -28,8 +28,11 @@ class StatisticRemoteDataSource @Inject constructor(
             Schedulers.io()
         )
 
-    fun getInsightData() =
-        fbmApi.getInsight().map { res -> res["result"] }.subscribeOn(Schedulers.io())
+    fun getInsightData(startedAt: Long, endedAt: Long) =
+        fbmApi.getInsight(
+            startedAt,
+            endedAt
+        ).map { res -> res["result"] }.subscribeOn(Schedulers.io())
 
     fun getStats(type: StatsType, startedAt: Long, endedAt: Long) = if (type == StatsType.POST) {
         fbmApi.getPostStats(startedAt, endedAt)

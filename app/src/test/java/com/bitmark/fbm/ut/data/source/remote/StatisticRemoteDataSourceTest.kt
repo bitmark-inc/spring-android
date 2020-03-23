@@ -79,10 +79,10 @@ class StatisticRemoteDataSourceTest : DataTest() {
         val observer = TestObserver<Any>()
 
         whenever(
-            fbmApi.getInsight()
+            fbmApi.getInsight(any(), any())
         ).thenReturn(Single.just(mapOf("result" to INSIGHT_DATA)))
 
-        remoteDataSource.getInsightData().subscribe(observer)
+        remoteDataSource.getInsightData(0L, 1L).subscribe(observer)
 
         observer.assertComplete()
         observer.assertNoErrors()
@@ -94,9 +94,9 @@ class StatisticRemoteDataSourceTest : DataTest() {
     fun testGetInsightDataError() {
         val observer = TestObserver<Any>()
 
-        whenever(fbmApi.getInsight()).thenReturn(Single.error(HTTP_ERROR))
+        whenever(fbmApi.getInsight(any(), any())).thenReturn(Single.error(HTTP_ERROR))
 
-        remoteDataSource.getInsightData().subscribe(observer)
+        remoteDataSource.getInsightData(0L, 1L).subscribe(observer)
 
         observer.assertNotComplete()
         observer.assertError(HTTP_ERROR)

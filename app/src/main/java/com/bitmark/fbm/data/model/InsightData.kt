@@ -17,10 +17,14 @@ data class InsightData(
 
     @Expose
     @SerializedName("fb_income_from")
-    val fbIncomeFrom: Long
+    val fbIncomeFrom: Long,
+
+    @Expose
+    @SerializedName("fb_income_to")
+    val fbIncomeTo: Long
 ) : Data {
     companion object
 }
 
-fun InsightData.Companion.newDefaultInstance() = InsightData(-1f, 0)
+fun InsightData.Companion.newDefaultInstance() = InsightData(-1f, 0, 0)
 

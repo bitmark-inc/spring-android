@@ -19,7 +19,6 @@ data class SectionModelView(
     val groups: List<GroupModelView>? = listOf(),
     val value: Float? = null,
     val income: Float? = null,
-    val incomeFrom: Long? = null,
     val categories: List<String>? = null
 ) : ModelView {
     companion object {
@@ -39,8 +38,12 @@ data class SectionModelView(
                 periodStartedAtSec = periodStartedAtSec
             )
 
-        fun newInstance(income: Float, incomeFrom: Long) =
-            SectionModelView(income = income, incomeFrom = incomeFrom)
+        fun newInstance(period: Period, periodStartedAtSec: Long, income: Float) =
+            SectionModelView(
+                period = period,
+                periodStartedAtSec = periodStartedAtSec,
+                income = income
+            )
 
         fun newInstance(categories: List<String>) = SectionModelView(categories = categories)
 

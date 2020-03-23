@@ -145,10 +145,15 @@ class StatisticRepositoryTest : DataTest() {
     fun testGetInsightData() {
         val observer = TestObserver<Any>()
 
-        whenever(remoteDataSource.getInsightData()).thenReturn(Single.just(INSIGHT_DATA))
+        whenever(
+            remoteDataSource.getInsightData(
+                any(),
+                any()
+            )
+        ).thenReturn(Single.just(INSIGHT_DATA))
         whenever(localDataSource.saveInsightData(any())).thenReturn(Completable.complete())
 
-        repository.getInsightData().subscribe(observer)
+        repository.getInsightData(0L, 1L).subscribe(observer)
 
         observer.assertComplete()
         observer.assertNoErrors()
@@ -160,11 +165,15 @@ class StatisticRepositoryTest : DataTest() {
     fun testGetInsightDataError1() {
         val observer = TestObserver<Any>()
 
-        whenever(remoteDataSource.getInsightData()).thenReturn(Single.error(NETWORK_ERROR))
+        whenever(remoteDataSource.getInsightData(any(), any())).thenReturn(
+            Single.error(
+                NETWORK_ERROR
+            )
+        )
         whenever(localDataSource.getInsightData()).thenReturn(Single.just(INSIGHT_DATA))
         whenever(localDataSource.saveInsightData(any())).thenReturn(Completable.complete())
 
-        repository.getInsightData().subscribe(observer)
+        repository.getInsightData(0L, 1L).subscribe(observer)
 
         observer.assertComplete()
         observer.assertNoErrors()
@@ -176,10 +185,15 @@ class StatisticRepositoryTest : DataTest() {
     fun testGetInsightDataError2() {
         val observer = TestObserver<Any>()
 
-        whenever(remoteDataSource.getInsightData()).thenReturn(Single.just(INSIGHT_DATA))
+        whenever(
+            remoteDataSource.getInsightData(
+                any(),
+                any()
+            )
+        ).thenReturn(Single.just(INSIGHT_DATA))
         whenever(localDataSource.saveInsightData(any())).thenReturn(Completable.error(RANDOM_ERROR))
 
-        repository.getInsightData().subscribe(observer)
+        repository.getInsightData(0L, 1L).subscribe(observer)
 
         observer.assertNotComplete()
         observer.assertError(RANDOM_ERROR)
@@ -213,11 +227,29 @@ class StatisticRepositoryTest : DataTest() {
     fun testGetStatsError1() {
         val observer = TestObserver<Any>()
 
-        whenever(remoteDataSource.getStats(any(), any(), any())).thenReturn(Single.error(HTTP_ERROR))
-        whenever(localDataSource.checkStoredStats(any(), any(), any())).thenReturn(Single.just(true))
+        whenever(
+            remoteDataSource.getStats(
+                any(),
+                any(),
+                any()
+            )
+        ).thenReturn(Single.error(HTTP_ERROR))
+        whenever(
+            localDataSource.checkStoredStats(
+                any(),
+                any(),
+                any()
+            )
+        ).thenReturn(Single.just(true))
         whenever(localDataSource.getStats(any(), any(), any())).thenReturn(Single.just(STATSR))
         whenever(localDataSource.saveStats(any())).thenReturn(Completable.complete())
-        whenever(localDataSource.saveStatsCriteria(any(), any(), any())).thenReturn(Completable.complete())
+        whenever(
+            localDataSource.saveStatsCriteria(
+                any(),
+                any(),
+                any()
+            )
+        ).thenReturn(Completable.complete())
 
         repository.getStats(StatsType.POST, Period.WEEK, 0L).subscribe(observer)
 
@@ -246,8 +278,20 @@ class StatisticRepositoryTest : DataTest() {
     fun testGetStatsError3() {
         val observer = TestObserver<StatsR>()
 
-        whenever(remoteDataSource.getStats(any(), any(), any())).thenReturn(Single.error(HTTP_ERROR))
-        whenever(localDataSource.checkStoredStats(any(), any(), any())).thenReturn(Single.just(false))
+        whenever(
+            remoteDataSource.getStats(
+                any(),
+                any(),
+                any()
+            )
+        ).thenReturn(Single.error(HTTP_ERROR))
+        whenever(
+            localDataSource.checkStoredStats(
+                any(),
+                any(),
+                any()
+            )
+        ).thenReturn(Single.just(false))
 
         repository.getStats(StatsType.POST, Period.WEEK, 0L).subscribe(observer)
 

@@ -46,12 +46,13 @@ class StatisticRepository(
             .flatMapCompletable { localDataSource.saveUsageCriteria(range.first, range.last) }
     }
 
-    fun getInsightData() = remoteDataSource.getInsightData()
-        .observeOn(Schedulers.io())
-        .onErrorResumeNext { localDataSource.getInsightData() }
-        .flatMap { insightData ->
-            localDataSource.saveInsightData(insightData).andThen(Single.just(insightData))
-        }
+    fun getInsightData(startedAt: Long, endedAt: Long) =
+        remoteDataSource.getInsightData(startedAt, endedAt)
+            .observeOn(Schedulers.io())
+            .onErrorResumeNext { localDataSource.getInsightData() }
+            .flatMap { insightData ->
+                localDataSource.saveInsightData(insightData).andThen(Single.just(insightData))
+            }
 
     fun getStats(type: StatsType, period: Period, periodStartedAtSec: Long): Single<StatsR> {
         val range = period.toPeriodRangeSec(periodStartedAtSec)

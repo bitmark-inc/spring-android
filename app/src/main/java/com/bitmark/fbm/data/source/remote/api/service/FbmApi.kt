@@ -46,7 +46,7 @@ interface FbmApi {
     ): Single<Map<String, List<SectionR>>>
 
     @GET("api/insight")
-    fun getInsight(): Single<Map<String, InsightData>>
+    fun getInsight(@Query("started_at") startedAt: Long, @Query("ended_at") endedAt: Long): Single<Map<String, InsightData>>
 
     @GET("api/posts")
     fun listPost(

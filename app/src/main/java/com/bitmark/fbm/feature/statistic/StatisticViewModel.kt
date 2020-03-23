@@ -10,7 +10,9 @@ import androidx.lifecycle.Lifecycle
 import com.bitmark.fbm.data.ext.onNetworkErrorReturn
 import com.bitmark.fbm.data.model.AccountData
 import com.bitmark.fbm.data.model.ArchiveType
+import com.bitmark.fbm.data.model.InsightData
 import com.bitmark.fbm.data.model.entity.*
+import com.bitmark.fbm.data.model.newDefaultInstance
 import com.bitmark.fbm.data.source.AccountRepository
 import com.bitmark.fbm.data.source.AppRepository
 import com.bitmark.fbm.data.source.StatisticRepository
@@ -21,7 +23,7 @@ import com.bitmark.fbm.util.livedata.RxLiveDataTransformer
 import com.bitmark.fbm.util.modelview.SectionModelView
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
-import io.reactivex.functions.Function4
+import io.reactivex.functions.Function5
 import io.reactivex.schedulers.Schedulers
 
 
@@ -103,18 +105,19 @@ class StatisticViewModel(
         val listAdsCategoryStream = accountRepo.listAdsPrefCategory()
             .map { categories -> SectionModelView.newInstance(categories) }
 
-/*        val insightDataStream = appRepo.checkDataReady().flatMap { ready ->
+        val insightDataStream = appRepo.checkDataReady().flatMap { ready ->
             if (ready) {
-                statisticRepo.getInsightData()
+                statisticRepo.getInsightData(startedAt, endedAt)
             } else {
                 Single.just(InsightData.newDefaultInstance())
             }
         }.map { insightData ->
             SectionModelView.newInstance(
-                insightData.fbIncome,
-                insightData.fbIncomeFrom
+                period,
+                periodStartedAtSec,
+                insightData.fbIncome
             )
-        }*/
+        }
 
         val determineArchiveTypeStream = Single.zip(
             accountRepo.getLatestArchiveType(),
@@ -133,19 +136,21 @@ class StatisticViewModel(
                     listUsageStream,
                     systemStatisticStream,
                     listAdsCategoryStream,
-                    /*insightDataStream,*/
+                    insightDataStream,
                     determineArchiveTypeStream,
-                    Function4<List<SectionModelView>, List<SectionModelView>, /*SectionModelView,*/ SectionModelView, String, List<SectionModelView>>
-                    { usageStatistics, systemStatistics, category/*, insights*/, archiveType ->
+                    Function5<List<SectionModelView>, List<SectionModelView>, SectionModelView, SectionModelView, String, List<SectionModelView>>
+                    { usageStatistics, systemStatistics, category, insights, archiveType ->
                         val data = mutableListOf<SectionModelView>()
 
                         data.addAll(systemStatistics)
 
+                        if (insights.income != -1f) {
+                            data.add(insights)
+                        }
+
                         if (archiveType == ArchiveType.SESSION) {
                             data.add(category)
                         }
-
-                        /*data.add(insights)*/
 
                         data.addAll(usageStatistics)
 

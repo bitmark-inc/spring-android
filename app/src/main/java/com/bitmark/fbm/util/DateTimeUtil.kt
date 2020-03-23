@@ -42,6 +42,8 @@ class DateTimeUtil {
 
         val DATE_FORMAT_12 = "MMMM"
 
+        val DATE_FORMAT_13 = "MMMM yyyy"
+
         val DATE_TIME_FORMAT_1 = "MMM dd hh:mm a"
 
         val TIME_FORMAT_1 = "hh:mm a"

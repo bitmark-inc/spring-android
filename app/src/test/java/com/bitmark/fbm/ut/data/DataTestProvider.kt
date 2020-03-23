@@ -258,7 +258,7 @@ val SECTIONR_2 = SectionR(2, SectionName.REACTION, Period.WEEK, 0, 0f, 0, mapOf(
 
 val SECTIONRS = listOf(SECTIONR_1, SECTIONR_2)
 
-val INSIGHT_DATA = InsightData(1f, 0L)
+val INSIGHT_DATA = InsightData(1f, 0L, 0L)
 
 val STATS = Stats(1f, 1f)
 

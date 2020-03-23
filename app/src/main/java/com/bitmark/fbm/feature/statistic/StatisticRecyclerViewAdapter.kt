@@ -17,6 +17,7 @@ import com.bitmark.fbm.util.DateTimeUtil
 import com.bitmark.fbm.util.ext.getDimensionPixelSize
 import com.bitmark.fbm.util.ext.gone
 import com.bitmark.fbm.util.ext.visible
+import com.bitmark.fbm.util.formatPeriod
 import com.bitmark.fbm.util.modelview.SectionModelView
 import com.bitmark.fbm.util.view.statistic.GroupView
 import com.bitmark.fbm.util.view.statistic.SectionView
@@ -65,7 +66,7 @@ class StatisticRecyclerViewAdapter :
                     SectionName.STATS
                 ) -> STATISTIC
                 s.categories != null -> ADS_CATEGORIES
-                s.income != null && s.incomeFrom != null -> FB_INCOME
+                s.income != null -> FB_INCOME
                 else -> ARCHIVE_UPLOAD
             }
             Item(type, s)
@@ -202,7 +203,6 @@ class StatisticRecyclerViewAdapter :
         fun bind(item: Item) {
             with(itemView) {
                 val income = item.section.income
-                val incomeFrom = item.section.incomeFrom
                 if (income == null || income <= 0f) {
                     tvIncome.text = "--"
                     tvMsg.text = context.getString(R.string.sorry_no_data)
@@ -210,10 +210,9 @@ class StatisticRecyclerViewAdapter :
                     tvIncome.text = String.format("$%.2f", income)
                     tvMsg.text = context.getString(R.string.income_fb_made_from_you_format)
                         .format(
-                            DateTimeUtil.millisToString(
-                                incomeFrom!! * 1000,
-                                DateTimeUtil.DATE_FORMAT_11,
-                                DateTimeUtil.defaultTimeZone()
+                            DateTimeUtil.formatPeriod(
+                                item.section.period!!,
+                                item.section.periodStartedAtSec!! * 1000
                             )
                         )
                 }
