@@ -12,6 +12,7 @@ import android.os.Binder
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
+import com.bitmark.apiservice.utils.BackgroundJobScheduler
 import com.bitmark.fbm.R
 import com.bitmark.fbm.data.model.ArchiveType
 import com.bitmark.fbm.data.source.AccountRepository
@@ -69,13 +70,24 @@ class UploadArchiveService : DaggerService(), ConnectivityHandler.NetworkStateCh
 
     private var uri: Uri? = null
 
-    private var errorDuringUploading = false
-
     private val handler = Handler()
+
+    private val executor = BackgroundJobScheduler(3)
+
+    private var state: State = State.STARTED
+
+    private var throwable: Throwable? = null
+
+    private var fileName: String = ""
+
+    private var byteTotal = 0L
+
+    private var byteUploaded = 0L
 
     fun addStateListener(stateListener: StateListener) {
         if (stateListeners.contains(stateListener)) return
         stateListeners.add(stateListener)
+        notifyClient(stateListener)
     }
 
     fun removeStateListener(stateListener: StateListener) {
@@ -83,19 +95,22 @@ class UploadArchiveService : DaggerService(), ConnectivityHandler.NetworkStateCh
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        state = State.STARTED
 
         try {
             val uriString = intent?.extras?.getString(URI) ?: error("missing uri string")
             uri = Uri.parse(uriString) ?: error("invalid uri")
             execute(uri!!)
         } catch (e: Throwable) {
+            state = State.ERROR
+            throwable = e
             Tracer.ERROR.log(
                 TAG,
-                "error when prepare uri: ${e.javaClass.canonicalName
-                    ?: "UnknownError"}: ${e.message ?: "unknown"}"
+                "error when prepare uri: ${throwable!!.javaClass.canonicalName
+                    ?: "UnknownError"}: ${throwable!!.message ?: "unknown"}"
             )
-            logger.logError(Event.ARCHIVE_FILE_UPLOAD_ERROR, e)
-            notifyError(e)
+            logger.logError(Event.ARCHIVE_FILE_UPLOAD_ERROR, throwable)
+            notifyError(throwable!!)
         }
         return START_NOT_STICKY
     }
@@ -109,10 +124,6 @@ class UploadArchiveService : DaggerService(), ConnectivityHandler.NetworkStateCh
             buildNotification(applicationContext, notificationBundle)
         )
 
-        val fileSize = getFileSize(uri)
-        val fileName = getFileName(uri)
-        val fileInputStream = contentResolver.openInputStream(uri) ?: error("cannot open stream")
-
         // using delay publisher to avoid backpressure for notification updating
         val publisher = PublishSubject.create<Int>()
         disposeBag.add(publisher.debounce(100, TimeUnit.MILLISECONDS).subscribe { percent ->
@@ -121,36 +132,49 @@ class UploadArchiveService : DaggerService(), ConnectivityHandler.NetworkStateCh
             pushNotification(applicationContext, notificationBundle)
         })
 
-        // start executing
-        disposeBag.add(
-            accountRepo.uploadArchive(fileInputStream, fileSize) { progress ->
-                val byteRead = progress.first
-                val byteTotal = progress.second
-                val percent = (byteRead * 100 / byteTotal).toInt()
-                publisher.onNext(percent)
-                notifyProgressChanged(fileName, byteRead, byteTotal)
-            }.andThen(
-                Completable.mergeArray(
-                    appRepo.setArchiveUploaded(),
-                    accountRepo.saveLatestArchiveType(ArchiveType.FILE).ignoreElement()
-                )
-            ).subscribe({
-                errorDuringUploading = false
-                logger.logEvent(Event.ARCHIVE_FILE_UPLOAD_SUCCESS)
-                notificationBundle = buildNotificationBundle(0, 0)
-                notifyFinished()
-                stopSelf()
-            }, { e ->
-                errorDuringUploading = true
-                logger.logError(Event.ARCHIVE_FILE_UPLOAD_ERROR, e)
-                Tracer.ERROR.log(
-                    TAG,
-                    "error in upload archive: ${e.javaClass.canonicalName
-                        ?: "UnknownError"}: ${e.message ?: "unknown"}"
-                )
-                notifyError(e)
-            })
-        )
+        byteTotal = getFileSize(uri)
+        fileName = getFileName(uri)
+
+        notifyStarted(fileName, byteTotal)
+
+        executor.execute {
+            val fileInputStream =
+                contentResolver.openInputStream(uri) ?: error("cannot open stream")
+
+            // start executing
+            disposeBag.add(
+                accountRepo.uploadArchive(fileInputStream, byteTotal) { progress ->
+                    state = State.UPLOADING
+                    byteUploaded = progress.first
+                    byteTotal = progress.second
+                    val percent = (byteUploaded * 100 / byteTotal).toInt()
+                    publisher.onNext(percent)
+                    notifyProgressChanged(fileName, byteUploaded, byteTotal)
+                }.andThen(
+                    Completable.mergeArray(
+                        appRepo.setArchiveUploaded(),
+                        accountRepo.saveLatestArchiveType(ArchiveType.FILE).ignoreElement()
+                    )
+                ).subscribe({
+                    state = State.FINISHED
+                    logger.logEvent(Event.ARCHIVE_FILE_UPLOAD_SUCCESS)
+                    notificationBundle = buildNotificationBundle(0, 0)
+                    notifyFinished()
+                    resetState()
+                    stopSelf()
+                }, { e ->
+                    state = State.ERROR
+                    throwable = e
+                    logger.logError(Event.ARCHIVE_FILE_UPLOAD_ERROR, throwable)
+                    Tracer.ERROR.log(
+                        TAG,
+                        "error in upload archive: ${throwable!!.javaClass.canonicalName
+                            ?: "UnknownError"}: ${throwable!!.message ?: "unknown"}"
+                    )
+                    notifyError(throwable!!)
+                })
+            )
+        }
     }
 
     private fun buildNotificationBundle(maxProgress: Int, currentProgress: Int) =
@@ -182,6 +206,26 @@ class UploadArchiveService : DaggerService(), ConnectivityHandler.NetworkStateCh
         handler.post { stateListeners.forEach { l -> l.onFinished() } }
     }
 
+    private fun notifyStarted(fileName: String, byteTotal: Long) {
+        handler.post { stateListeners.forEach { l -> l.onStarted(fileName, byteTotal) } }
+    }
+
+    private fun notifyClient(l: StateListener) {
+        when (state) {
+            State.STARTED -> l.onStarted(fileName, byteTotal)
+            State.UPLOADING -> l.onProgressChanged(fileName, byteUploaded, byteTotal)
+            State.ERROR -> l.onError(throwable!!)
+            State.FINISHED -> l.onFinished()
+        }
+    }
+
+    private fun resetState() {
+        byteUploaded = 0
+        byteTotal = 0
+        fileName = ""
+        throwable = null
+    }
+
     override fun onBind(intent: Intent?): IBinder? {
         return binder
     }
@@ -195,11 +239,12 @@ class UploadArchiveService : DaggerService(), ConnectivityHandler.NetworkStateCh
         handler.removeCallbacksAndMessages(null)
         connectivityHandler.removeNetworkStateChangeListener(this)
         disposeBag.dispose()
+        executor.shutdown()
         super.onDestroy()
     }
 
     override fun onChange(connected: Boolean) {
-        if (connected && errorDuringUploading && uri != null) {
+        if (connected && state == State.ERROR && uri != null) {
             execute(uri!!)
         }
     }
@@ -211,10 +256,16 @@ class UploadArchiveService : DaggerService(), ConnectivityHandler.NetworkStateCh
 
     interface StateListener {
 
+        fun onStarted(fileName: String, byteTotal: Long)
+
         fun onProgressChanged(fileName: String, byteRead: Long, byteTotal: Long)
 
         fun onFinished()
 
         fun onError(e: Throwable)
+    }
+
+    enum class State {
+        STARTED, UPLOADING, FINISHED, ERROR
     }
 }

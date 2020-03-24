@@ -75,7 +75,7 @@ class AccountRepository(
     fun checkFbCredentialExisting() = localDataSource.checkFbCredentialExisting()
 
     fun checkInvalidArchives() = remoteDataSource.getArchives().map { archives ->
-        archives.none { a -> a.isValid() }
+        archives.isNotEmpty() && archives.none { a -> a.isValid() }
     }
 
     fun checkArchiveProcessed() = listProcessedArchive().map { archives -> archives.isNotEmpty() }

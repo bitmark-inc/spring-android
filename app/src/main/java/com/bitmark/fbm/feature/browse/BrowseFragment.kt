@@ -13,13 +13,13 @@ import android.os.Handler
 import android.view.View
 import androidx.lifecycle.Observer
 import com.bitmark.fbm.R
+import com.bitmark.fbm.data.model.ArchiveType
 import com.bitmark.fbm.feature.BaseSupportFragment
 import com.bitmark.fbm.feature.BaseViewModel
 import com.bitmark.fbm.feature.DialogController
 import com.bitmark.fbm.feature.Navigator
 import com.bitmark.fbm.feature.Navigator.Companion.RIGHT_LEFT
 import com.bitmark.fbm.feature.archiveuploading.UploadArchiveActivity
-import com.bitmark.fbm.data.model.ArchiveType
 import com.bitmark.fbm.feature.archiveuploading.service.UploadArchiveService
 import com.bitmark.fbm.feature.archiveuploading.service.UploadArchiveServiceHandler
 import com.bitmark.fbm.feature.realtime.ArchiveStateBus
@@ -66,6 +66,10 @@ class BrowseFragment : BaseSupportFragment() {
     private val handler = Handler()
 
     private val uploadArchiveListener = object : UploadArchiveService.StateListener {
+        override fun onStarted(fileName: String, byteTotal: Long) {
+            showUploadStartedState(fileName, byteTotal)
+        }
+
         override fun onProgressChanged(fileName: String, byteRead: Long, byteTotal: Long) {
             showUploadingState(fileName, byteRead, byteTotal)
         }
@@ -252,14 +256,31 @@ class BrowseFragment : BaseSupportFragment() {
         sv.scrollToTop()
     }
 
+    private fun showUploadStartedState(fileName: String, byteTotal: Long) {
+        progressBar1.progress = 0
+        tvState.setText(R.string.uploading)
+        tvProgress.text =
+            String.format("%d of %s", 0, byteTotal.formatByteString())
+        tvArchiveName.text = fileName
+        tvArchiveName.visible()
+        tvProgress.visible()
+        progressBar1.visible()
+        progressBar2.gone()
+
+        layoutProgress.visible()
+        layoutCategories.gone()
+        layoutGetFbData.gone()
+        layoutArchiveRequestInfo.gone()
+    }
+
     private fun showUploadingState(fileName: String, byteRead: Long, byteTotal: Long) {
         progressBar1.progress = (byteRead * 100 / byteTotal).toInt()
         tvState.setText(R.string.uploading)
         tvProgress.text =
             String.format("%s of %s", byteRead.formatByteString(), byteTotal.formatByteString())
         tvArchiveName.text = fileName
-        tvProgress.visible()
         tvArchiveName.visible()
+        tvProgress.visible()
         progressBar1.visible()
         progressBar2.gone()
 

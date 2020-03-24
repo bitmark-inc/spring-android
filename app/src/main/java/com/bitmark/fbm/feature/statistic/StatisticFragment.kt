@@ -100,6 +100,10 @@ class StatisticFragment : BaseSupportFragment() {
     private lateinit var adapter: StatisticRecyclerViewAdapter
 
     private val uploadArchiveListener = object : UploadArchiveService.StateListener {
+        override fun onStarted(fileName: String, byteTotal: Long) {
+            uploading = false
+        }
+
         override fun onProgressChanged(fileName: String, byteRead: Long, byteTotal: Long) {
             uploading = true
         }
