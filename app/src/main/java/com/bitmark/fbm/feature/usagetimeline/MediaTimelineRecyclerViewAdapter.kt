@@ -14,10 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bitmark.fbm.BuildConfig
 import com.bitmark.fbm.R
 import com.bitmark.fbm.data.model.entity.Period
-import com.bitmark.fbm.util.ext.gone
-import com.bitmark.fbm.util.ext.load
-import com.bitmark.fbm.util.ext.setSafetyOnclickListener
-import com.bitmark.fbm.util.ext.visible
+import com.bitmark.fbm.util.ext.*
 import com.bitmark.fbm.util.modelview.MediaModelView
 import com.bitmark.fbm.util.modelview.timestamp
 import kotlinx.android.synthetic.main.item_media.view.*
@@ -114,15 +111,19 @@ class MediaTimelineRecyclerViewAdapter(period: Period) :
             this.mediaItem = mediaItem
             with(itemView) {
                 val cache = mediaItem.uri + "_thumbnail"
+                vBottomGradient.invisible()
                 ivThumbnail.load(mediaItem.thumbnail, cache, error = {
                     this@ItemViewHolder.handler.post {
                         ivThumbnail.load(mediaItem.absoluteUrl, cache, success = {
+                            vBottomGradient.visible()
                             loadingImageListener?.onLoadingAlternativeUri(
                                 mediaItem.id,
                                 mediaItem.absoluteUrl
                             )
                         })
                     }
+                }, success = {
+                    vBottomGradient.visible()
                 })
                 if (mediaItem.isVideo) {
                     ivVideo.visible()
