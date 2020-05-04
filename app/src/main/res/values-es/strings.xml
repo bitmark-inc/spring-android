@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Authors:
+* Fitoschido
+* Joanmp17
+* Juenti el toju
+-->
+<resources>
+  <string name="error">Error</string>
+  <string name="get_started_arrow">Empezar →</string>
+  <string name="i_already_have_an_account_arrow">Ya tengo cuenta →</string>
+  <string name="how_it_works">Cómo funciona</string>
+  <string name="continue_arrow">Continuar →</string>
+  <string name="fb_login">Usuario de Facebook</string>
+  <string name="fb_password">Contraseña de Facebook</string>
+  <string name="data_requested">Datos solicitados</string>
+  <string name="notify_me_arrow">Notificarme →</string>
+  <string name="no_thanks">No, gracias</string>
+  <string name="enable">Activar</string>
+  <string name="authorize_arrow">Autorizar →</string>
+  <string name="usage">USO</string>
+  <string name="account">CUENTA</string>
+  <string name="security">Seguridad</string>
+  <string name="sign_out_arrow">Salir →</string>
+  <string name="biometric_auth_arrow">Autenticación biométrica →</string>
+  <string name="recovery_key_arrow">Clave de recuperación →</string>
+  <string name="support">Asistencia</string>
+  <string name="about_arrow">Acerca de →</string>
+  <string name="faq_arrow">Preguntas frecuentes →</string>
+  <string name="faq">Preguntas frecuentes</string>
+  <string name="unlink_account">Desenlazar cuenta</string>
+  <string name="unlink_account_arrow">Desenlazar cuenta →</string>
+  <string name="enable_biometric_auth">Activar autenticación biométrica</string>
+  <string name="recovery_key">Clave de recuperación</string>
+  <string name="about">Acerca de</string>
+  <string name="check_now_arrow">Comprobar ahora →</string>
+  <string name="still_waiting">Aún a la espera</string>
+  <string name="week">Semana</string>
+  <string name="year">Año</string>
+  <string name="decade">Década</string>
+  <string name="last_week">Semana pasada</string>
+  <string name="this_week">Esta semana</string>
+  <string name="this_year">Este año</string>
+  <string name="this_decade">Esta década</string>
+  <string name="posts">Publicaciones</string>
+  <string name="reactions">Reacciones</string>
+  <string name="updates">Actualizaciones</string>
+  <string name="photos_videos">Fotos y vídeos</string>
+  <string name="stories">Historias</string>
+  <string name="links">Enlaces</string>
+  <string name="like">Me gusta</string>
+  <string name="love">Me encanta</string>
+  <string name="wow">Me asombra</string>
+  <string name="haha">Me divierte</string>
+  <string name="sad">Me entristece</string>
+  <string name="angry">Me enoja</string>
+  <string name="by_type">Por tipo</string>
+  <string name="by_day">Por día</string>
+  <string name="by_month">Por mes</string>
+  <string name="notifications">Notificaciones</string>
+  <string name="submit_arrow">Enviar →</string>
+  <string name="you_requested_your_fb_archive">Datos de Facebook solicitados:</string>
+  <string name="update_now_arrow">Actualizar ahora →</string>
+  <string name="update_available">Actualización disponible</string>
+  <string name="categories_for_ads">Categorías de anuncios</string>
+  <string name="settings">CONFIGURACIÓN</string>
+  <string name="export_data_arrow">Exportar datos →</string>
+  <string name="source_code_arrow">Código fuente →</string>
+  <string name="delete_data_arrow">Eliminar datos →</string>
+  <string name="privacy_policy">Normativa de privacidad</string>
+  <string name="facebook">Facebook</string>
+  <string name="eula_and_pp">CLUF y normativa de privacidad</string>
+  <string name="whats_new_arrow">Novedades →</string>
+  <string name="eula">CLUF</string>
+  <string name="read_more_arrow">Más información →</string>
+  <string name="delete_arrow">Eliminar →</string>
+  <string name="confirm">Confirmar</string>
+  <string name="all_of_spring">Todo Spring</string>
+  <string name="reaction_by_type">Reacciones por tipo</string>
+  <string name="enhancements">Mejoras</string>
+  <string name="summary">RESUMEN</string>
+  <string name="browse">EXPLORAR</string>
+  <string name="add_zip_file_arrow">Añadir archivo ZIP →</string>
+  <string name="invalid_file_format">Formato de archivo no válido</string>
+  <string name="the_url_provided_was_invalid">El URL proporcionado no es válido</string>
+  <string name="notify_me_when_it_done_arrow">Notificarme cuando termine →</string>
+  <string name="automate_now_arrow">Automatizar ahora →</string>
+  <string name="last_week_format_plural">Hace %d semanas</string>
+  <string name="last_year_format_plural">Hace %d años</string>
+  <string name="last_decade_format_plural">Hace %d décadas</string>
+  <string name="version_format">Versión %1$s</string>
+</resources>

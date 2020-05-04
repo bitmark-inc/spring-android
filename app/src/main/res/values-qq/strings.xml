@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Authors:
+* Robby
+-->
+<resources>
+  <string name="error">{{identical|Error}}</string>
+  <string name="support">{{identical|Support}}</string>
+  <string name="week">{{identical|Week}}</string>
+  <string name="year">{{identical|Year}}</string>
+</resources>

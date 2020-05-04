@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Authors:
+* FarsiNevis
+-->
+<resources>
+  <string name="error">خطا</string>
+  <string name="continue_arrow">ادامه »</string>
+  <string name="fb_login">ورود با فیس‌بوک</string>
+  <string name="fb_password">اسم رمز فیس‌بوک</string>
+  <string name="no_thanks">نه؛ سپاس!</string>
+  <string name="enable">فعال‌سازی</string>
+  <string name="sign_out_arrow">خروج »</string>
+  <string name="support">پشتیبانی</string>
+  <string name="about_arrow">معرفی »</string>
+  <string name="about">معرفی</string>
+  <string name="week">هفته</string>
+  <string name="year">سال</string>
+  <string name="decade">دهه</string>
+  <string name="last_week">هفتهٔ گذشته</string>
+  <string name="this_week">هفتهٔ کنونی</string>
+  <string name="this_year">امسال</string>
+  <string name="this_decade">دههٔ کنونی</string>
+  <string name="reactions">واکنش‌ها</string>
+  <string name="updates">روزآمدسازی‌ها</string>
+  <string name="photos_videos">عکس‌ها و ویدئوها</string>
+  <string name="stories">روایت‌ها</string>
+  <string name="love">عشق</string>
+  <string name="wow">وای</string>
+  <string name="haha">هاها</string>
+  <string name="sad">ناراحت</string>
+  <string name="angry">عصبانی</string>
+  <string name="by_type">بر حسب نوع</string>
+  <string name="by_day">بر حسب روز</string>
+  <string name="by_month">بر حسب ماه</string>
+  <string name="by_year">بر حسب سال</string>
+  <string name="sincerely_colon">با احترام،</string>
+  <string name="your_help_is_required">کمک شما مورد نیاز است</string>
+  <string name="happy">شاد</string>
+  <string name="unhappy">غمگین</string>
+  <string name="one">۱</string>
+  <string name="ten">۱۰</string>
+  <string name="last_year">سال گذشته</string>
+  <string name="last_decade">دههٔ گذشته</string>
+  <string name="coming_soon">به‌زودی!</string>
+  <string name="sign_in">ورود</string>
+  <string name="update_now_arrow">روزآمد کنید</string>
+  <string name="update_available">روزآمدسازی موجود است</string>
+  <string name="try_again">دوباره تلاش کنید</string>
+  <string name="settings">تنظیمات</string>
+  <string name="facebook">فیس‌بوک</string>
+  <string name="help_arrow">تماس با ما »</string>
+  <string name="select_no">«نه» را انتخاب کنید</string>
+  <string name="select_no_one">«هیچ‌کس» را انتخاب کنید</string>
+  <string name="read_more_arrow">بیشتر بخواانید »</string>
+  <string name="pls_check_the_new_updates">لطفاً روزآمدسازی‌های جدید را وارسی کنید...</string>
+  <string name="delete_account">حذف حساب کاربری</string>
+  <string name="delete_arrow">حذف »</string>
+  <string name="confirm">تأیید</string>
+  <string name="summary">خلاصه</string>
+  <string name="or">یا</string>
+  <string name="contact_us">تماس با ما</string>
+  <string name="uploading">در حال بارگذاری...</string>
+  <string name="processing">در حال پردازش...</string>
+  <string name="month">ماه</string>
+  <string name="word_of_format">واژهٔ %1$d از %2$d</string>
+  <string name="reactions_format">%1$s واکنش</string>
+  <string name="date_format_1">%1$s در %2$s</string>
+  <string name="with_format_1">W/%1$s</string>
+  <string name="version_format">نسخهٔ %1$s</string>
+</resources>
